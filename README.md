@@ -2,6 +2,13 @@
 
 **Composition rules and agent skills for generating Chinese ink paintings from classical verse using diffusion models.**
 
+## Install
+
+```shell
+/plugin marketplace add augchan42/inkstone
+/plugin install inkstone@augchan42-inkstone
+```
+
 Inkstone is the methodology behind [SixLines.online](https://sixlines.online)'s image pipeline — 4,096 unique ink paintings generated from Han dynasty oracular poetry (the Jiaoshi Yilin, 焦氏易林, ~40 BCE). These rules and skills were developed iteratively across four rounds of testing and refined through generating the full corpus.
 
 The name comes from the inkstone (硯台), one of the Four Treasures of the Study (文房四寶) — the tool you grind ink on before painting. This repo grinds classical Chinese verses into painterly prompts.
@@ -9,10 +16,16 @@ The name comes from the inkstone (硯台), one of the Four Treasures of the Stud
 ## What's Inside
 
 ```
+.claude-plugin/
+├── plugin.json              # Plugin manifest
+└── marketplace.json         # Marketplace registry
+
 skills/
-├── verse-to-prompt.md      # The image generation skill (7 composition rules,
+├── verse-to-prompt/
+│   └── SKILL.md             # The image generation skill (7 composition rules,
 │                            # 5 style categories, content safety patterns)
-└── create-explanation.md    # Bilingual scholarly explanation skill
+└── create-explanation/
+    └── SKILL.md             # Bilingual scholarly explanation skill
 
 examples/
 └── prompt-examples.md       # 8 validated reference prompts, one per style
@@ -63,7 +76,7 @@ The full substitution table is in `skills/verse-to-prompt.md`.
 
 These skills are designed as agent skills (tested with Claude Code). You can use them:
 
-1. **As Claude Code skills** — drop the `skills/` folder into your `.claude/skills/` directory
+1. **As a Claude Code plugin** — install via the commands in the [Install](#install) section above
 2. **As prompt engineering reference** — the composition rules and anti-patterns apply to any text-to-image workflow
 3. **As a starting point** — adapt the style categories and rules for your own domain
 

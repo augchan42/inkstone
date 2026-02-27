@@ -1,0 +1,9 @@
+{
+  "name": "inkstone",
+  "owner": { "name": "Augustin Chan" },
+  "plugins": [{
+    "name": "inkstone",
+    "source": ".",
+    "description": "Composition rules and agent skills for generating Chinese ink paintings from classical verse"
+  }]
+}
