@@ -2,7 +2,7 @@
 
 **Composition rules and agent skills for generating Chinese ink paintings from classical verse using diffusion models.**
 
-Inkstone is the methodology behind [8-Bit Oracle](https://8bitoracle.ai)'s image pipeline — 4,096 unique ink paintings generated from Han dynasty oracular poetry (the Jiaoshi Yilin, 焦氏易林, ~40 BCE). These rules and skills were developed iteratively across four rounds of testing and refined through generating the full corpus.
+Inkstone is the methodology behind [SixLines.online](https://sixlines.online)'s image pipeline — 4,096 unique ink paintings generated from Han dynasty oracular poetry (the Jiaoshi Yilin, 焦氏易林, ~40 BCE). These rules and skills were developed iteratively across four rounds of testing and refined through generating the full corpus.
 
 The name comes from the inkstone (硯台), one of the Four Treasures of the Study (文房四寶) — the tool you grind ink on before painting. This repo grinds classical Chinese verses into painterly prompts.
 
@@ -83,7 +83,7 @@ Things we tried that produced bad results:
 
 - Blog post: [Teaching Taste to an Agent](https://augustinchan.dev/posts/teaching-taste-to-agents-yilin-image-pipeline)
 - See sample output: [SixLines.online — Hexagram 14](https://sixlines.online/en/hexagrams/14) — ink paintings from the Jiaoshi Yilin
-- Product: [8-Bit Oracle](https://8bitoracle.ai) — AI-powered I-Ching divination
+- Product: [SixLines.online](https://sixlines.online) — I-Ching reference and Chinese almanac for iOS
 - The Jiaoshi Yilin is a ~40 BCE divination text by Jiao Yanshou (焦延壽), containing 4,096 oracular verses organized as 64×64 hexagram transformations
 
 ## License
