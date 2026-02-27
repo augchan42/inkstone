@@ -1,6 +1,6 @@
 # Inkstone 硯台
 
-**Composition rules and agent skills for generating Chinese ink paintings from classical verse using diffusion models.**
+**Composition rules and agent skills for generating Chinese ink paintings from classical verse using text-to-image models.**
 
 ## Install
 

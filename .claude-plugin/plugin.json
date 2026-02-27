@@ -1,5 +1,5 @@
 {
   "name": "inkstone",
-  "description": "Composition rules and agent skills for generating Chinese ink paintings from classical verse using diffusion models",
+  "description": "Composition rules and agent skills for generating Chinese ink paintings from classical verse using text-to-image models",
   "version": "1.0.0"
 }

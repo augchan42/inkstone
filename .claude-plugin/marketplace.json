@@ -4,6 +4,6 @@
   "plugins": [{
     "name": "inkstone",
     "source": ".",
-    "description": "Composition rules and agent skills for generating Chinese ink paintings from classical verse"
+    "description": "Composition rules and agent skills for generating Chinese ink paintings from classical verse using text-to-image models"
   }]
 }

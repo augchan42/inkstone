@@ -5,7 +5,7 @@ description: Convert classical Chinese verses into ink painting image generation
 
 # Verse → Image Prompt
 
-Convert classical Chinese oracular verses into English image generation prompts for diffusion models (validated with `fal-ai/z-image/turbo`).
+Convert classical Chinese oracular verses into English image generation prompts for text-to-image models (validated with `fal-ai/z-image/turbo`).
 
 ## Your Task
 
