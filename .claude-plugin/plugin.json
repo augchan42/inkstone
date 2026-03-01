@@ -13,6 +13,7 @@
   "skills": [
     "./skills/create-explanation",
     "./skills/verse-to-prompt",
-    "./skills/ui-ux-architect"
+    "./skills/ui-ux-architect",
+    "./skills/nextjs-i18n-seo"
   ]
 }
