@@ -9,10 +9,5 @@
   "homepage": "https://github.com/augchan42/inkstone",
   "repository": "https://github.com/augchan42/inkstone",
   "license": "MIT",
-  "keywords": ["ink-painting", "chinese", "classical-verse", "image-generation", "ui-ux", "design-audit"],
-  "skills": [
-    "./skills/create-explanation",
-    "./skills/verse-to-prompt",
-    "./skills/ui-ux-architect"
-  ]
+  "keywords": ["ink-painting", "chinese", "classical-verse", "image-generation", "ui-ux", "design-audit"]
 }
