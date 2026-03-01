@@ -1,6 +1,8 @@
 ---
 name: verse-to-prompt
-description: Convert classical Chinese verses into ink painting image generation prompts following validated composition rules
+description: Convert classical Chinese verses into ink painting image generation prompts. Use only when called explicitly as part of a batch pipeline — not for conversational use. Takes a JSON array of verse objects and outputs a JSON array of prompt objects.
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Verse → Image Prompt

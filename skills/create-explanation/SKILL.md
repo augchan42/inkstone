@@ -1,6 +1,8 @@
 ---
 name: create-explanation
-description: Generate scholarly bilingual explanations for classical Chinese verses - research-grounded, accessible tone connecting imagery to transformation meaning
+description: Generate scholarly bilingual explanations for classical Chinese verses. Use only when called explicitly as part of a batch pipeline — not for conversational use. Takes a verse and produces English + Traditional Chinese commentary with a references array.
+disable-model-invocation: true
+user-invocable: true
 ---
 
 # Create Verse Explanation
