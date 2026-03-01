@@ -3,7 +3,7 @@
   "owner": { "name": "Augustin Chan" },
   "plugins": [{
     "name": "inkstone",
-    "source": ".",
+    "source": "augchan42/inkstone",
     "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more"
   }]
 }
