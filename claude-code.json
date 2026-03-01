@@ -1,0 +1,25 @@
+{
+  "name": "inkstone",
+  "version": "1.0.0",
+  "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more",
+  "author": "Augustin Chan",
+  "license": "MIT",
+  "commands": [
+    "./commands/create-explanation.md",
+    "./commands/verse-to-prompt.md"
+  ],
+  "skills": [
+    {
+      "name": "create-explanation",
+      "description": "Generate a scholarly bilingual explanation of a classical Chinese verse. Use when the user pastes a classical Chinese verse and wants to understand it, asks 'what does this mean,' or wants an English and Traditional Chinese commentary."
+    },
+    {
+      "name": "verse-to-prompt",
+      "description": "Generate a Chinese ink painting image prompt from a classical Chinese verse. Use when the user pastes a classical Chinese verse and asks for an image prompt, wants to visualize a verse, or asks 'what would this look like as an ink painting.'"
+    },
+    {
+      "name": "ui-ux-architect",
+      "description": "Use when auditing UI/UX design, reviewing screen layouts, evaluating user flows, or assessing design system consistency."
+    }
+  ]
+}
