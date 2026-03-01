@@ -1,5 +1,10 @@
 {
   "name": "inkstone",
   "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more",
-  "version": "1.0.0"
+  "version": "1.0.0",
+  "skills": [
+    "./skills/create-explanation",
+    "./skills/verse-to-prompt",
+    "./skills/ui-ux-architect"
+  ]
 }
