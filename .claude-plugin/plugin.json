@@ -1,5 +1,5 @@
 {
   "name": "inkstone",
-  "description": "Composition rules and agent skills for generating Chinese ink paintings from classical verse using text-to-image models",
+  "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more",
   "version": "1.0.0"
 }
