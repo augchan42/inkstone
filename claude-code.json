@@ -20,6 +20,10 @@
     {
       "name": "ui-ux-architect",
       "description": "Use when auditing UI/UX design, reviewing screen layouts, evaluating user flows, or assessing design system consistency."
+    },
+    {
+      "name": "nextjs-i18n-seo",
+      "description": "Use when a Next.js multilingual site has crawlability or ranking issues, locale-prefixed URLs aren't indexed properly, or to audit/fix i18n SEO. Covers the 307 redirect bug, no-prefix default locale strategy, sitemap, hreflang, and middleware audit."
     }
   ]
 }
