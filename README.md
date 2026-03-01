@@ -64,7 +64,9 @@ A white colt grazes quietly in an enclosed field — then in a single bound, it 
 
 The ink painting skills are the methodology behind [SixLines.online](https://sixlines.online)'s image pipeline — 4,096 unique ink paintings generated from Han dynasty oracular poetry (the Jiaoshi Yilin, 焦氏易林, ~40 BCE). These rules were developed iteratively across four rounds of testing and refined through generating the full corpus.
 
-The name comes from the inkstone (硯台), one of the Four Treasures of the Study (文房四寶) — the tool you grind ink on before painting.
+The name comes from the inkstone (硯台, yàntái), one of the Four Treasures of the Study (文房四寶, wénfáng sìbǎo) — the stone slab on which an ink stick is ground with water to produce ink before painting or writing. The other three treasures are the brush (筆), ink stick (墨), and paper (紙).
+
+The inkstone is the preparatory tool — it transforms a raw material into something ready to make art. That felt like the right metaphor for a collection of skills that transform raw classical verse into image prompts and explanations: the grinding happens here, before anything is painted.
 
 #### The 7 Composition Rules
 
