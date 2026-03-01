@@ -1,9 +1,17 @@
 {
+  "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
   "name": "inkstone",
   "owner": { "name": "Augustin Chan" },
-  "plugins": [{
-    "name": "inkstone",
-    "source": "augchan42/inkstone",
-    "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more"
-  }]
+  "plugins": [
+    {
+      "name": "inkstone",
+      "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more",
+      "source": {
+        "source": "github",
+        "repo": "augchan42/inkstone"
+      },
+      "category": "development",
+      "homepage": "https://github.com/augchan42/inkstone"
+    }
+  ]
 }
