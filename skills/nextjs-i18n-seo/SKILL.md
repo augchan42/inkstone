@@ -1,6 +1,6 @@
 ---
 name: nextjs-i18n-seo
-description: Use when a Next.js multilingual site has crawlability or ranking issues, when locale-prefixed URLs aren't being indexed properly, or when the user wants to audit/fix i18n SEO for any Next.js site. Covers the 307 redirect bug, no-prefix default locale strategy, sitemap, hreflang, and middleware audit.
+description: Use when a Next.js multilingual site has crawlability issues, locale URLs aren't indexed, or to audit/fix i18n SEO. Fixes 307 redirect bug, no-prefix default locale, sitemap, hreflang.
 user-invocable: true
 argument-hint: [site URL or project path]
 ---
