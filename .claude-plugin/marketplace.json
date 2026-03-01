@@ -11,13 +11,7 @@
         "repo": "augchan42/inkstone"
       },
       "category": "development",
-      "homepage": "https://github.com/augchan42/inkstone",
-      "strict": false,
-      "skills": [
-        "./skills/create-explanation",
-        "./skills/verse-to-prompt",
-        "./skills/ui-ux-architect"
-      ]
+      "homepage": "https://github.com/augchan42/inkstone"
     }
   ]
 }
