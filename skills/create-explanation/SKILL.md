@@ -1,8 +1,8 @@
 ---
 name: create-explanation
-description: Generate scholarly bilingual explanations for classical Chinese verses. Use only when called explicitly as part of a batch pipeline — not for conversational use. Takes a verse and produces English + Traditional Chinese commentary with a references array.
-disable-model-invocation: true
+description: Generate a scholarly bilingual explanation of a classical Chinese verse. Use when the user pastes a classical Chinese verse and wants to understand it, asks "what does this mean," or wants an English and Traditional Chinese commentary. Works with Yilin verses, I Ching lines, Tang poetry, or any classical Chinese text.
 user-invocable: true
+argument-hint: [paste your verse here]
 ---
 
 # Create Verse Explanation
@@ -14,7 +14,7 @@ Generate scholarly bilingual explanations for classical Chinese oracular verses.
 Given a classical Chinese verse, produce:
 1. An **English explanation** (100-150 words)
 2. A **Traditional Chinese explanation** (150-200 characters)
-3. A **references** array of historical figures, places, or allusions used
+3. A **references** list of historical figures, places, or allusions used
 
 ## Critical Requirements
 
@@ -34,7 +34,7 @@ Given a classical Chinese verse, produce:
 **Structure:**
 1. **Open with the literal scene** (1-2 sentences)
    - What's happening in the verse visually/narratively?
-   - Ground reader in the imagery before explaining
+   - Ground the reader in the imagery before explaining
 
 2. **Explain historical allusions** (2-3 sentences)
    - Clarify references with brief context
@@ -69,34 +69,37 @@ Given a classical Chinese verse, produce:
 
 ## Output Format
 
-```json
-{
-  "key": "1-23",
-  "explanation_en": "Great Yu inspects the roads while Chiyou clears the way ahead, covering ten thousand miles without danger...",
-  "explanation_zh": "大禹巡視道路，蚩尤開闢通途，行遍萬里不遇危險...",
-  "references": ["大禹", "蚩尤"]
-}
-```
+Present the result conversationally:
+
+**English**
+Great Yu inspects the roads while Chiyou clears the way ahead, covering ten thousand miles without danger...
+
+**繁體中文**
+大禹巡視道路，蚩尤開闢通途，行遍萬里不遇危險...
+
+**References:** 大禹, 蚩尤
+
+---
 
 ## Example: Strong Explanation
 
-**Verse (1→23):** "大禹式路，蚩尤除道。周匝萬里，不危不殆，見其所使，無所不在。"
+**Verse:** 大禹式路，蚩尤除道。周匝萬里，不危不殆，見其所使，無所不在。
 
-**EN (138 words):**
+**English (138 words):**
 Great Yu inspects the roads while Chiyou clears the way ahead, covering ten thousand miles without danger. Yu, the legendary flood-tamer who founded the Xia dynasty, represents methodical governance; Chiyou, the mythical warrior deity, embodies raw martial force. Together they symbolize the pairing of strategy and execution — authority that both plans and acts. The verse connects to the transformation from Creative (乾) pure yang to Splitting Apart (剝): as yang lines erode from below, power must expand its reach to compensate for shrinking foundation. "Seeing their agents everywhere" suggests surveillance born of weakness, not strength. The journey is safe not because of dominance but because authority has learned to delegate, to work through envoys rather than direct force.
 
-**ZH (198 chars):**
+**繁體中文 (198 chars):**
 大禹巡視道路，蚩尤開闢通途，行遍萬里不遇危險。大禹為治水聖王，建夏朝；蚩尤為戰神，象徵武力。二者合象謀略與執行之配——既謀劃又行動的權威。詩呼應乾卦純陽至剝卦剝蝕之變：陽爻自下而蝕，權力須擴展觸角以補基礎之削弱。「見其所使，無所不在」暗示監視源於虛弱而非強大。旅途安全非因壓制，乃因權威學會委派，藉使者而非直接施力。
 
-**References:** `["大禹", "蚩尤"]`
+**References:** 大禹, 蚩尤
 
 ## Quality Checks
 
 Before finalizing output:
 - [ ] All historical references verified (not hallucinated)
-- [ ] EN explanations 100-150 words
-- [ ] ZH explanations 150-200 chars
-- [ ] All references cited in `references` array
+- [ ] EN explanation 100-150 words
+- [ ] ZH explanation 150-200 chars
+- [ ] All references listed
 - [ ] Tone is scholarly but accessible
 - [ ] Explanations connect imagery to verse meaning
 - [ ] Both EN and ZH stand alone — not literal translations of each other
