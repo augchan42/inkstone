@@ -26,6 +26,38 @@ A collection of agent skills for creative and design workflows, built for [Claud
 |-------|-------------|
 | **ui-ux-architect** | Premium UI/UX audit with Jobs/Ive philosophy — visual hierarchy, spacing, typography, color, motion, accessibility, dark mode |
 
+## Usage
+
+### Generate an ink painting prompt
+
+Paste any classical Chinese verse — Yilin, I Ching lines, Tang poetry, fortune slips:
+
+```
+/verse-to-prompt 白駒食場，一躍而去。
+```
+
+**Style:** `ink-landscape` — the white colt's flash of movement maps to shanshui's sense of transience
+
+**Prompt:**
+> A white colt grazes in a walled courtyard, its mane catching pale morning light like brushed silk. Stone walls frame the scene; a gnarled plum tree leans at a diagonal in the midground. Beyond the open gate, mist swallows a mountain path. A single amber lantern glows above the gate arch. The colt is mid-leap, already half-gone. Chinese ink painting.
+
+**Translation:**
+> The white colt grazes the courtyard field; it leaps and is gone in a flash.
+
+### Generate a bilingual explanation
+
+```
+/create-explanation 白駒食場，一躍而去。
+```
+
+**English**
+A white colt grazes quietly in an enclosed field — then in a single bound, it vanishes. The image comes from the *Book of Songs* (詩經), where the white colt symbolizes a worthy person or fleeting opportunity. The "field" (場) suggests a bounded, domestic space; the leap outward marks an irreversible crossing. The verse captures the hexagram transition's essential quality: something precious was here, present and visible, and now it is gone. The loss is not violent but absolute — the field remains, the colt does not.
+
+**繁體中文**
+白駒於場中悠然食草，忽一躍而去，無影無蹤。白駒典出《詩經》，象徵賢才或良機。「場」為有界之地，躍出意味著不可挽回之離去。此詩捕捉卦變之質：珍貴之物曾在眼前，轉瞬即逝，場地猶存，而駒已杳然。
+
+**References:** 白駒 (詩經), 場
+
 ## Background
 
 ### Ink Painting Skills
