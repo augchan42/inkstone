@@ -34,9 +34,63 @@ The ink painting skills are the methodology behind [SixLines.online](https://six
 
 The name comes from the inkstone (硯台), one of the Four Treasures of the Study (文房四寶) — the tool you grind ink on before painting.
 
+#### The 7 Composition Rules
+
+Every prompt must follow all 7:
+
+1. **Frame the scene** — gorges, gates, doorways, walls, tree canopies. Never a subject floating in open space.
+2. **Force depth** — foreground, midground, and background elements in every prompt.
+3. **Demand contrast** — at least one strong light source against darkness, or dark subject against light.
+4. **Include a warm accent** — even in monochrome scenes, one element carries amber, vermillion, pink, or gold.
+5. **Favor diagonals and verticals** — avoid flat horizontal compositions.
+6. **Pack in discoverable detail** — the best images reward a second look.
+7. **Use painterly scene language** — embed painterly metaphors throughout ("like ink drops", "pale threads", "like shattered porcelain"). NEVER use photographic language.
+
+#### Key Insight: Style Is Not a Suffix
+
+Appending "Chinese ink painting style" to a prompt doesn't work. Text-to-image models ignore trailing style directives. Instead, write prompts that *read like the caption under an ink painting*:
+
+```
+# Bad — style as suffix
+"A tree on a hill. Chinese ink painting style."
+
+# Good — painterly language embedded in the scene
+"A gnarled pine leans from a cliff face like a brushstroke frozen mid-sweep,
+its roots gripping stone above a gorge filled with morning mist. A single
+vermillion leaf clings to the lowest branch. Far below, a river catches
+the first light like spilled mercury. Chinese ink painting."
+```
+
+#### Content Safety Patterns
+
+52 of 4,096 images failed generation due to content filters. Ancient Chinese texts contain violence — the Yilin has verses about warfare, predation, and suffering. We developed a substitution table for depicting these themes through atmosphere and metaphor:
+
+| Blocked concept | Safe alternative |
+|----------------|-----------------|
+| Blood on surfaces | "dark stains like spilled ink", "vermillion streaks on stone" |
+| Fallen bodies | "abandoned armor on bare ground", "crows settling on a silent field" |
+| Restraint / captivity | "a narrow gorge with no exit", "walls closing to a slit of sky" |
+
+**The principle:** Show the weight of violence through atmosphere, aftermath, and metaphor — never through the act itself.
+
+#### Anti-Patterns
+
+Things we tried that produced bad results:
+
+- **Style-as-suffix** — appending "ink wash style" after a scene description (model ignores it)
+- **Over-instruction** — 70+ word prompts with competing directives (model gets confused)
+- **Flat composition** — horizontal scenes, even lighting, no framing elements
+- **Sparse scenes** — too few elements, too much empty space
+- **Photographic language** — "medium format", "film grain", "shallow depth of field" (model goes photorealistic)
+
+The skills were validated with `fal-ai/z-image/turbo` but the composition principles are model-agnostic.
+
+#### Links
+
 - Blog post: [Teaching Taste to an Agent](https://augustinchan.dev/posts/teaching-taste-to-agents-yilin-image-pipeline)
 - Sample output: [SixLines.online — Hexagram 14](https://sixlines.online/en/hexagrams/14)
 - Product: [SixLines.online](https://sixlines.online) — I-Ching reference and Chinese almanac for iOS
+- The Jiaoshi Yilin is a ~40 BCE divination text by Jiao Yanshou (焦延壽), containing 4,096 oracular verses organized as 64x64 hexagram transformations
 
 ### UI/UX Architect
 
