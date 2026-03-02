@@ -128,33 +128,108 @@ Given your concept, ask these questions in order:
 
 If multiple apply, prefer the one that captures the **emotional core** — the feeling, not the diagram.
 
+## Figure Type Classification
+
+Before writing the characters and action layers, classify the concept's figure type. This determines anatomy rules — **do not default to human.**
+
+| Type | Anatomy Rules | When to Use | Examples |
+|------|--------------|-------------|---------|
+| **human** | Standard Blakean: elongated limbs, tensioned musculature, overdefined deltoids, every tendon visible | Concept is about human experience, spiritual struggle, inner states | Da'at, Fool, Dark Night, Fana, Ansuz, Anahata |
+| **supernatural** | Blakean anatomy but NOT restricted to mortal bodies — allow wings, flame-bodies, divine radiance, cosmic scale. Still tensioned, still muscular, but beyond human | Concept involves divine/demonic beings, cosmic forces, guardian spirits | Gumezishn (Ahura Mazda vs Angra Mainyu), Epopteia (hierophant), Rubedo (the Rebis) |
+| **creature** | The concept IS non-human forms. Don't force a human body. Describe the animal/creature with the same Blakean intensity (taut sinew, visible musculature) but as the animal it is | Concept's identity depends on specific non-human forms | Scorpio (scorpion→eagle→phoenix), Osetura (vulture) |
+| **hybrid** | Human figure(s) interacting with non-human forces, creatures, or supernatural elements. The human has standard Blakean anatomy; the non-human has its own form | Concept involves human encounter with the numinous, weighing/judgment by non-human entities | Heart (Anubis + Ma'at + human soul), Bardo (human dissolving into vortex of forces) |
+
+### Figure Type Decision Tree
+
+1. Is the concept's visual identity defined by specific non-human forms? → **creature**
+2. Are the primary figures divine/demonic/cosmic beings? → **supernatural**
+3. Does a human figure interact with non-human forces? → **hybrid**
+4. Default → **human**
+
+When `figureType` is provided in input, use it directly. When omitted, use this decision tree.
+
 ## Output Format
 
-Produce a **complete, ready-to-use image generation prompt** assembled from all 8 layers. The subagent should be able to pass this directly to fal.ai without further editing.
+Produce a **complete, ready-to-use image generation prompt** assembled from all 8 layers. The output should be passable directly to fal.ai without further editing.
+
+### Input
+
+The skill accepts either:
+
+- **Single concept** (conversational): `[tradition name] [concept name and brief description]`
+- **Batch JSON** (pipeline): Array of objects:
+```json
+[
+  {
+    "id": "gumezishn",
+    "tradition": "Zoroastrianism",
+    "concept": "Gumezishn (The Mixture)",
+    "description": "The cosmic intermingling of good and evil, Ahura Mazda vs Angra Mainyu",
+    "pattern": "parallel_mirrored",
+    "figureType": "supernatural"
+  }
+]
+```
+
+When `pattern` and `figureType` are provided in input, use them. When omitted, use the Selection Decision Tree and Figure Type Decision Tree to determine them.
+
+**Target length:** 240-280 words total. The fixed layers consume ~80 words; the generated layers (composition + characters + action + accent sentence) should total ~160-200 words combined. Do not exceed 300 words — the model's attention degrades beyond that. Count your words before finalizing. If over 300, cut the least essential detail.
+
+**Important:** Do not describe text, inscriptions, letters, or writing in the scene — the anti layer blocks all text and the model will fight itself.
 
 ### The 8 Layers (assemble in this order)
 
-1. **background:** `On a solid black background.`
-2. **medium:** `Watercolor and ink over etched line — the quality of a hand-colored copper plate print from the 1790s.`
-3. **composition:** ← Derived from your chosen pattern (see geometry descriptions above). Write 2-3 sentences specifying angle, framing, spatial structure.
-4. **characters:** The figure(s) — who, physicality, clothing, anatomy. Must follow prophetic force grammar:
-   - Elongated limbs, tensioned sinuous musculature, not bulky but taut
-   - Overdefined deltoids and forearms, elastic expressive anatomy
-   - Every tendon visible — bodies under tension, not at rest
+1. **background:** `On a solid black background.` — **Compositing requirement.** Black is keyed out for transparency; the image is then composited as marginalia onto parchment-colored grimoire pages. Each image may appear as a marginal illustration for any associated entry across traditions. All palette families must produce subjects that *emerge from* pure black — no mid-tone backgrounds, no grey ambient fill. The final visible ground is warm parchment, not black.
+2. **medium:** `Watercolor and ink over etched line — the quality of a hand-colored copper plate print from the 1790s. Translucent pigment, visible brushwork.`
+3. **composition:** ← Derived from your chosen pattern (see geometry descriptions above). Write 2-3 sentences specifying angle, framing, spatial structure. **Must also include:**
+   - **Framing elements** — gorges, gates, doorways, arches, cliff faces, tree canopies, temple columns, cave mouths. Never a figure floating in featureless void.
+   - **Depth layering** — name a foreground, midground, and background element explicitly. Even in tight compositions, there is near and far.
+4. **characters:** The figure(s) — who, physicality, clothing, anatomy. Must follow the **Figure Type** rules:
+   - **human:** Elongated limbs, tensioned sinuous musculature, overdefined deltoids, every tendon visible — bodies under tension, not at rest
+   - **supernatural:** Same Blakean intensity but beyond mortal — wings, flame-bodies, divine radiance, cosmic scale permitted
+   - **creature:** Describe the animal/creature as itself with Blakean intensity (taut sinew, visible musculature) — do NOT force a human body
+   - **hybrid:** Human figures get standard Blakean anatomy; non-human elements get their own form
    - Tradition-appropriate clothing, implements, attributes
-5. **action:** The key gesture, the dramatic moment. Must describe the body's relationship to space and name the specific instant of highest tension.
-6. **palette:** `Nearly monochromatic — warm grey-brown, faded umber, muted ochre. Watercolor on aged paper — translucent washes. Restrained, somber.`
+5. **action:** The key gesture, the dramatic moment. Must describe the body's relationship to space and name the specific instant of highest tension. **Must also include:**
+   - **Discoverable detail** — at least one secondary element that rewards a second look (a cracked surface, scattered objects, an animal, an inscription on stone, a reflection)
+6. **palette:** Choose the palette family that matches the compositional pattern's emotional register (see table below), then append one accent color sentence: `A single accent of [specific hue] — [what carries it].` The accent is the only vivid, saturated color in the image. Choose it from the tradition's symbolism.
+
+   | Palette Family | Base Text | Patterns | Blake Reference |
+   |---------------|-----------|----------|-----------------|
+   | **Gold-and-Shadow** | `Deep black and umber ground. Warm golden-orange light breaks through — the figure blazes against darkness. Watercolor translucency over charcoal shadow.` | Triangle/Apex, Vertical Axis | Ancient of Days copy K (gold figure from black clouds), Jacob's Ladder |
+   | **Crimson-and-Shadow** | `Deep blacks and warm earth tones. Reds, crimsons, and flame-orange emerge from shadow — the drama is in the heat against the dark. Watercolor on aged paper.` | Parallel/Mirrored, From Behind/Looming | Good and Evil Angels (red flames vs pale gold), Great Red Dragon, Elohim Creating Adam |
+   | **Earth-and-Pallor** | `Nearly monochromatic — warm grey-brown, faded umber, muted ochre. Watercolor on aged paper — translucent washes. Restrained, somber.` | Vortex/Spiral, Contracted/Curled, Radial/Expanding | Whirlwind of Lovers, Nebuchadnezzar, House of Death |
+   | **Cool-and-Uncanny** | `Cool blue-greens and teals against warm flesh. The ground is dark, almost submarine — organic textures, lichenous surfaces. Watercolor translucency.` | Any pattern where the concept is liminal, underwater, alchemical, or between-worlds | Newton (teal rock, warm body, black void) |
+
+   The table maps patterns to their *default* palette family. Override when the concept's emotional register demands it — a Contracted/Curled scene about alchemical dissolution might need Cool-and-Uncanny; a Radial/Expanding scene about divine fire might need Gold-and-Shadow.
+
 7. **anti:** `No text, no words, no letters, no writing, no borders, no margins, no frames.`
 8. **closer:** `The image emerges from darkness. Fine art quality, highly detailed. Fine art, not photographic.`
 
-Layers 1, 2, 6, 7, 8 are **fixed** (use as-is). Layers 3, 4, 5 are **generated** per concept.
+Layers 1, 2, 7, 8 are **fixed** (use as-is). Layers 3, 4, 5, 6 are **generated** per concept (layer 6 selects a palette family + accent).
+
+### The 5 Scene Quality Rules (MANDATORY)
+
+Every generated prompt must satisfy all 5. These are adapted from the verse-to-prompt composition rules for the Blakean context:
+
+1. **Frame the scene** — include at least one environmental framing element (arch, cliff, doorway, tree canopy, cave mouth, temple column, stone wall). Figures never float in featureless void.
+2. **Force depth** — every prompt must name foreground, midground, and background elements explicitly in the composition or action block.
+3. **Demand contrast** — at least one strong light source against the surrounding darkness. Name where the light comes from and what it illuminates.
+4. **Include one vivid accent** — one element carries a specific saturated color that pops against the base palette (rose-gold, vermillion, teal, amber, crimson, deep indigo, burning orange). Name the object and the hue in the palette layer. The accent must be *vivid*, not pale or faint — "pale violet" or "faint gold" are anti-patterns. If it wouldn't be visible at thumbnail size, it's too subtle.
+5. **Pack in discoverable detail** — at least one secondary subject or texture that rewards a second look (cracks in stone, scattered implements, an animal, a reflection, weathered inscriptions).
 
 ### Output Structure
+
+The skill accepts an optional `--json` flag (or `format: json` when invoked programmatically).
+
+#### Default mode (conversational)
 
 Present the result as:
 
 **Concept:** [tradition] — [concept name]
 **Pattern:** [chosen pattern] — [one-line rationale]
+**Figure Type:** [human|supernatural|creature|hybrid]
+**Palette:** [family name] — [one-line rationale if overriding default]
 
 **Full prompt:**
 > [All 8 layers concatenated into a single paragraph, space-separated]
@@ -165,19 +240,82 @@ Present the result as:
 **action block** (for reference/debugging):
 > [Just the action layer text]
 
-### Example
+**Quality checklist:**
+- Framing: [element] ✓
+- Depth: [FG] → [MG] → [BG] ✓
+- Contrast: [light source] against [darkness] ✓
+- Accent: [color] ([carrier]) ✓
+- Detail: [discoverable elements] ✓
+
+#### JSON mode (`--json` or batch pipeline)
+
+Output valid JSON matching this schema. For batch input (array), output an array. For single input, output a single object.
+
+```json
+{
+  "id": "gumezishn",
+  "tradition": "Zoroastrianism",
+  "concept": "Gumezishn (The Mixture)",
+  "pattern": "parallel_mirrored",
+  "patternRationale": "Two colossal forces in cosmic opposition",
+  "figureType": "supernatural",
+  "layers": {
+    "background": "On a solid black background.",
+    "medium": "Watercolor and ink over etched line — the quality of a hand-colored copper plate print from the 1790s. Translucent pigment, visible brushwork.",
+    "composition": "[generated per concept]",
+    "characters": "[generated per concept]",
+    "action": "[generated per concept]",
+    "paletteFamily": "crimson_and_shadow",
+    "palette": "Deep blacks and warm earth tones. Reds, crimsons, and flame-orange emerge from shadow — the drama is in the heat against the dark. Watercolor on aged paper.",
+    "accent": {
+      "color": "vermillion",
+      "carrier": "the flames wreathing Ahura Mazda's wings"
+    },
+    "anti": "No text, no words, no letters, no writing, no borders, no margins, no frames.",
+    "closer": "The image emerges from darkness. Fine art quality, highly detailed. Fine art, not photographic."
+  },
+  "fullPrompt": "[all layers concatenated, space-separated]",
+  "qualityChecklist": {
+    "framing": "cracked cosmic sphere between the two figures",
+    "depth": "foreground shattered ground → midground two figures → background cosmic void",
+    "contrast": "blazing white-gold light from Ahura Mazda against absolute shadow of Angra Mainyu",
+    "accent": "vermillion — flames wreathing the light figure's wings",
+    "detail": "a small sapling pushing through the cracked ground between them"
+  },
+  "wordCount": 267
+}
+```
+
+Key differences from conversational mode:
+- Fixed layers (background, medium, anti, closer) are pre-filled
+- `paletteFamily` is one of: `gold_and_shadow`, `crimson_and_shadow`, `earth_and_pallor`, `cool_and_uncanny`
+- `accent` is a structured object with `color` and `carrier`
+- `qualityChecklist` maps each rule to its fulfillment
+- `wordCount` enables automated validation
+- `figureType` is explicit for downstream tooling
+
+### Example (conversational mode)
 
 **Concept:** Hinduism — Anahata (Heart Chakra)
 **Pattern:** Radial/Expanding — emanation from heart center, energy pulsing outward
+**Figure Type:** human
+**Palette:** Earth-and-Pallor — default for Radial/Expanding; the emanation is felt as warmth, not fire
 
 **Full prompt:**
-> On a solid black background. Watercolor and ink over etched line — the quality of a hand-colored copper plate print from the 1790s. Central figure fills the frame, seen straight on. Energy radiates outward from the center in all directions. Curves face away from the figure, emphasizing the outstretched limbs. A figure suspended in darkness — lean, elongated, bare-chested. Arms spread wide, palms open, fingers splayed. The ribcage is visible, every intercostal muscle tensioned. The chest is thrown open — not a pose of surrender but of emission, the body a conduit. Eyes closed, head tilted slightly back. From the figure's sternum, concentric rings of warm light pulse outward — not drawn as circles but felt as pressure in the air. The arms ride the outermost ring. Below, faint threads of light descend through the legs into darkness. Above, fainter threads ascend through the crown. The figure is the junction — the crossing point where ascending and descending forces meet. The surrounding darkness bends around the emanation like water around a stone. Nearly monochromatic — warm grey-brown, faded umber, muted ochre. Watercolor on aged paper — translucent washes. Restrained, somber. No text, no words, no letters, no writing, no borders, no margins, no frames. The image emerges from darkness. Fine art quality, highly detailed. Fine art, not photographic.
+> On a solid black background. Watercolor and ink over etched line — the quality of a hand-colored copper plate print from the 1790s. Translucent pigment, visible brushwork. Central figure fills the frame, seen straight on. Energy radiates outward from the center in all directions. Curves face away from the figure. The figure is framed by a stone archway carved with worn Sanskrit — the arch curves above, crumbling pillars on either side. In the foreground, scattered marigold petals on cracked flagstone. In the background beyond the arch, fading temple corridors recede into darkness. A figure suspended within the archway — lean, elongated, bare-chested. Arms spread wide, palms open, fingers splayed. The ribcage is visible, every intercostal muscle tensioned. The chest is thrown open — not a pose of surrender but of emission, the body a conduit. Tendons in the neck stand taut. Eyes closed, head tilted slightly back. From the figure's sternum, concentric rings of warm light pulse outward — not drawn as circles but felt as pressure in the air. The arms ride the outermost ring. Below, faint threads of light descend through the legs into the cracked stone. Above, fainter threads ascend through the crown toward the arch's keystone. A small oil lamp burns at the figure's feet, its flame bent outward by the force of the emanation. The surrounding darkness bends around the pulse like water around a stone. Nearly monochromatic — warm grey-brown, faded umber, muted ochre. Watercolor on aged paper — translucent washes. Restrained, somber. A single accent of rose-gold — the light pulsing from the sternum and the scattered marigold petals. No text, no words, no letters, no writing, no borders, no margins, no frames. The image emerges from darkness. Fine art quality, highly detailed. Fine art, not photographic.
 
 **characters block:**
-> A figure suspended in darkness — lean, elongated, bare-chested. Arms spread wide, palms open, fingers splayed. The ribcage is visible, every intercostal muscle tensioned. The chest is thrown open — not a pose of surrender but of emission, the body a conduit. Eyes closed, head tilted slightly back.
+> A figure suspended within the archway — lean, elongated, bare-chested. Arms spread wide, palms open, fingers splayed. The ribcage is visible, every intercostal muscle tensioned. The chest is thrown open — not a pose of surrender but of emission, the body a conduit. Tendons in the neck stand taut. Eyes closed, head tilted slightly back.
 
 **action block:**
-> From the figure's sternum, concentric rings of warm light pulse outward — not drawn as circles but felt as pressure in the air. The arms ride the outermost ring. Below, faint threads of light descend through the legs into darkness. Above, fainter threads ascend through the crown. The figure is the junction — the crossing point where ascending and descending forces meet. The surrounding darkness bends around the emanation like water around a stone.
+> From the figure's sternum, concentric rings of warm light pulse outward — not drawn as circles but felt as pressure in the air. The arms ride the outermost ring. Below, faint threads of light descend through the legs into the cracked stone. Above, fainter threads ascend through the crown toward the arch's keystone. A small oil lamp burns at the figure's feet, its flame bent outward by the force of the emanation. The surrounding darkness bends around the pulse like water around a stone.
+
+**Quality checklist:**
+- Framing: stone archway with crumbling pillars ✓
+- Depth: scattered petals (FG) → figure in archway (MG) → temple corridors (BG) ✓
+- Contrast: warm light from sternum against surrounding darkness ✓
+- Accent: rose-gold (sternum pulse + marigold petals) ✓
+- Detail: oil lamp bent by emanation, cracked flagstone, worn Sanskrit on arch ✓
 
 ## Content Safety Rules
 
@@ -199,3 +337,7 @@ Same as verse-to-prompt. Content filters reject explicit violence, blood, self-h
 - **Static pose:** A figure simply standing or sitting. There must be tension — reaching, dissolving, curling, expanding. The body is caught mid-action.
 - **Generic mystical:** Glowing figure in cosmic space. Be specific about *which* body part is tensioned, *which* direction the force moves, *what* the figure is reaching toward or away from.
 - **Wrong pattern for concept:** Using Triangle/Apex for a dissolution concept, or Contracted/Curled for an emanation concept. The geometry must match the energy.
+- **Reducing cosmic opposition to nude wrestlers:** When two supernatural forces oppose each other (Gumezishn, Good vs Evil Angels), they need wings, flame, shadow, cosmic scale — not two stripped-down human bodies on a rock.
+- **Forcing human anatomy onto creature concepts:** Scorpio's three forms (scorpion, eagle, phoenix) ARE the concept. Replacing them with "a human figure with scorpion features" destroys the meaning.
+- **Gorge-as-default framing:** Not every scene needs a stone gorge. Match framing to tradition: temple columns for Hindu/Greek, world-tree for Norse, dark water for Daoist, cosmic void for Zoroastrian.
+- **Losing the accent:** The vivid accent color must be visible at thumbnail size. "Pale violet" or "faint gold" are anti-patterns — use "deep violet", "burning amber", "vermillion", "crimson".
