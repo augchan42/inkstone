@@ -24,6 +24,10 @@
     {
       "name": "nextjs-i18n-seo",
       "description": "Use when a Next.js multilingual site has crawlability issues, locale URLs aren't indexed, or to audit/fix i18n SEO. Fixes 307 redirect bug, no-prefix default locale, sitemap, hreflang."
+    },
+    {
+      "name": "blakean-scene",
+      "description": "Convert abstract symbolic concepts into Blakean embodied scenes for image generation. Use when you have an abstract concept (chakra, sephirah, alchemical stage, rune, hexagram, bardo state) and need a scene with figures, gesture, and tension — not a diagram. Encodes Blake's 8 compositional patterns with selection rules."
     }
   ]
 }
