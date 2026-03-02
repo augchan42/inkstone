@@ -148,6 +148,43 @@ Before writing the characters and action layers, classify the concept's figure t
 
 When `figureType` is provided in input, use it directly. When omitted, use this decision tree.
 
+## Tradition Body Grammar
+
+Each tradition has a characteristic relationship between the human body and the concept's force. This determines the **emotional register of the figure's posture and gesture** in the characters and action layers. Apply the tradition's body grammar *after* selecting figure type — it tells you HOW the figure holds itself, not WHAT the figure is.
+
+| Tradition | Body Grammar | Posture Keywords |
+|-----------|-------------|------------------|
+| **I-Ching** | The body is a vessel for change — caught mid-transition, one state becoming another. Weight shifts, the figure is off-balance, leaning into what comes next. | shifting weight, off-balance, mid-turn, transitional |
+| **Tarot** | The figure embodies an archetype's full authority or surrender. Poses are iconic, held, almost heraldic — the body IS the card. | iconic, held, heraldic, declarative |
+| **Kabbalah** | Vertical reaching — the body stretches between earthly and divine. Arms up, spine elongated, the figure is a conduit between above and below. | reaching upward, elongated spine, vertical stretch, conduit |
+| **Alchemy** | Transformation IN the body — the body itself is the vessel changing state. Skin shifts tone, limbs dissolve or solidify, the figure is mid-process. | dissolving, solidifying, mid-transmutation, the body as crucible |
+| **Elder Futhark** | The body carves itself into the rune's shape — angular, sharp, deliberately posed like a stave. Weight committed, stance decisive. | angular, carved, stave-like, decisive stance |
+| **Astrology** | Celestial force flows through the figure — the body channels planetary energy. Gestures are grand, theatrical, occupying maximum space. | grand gesture, theatrical, channeling, expansive |
+| **Ancient Egyptian** | Formal, hieratic — the body in ritual posture. Frontal or profile, deliberate, ceremonial. Stillness IS the power. | hieratic, ritual, frontal, ceremonial stillness |
+| **Christian Mysticism** | The body endures — weight pressing down, gravity as spiritual force. Kneeling, prostrate, arms heavy, the flesh bearing what the spirit receives. | enduring, heavy, kneeling, gravity-bound, bearing weight |
+| **Sufism** | Ecstatic surrender — the body thrown open, spinning, yielding to gravity and centrifugal force. Arms wide, head back, the self dissolving in motion. | spinning, thrown open, yielding, ecstatic, surrendering |
+| **Hinduism** | The figure channels cosmic force through formal posture — mudras, multiple arms, upright spine. Power is contained and directed, not wild. | mudra, formal, upright spine, contained power, multiple arms |
+| **Buddhism** | Dissolution — the figure is *losing* form. Edges blur, the body becomes transparent, merging with ground or light. Stillness that is also disappearance. | dissolving edges, transparent, merging, still disappearance |
+| **Zoroastrianism** | Cosmic scale — the body operates at the level of creation itself. Figures are colossal, filling the frame, contesting with equal forces. | colossal, cosmic scale, filling the frame, titanic contest |
+| **Daoism** | Wu-wei — the figure is the still point while the environment moves. Relaxed hands (not fists), weight settling downward, gaze soft. Blakean intensity is in the *water, mist, wind* around the figure, not the figure itself. | still point, relaxed hands, settling weight, soft gaze, environment moves |
+| **Greek Mysteries** | The body at the threshold — half in, half out. One foot in darkness, one in light. The figure is between states, between worlds, liminal. | threshold, liminal, between states, half-revealed |
+| **Ifá** | The body as crossroads — dynamic, weight distributed in multiple directions, ready to move any way. Limbs suggest paths not taken. | crossroads stance, multi-directional, dynamic readiness |
+
+### How to Apply
+
+The body grammar modifies the characters and action layers:
+
+1. **Select figure type** (human/supernatural/creature/hybrid) — this determines anatomy
+2. **Apply tradition body grammar** — this determines posture, gesture, and emotional register
+3. **Write characters layer** using both constraints
+4. **Write action layer** ensuring the key gesture reflects the tradition's relationship to the body
+
+**Example — Daoism, Empty Boat:** Figure type is *human* (standard Blakean anatomy), but body grammar is *wu-wei*. So: lean figure with visible musculature (Blakean), but arms hanging loose, palms open, weight settling into the hull, gaze unfocused. The churning dark water provides the Blakean intensity — the figure is the calm eye.
+
+**Example — Sufism, Fana:** Figure type is *human*, body grammar is *ecstatic surrender*. So: lean muscular figure (Blakean), but thrown backward, arms flung wide, head tilted back, spinning or caught mid-whirl. The body yields rather than resists.
+
+**Anti-pattern — applying the wrong grammar:** A Daoist figure raging and shouting (that's Christian Mysticism's endurance or Zoroastrianism's cosmic contest). A Buddhist figure with clenched fists and taut arms (that's Elder Futhark's carved decisiveness). Match the grammar to the tradition.
+
 ## Output Format
 
 Produce a **complete, ready-to-use image generation prompt** assembled from all 8 layers. The output should be passable directly to fal.ai without further editing.
@@ -229,6 +266,7 @@ Present the result as:
 **Concept:** [tradition] — [concept name]
 **Pattern:** [chosen pattern] — [one-line rationale]
 **Figure Type:** [human|supernatural|creature|hybrid]
+**Body Grammar:** [tradition name] — [posture keywords]
 **Palette:** [family name] — [one-line rationale if overriding default]
 
 **Full prompt:**
@@ -259,6 +297,7 @@ Output valid JSON matching this schema. For batch input (array), output an array
   "pattern": "parallel_mirrored",
   "patternRationale": "Two colossal forces in cosmic opposition",
   "figureType": "supernatural",
+  "bodyGrammar": "cosmic_scale",
   "layers": {
     "background": "On a solid black background.",
     "medium": "Watercolor and ink over etched line — the quality of a hand-colored copper plate print from the 1790s. Translucent pigment, visible brushwork.",
@@ -293,6 +332,7 @@ Key differences from conversational mode:
 - `qualityChecklist` maps each rule to its fulfillment
 - `wordCount` enables automated validation
 - `figureType` is explicit for downstream tooling
+- `bodyGrammar` records which tradition body grammar was applied (snake_case of the posture keywords)
 
 ### Example (conversational mode)
 
