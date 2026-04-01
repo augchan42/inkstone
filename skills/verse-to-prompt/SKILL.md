@@ -1,6 +1,6 @@
 ---
 name: verse-to-prompt
-description: Generate a Chinese ink painting image prompt from a classical Chinese verse. Use when the user pastes a classical Chinese verse and asks for an image prompt, wants to visualize a verse, or asks "what would this look like as an ink painting." Works with Yilin verses, I Ching lines, Tang poetry, or any classical Chinese text.
+description: Convert classical Chinese verses into ink painting image generation prompts. Use when visualizing Yilin, I Ching, Tang poetry, or classical Chinese text.
 user-invocable: true
 argument-hint: [paste your verse here]
 ---

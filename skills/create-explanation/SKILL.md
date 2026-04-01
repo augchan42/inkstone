@@ -1,6 +1,6 @@
 ---
 name: create-explanation
-description: Generate a scholarly bilingual explanation of a classical Chinese verse. Use when the user pastes a classical Chinese verse and wants to understand it, asks "what does this mean," or wants an English and Traditional Chinese commentary. Works with Yilin verses, I Ching lines, Tang poetry, or any classical Chinese text.
+description: Generate scholarly bilingual (English + Traditional Chinese) explanations for classical Chinese verses. Covers Yilin, I Ching, Tang poetry.
 user-invocable: true
 argument-hint: [paste your verse here]
 ---

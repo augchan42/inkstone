@@ -1,6 +1,6 @@
 ---
 name: ui-ux-architect
-description: Use when auditing UI/UX design, reviewing screens for visual hierarchy, spacing, typography, or accessibility. Also use when the user says "review my design," "audit this screen," "make it feel premium," "improve the UX," or wants Jobs/Ive-style design critique.
+description: Audit UI/UX design for visual hierarchy, spacing, typography, and accessibility. Jobs/Ive-style design critique.
 user-invocable: true
 argument-hint: [screen name, flow, or "full audit"]
 ---
