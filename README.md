@@ -6,8 +6,15 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 ## Install
 
+**Step 1:** Add the plugin from the marketplace:
+
 ```shell
 /plugin marketplace add augchan42/inkstone
+```
+
+**Step 2:** Install the plugin:
+
+```shell
 /plugin install inkstone@augchan42-inkstone
 ```
 
