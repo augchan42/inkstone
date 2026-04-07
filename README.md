@@ -33,6 +33,19 @@ A collection of agent skills for creative and design workflows, built for [Claud
 |-------|-------------|
 | **ui-ux-architect** | Premium UI/UX audit with Jobs/Ive philosophy — visual hierarchy, spacing, typography, color, motion, accessibility, dark mode |
 
+### Productivity
+
+| Skill | Description |
+|-------|-------------|
+| **media-kit** | Build a speaker media kit — bio writing, photo prep, and page generation for event organizers |
+| **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
+
+### Web
+
+| Skill | Description |
+|-------|-------------|
+| **nextjs-i18n-seo** | Audit/fix Next.js i18n SEO — crawlability, 307 redirects, locale URLs, sitemap, hreflang |
+
 ## Usage
 
 ### Generate an ink painting prompt
