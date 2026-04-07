@@ -1,6 +1,6 @@
 {
   "$schema": "https://anthropic.com/claude-code/marketplace.schema.json",
-  "name": "inkstone",
+  "name": "augchan42-inkstone",
   "owner": { "name": "Augustin Chan" },
   "plugins": [
     {
