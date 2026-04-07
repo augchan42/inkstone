@@ -1,6 +1,6 @@
 ---
 name: blakean-scene
-description: Convert abstract symbolic concepts into Blakean embodied scenes for image generation. Encodes Blake's 8 compositional patterns with selection rules, tradition body grammar, and figure types.
+description: Convert abstract concepts into Blakean embodied scenes. Blake's 8 patterns, body grammar, and figure types.
 user-invocable: true
 argument-hint: [tradition name] [concept name and brief description]
 ---

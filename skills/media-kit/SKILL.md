@@ -1,6 +1,6 @@
 ---
 name: media-kit
-description: Use when building a speaker media kit — walks through bio writing, photo prep (cropping, transparency, sizing), and page generation for event organizers
+description: Build a speaker media kit — bio writing, photo prep, and page generation for event organizers
 user-invocable: true
 argument-hint: Optional path to existing headshot photo
 ---

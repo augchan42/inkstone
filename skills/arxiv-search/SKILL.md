@@ -1,6 +1,6 @@
 ---
 name: arxiv-search
-description: Search arXiv for academic papers by topic, author, or ID. Use when the user wants to find research papers, check recent publications, or look up a specific paper.
+description: Search arXiv for papers by topic, author, or ID. Find research, recent pubs, or look up a specific paper.
 user-invocable: true
 argument-hint: <search query or arXiv ID, e.g. "transformer attention" or "2301.07041">
 ---
