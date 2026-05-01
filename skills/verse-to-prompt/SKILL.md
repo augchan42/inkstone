@@ -1,13 +1,24 @@
 ---
 name: verse-to-prompt
-description: Convert classical Chinese verses into ink painting image generation prompts. Use when visualizing Yilin, I Ching, Tang poetry, or classical Chinese text.
+description: Convert classical Chinese verses into image generation prompts — ink painting (default) or tech-noir variant. Use when visualizing Yilin, I Ching, Tang poetry, or classical Chinese text.
 user-invocable: true
-argument-hint: [paste your verse here]
+argument-hint: [paste your verse here] or [--tech-noir paste your verse here]
 ---
 
-# Verse → Ink Painting Prompt
+# Verse → Image Prompt
 
-Convert a classical Chinese verse into an English image generation prompt, following validated composition rules developed across 4,096 ink paintings for [SixLines.online](https://sixlines.online).
+Convert a classical Chinese verse into an English image generation prompt, following validated composition rules developed across 4,096 images for [SixLines.online](https://sixlines.online).
+
+## Mode Selection
+
+- **Default (ink painting):** Classical ink painting aesthetic
+- **Tech-noir (`--tech-noir` flag):** Phosphor-green CRT aesthetic for the 8bitoracle matrix skin
+
+If the user passes `--tech-noir` or mentions "tech-noir", "matrix skin", "phosphor", or "CRT" — use the **Tech-Noir** rules below. Otherwise use the **Ink Painting** rules.
+
+---
+
+# INK PAINTING MODE (default)
 
 ## Your Task
 
@@ -40,7 +51,84 @@ Every prompt MUST follow all 7:
 6. **Pack in discoverable detail** — the best images reward a second look with secondary subjects and textures.
 7. **Use painterly scene language** — end with "Chinese ink painting." but embed painterly metaphors throughout ("like ink drops", "pale threads", "like shattered porcelain"). NEVER use photographic language ("shallow depth of field", "film grain", "desaturated").
 
-## Content Safety Rules (MANDATORY)
+## Ink Painting Reference Prompts
+
+### atmospheric-night
+> A frozen river valley under a dark sky split by driving snow. In the foreground, bare willow branches bend under crusts of ice like white brushstrokes. Midground, a lone figure hunches against the north wind on a stone bridge, robes whipping. Beyond, snow-covered hills vanish into the storm. The figure's lantern is a single point of amber warmth swallowed by the gray. Chinese ink painting.
+
+### ink-landscape
+> An empty market square in a river town, rain falling in gray sheets. Wooden stalls with tattered cloth canopies drip steadily. Muddy water pools between flagstones, reflecting the overcast sky. A single merchant sits under an awning, his wares untouched. In the background, a stone bridge arches over a swollen brown river. One red paper lantern, rain-soaked, sags from a crossbeam. Chinese ink painting.
+
+### figures-in-mist
+> A betrothal ceremony in a courtyard dusted with autumn frost. Two families face each other across a low table set with wine cups and red silk. At the center, a woman stands before a screen painted with peonies. Frost glitters on the courtyard stones like scattered silver. Paper lanterns in vermillion hang from the eaves, their warm light soft against the cold morning air. Chinese ink painting with soft watercolor tints.
+
+### bold-action
+> A warrior surrounded — a great brown bear rears up on the left, jaws open. A tiger crouches to spring on the right. Ahead, a wall of iron spearpoints bristles. Behind, crossbowmen draw taut strings. The warrior stands at the center, sword raised. Dust and tension in every direction. Diagonal composition — threats converging from four corners. Chinese ink painting.
+
+### cosmic-night
+> A phoenix with trailing crimson and gold tail feathers perches atop a towering paulownia tree on a high ridge. The tree's broad leaves form a canopy against a sky of deep blue grading to rose gold at the horizon. The phoenix calls — radiating lines of gold in the air. Below, lush grasses ripple in waves. The bird is luminous, the tree ancient, the dawn eternal. Chinese ink painting.
+
+---
+
+# TECH-NOIR MODE
+
+## Your Task
+
+Given a verse (raw text, any format), produce:
+1. A **style classification** with a one-line rationale
+2. A **50-60 word English prompt** ending with "phosphor-green tech-noir, CRT scanlines, deep blacks."
+3. A **faithful English translation** of the verse
+
+## Core Principle: Language Register Is the Style Engine
+
+Style-as-suffix fails. Appending "tech-noir aesthetic" to a scene produces inconsistent results. Instead, **the prompt must read like a tech-noir scene** — cinematic metaphors woven throughout, not appended. The verse's classical subjects stay (travelers, animals, courts, landscapes), but they are rendered through tech-noir visual language.
+
+A verse about a tiger should still have a tiger — but as "a tiger's silhouette caught in motion-sensor phosphor glow, chain-link fence framing the foreground." The verse drives the content; the register drives the rendering.
+
+## The 5 Tech-Noir Style Categories
+
+| Style | Palette & Feel | Use When Verse Contains |
+|-------|---------------|------------------------|
+| `terminal-dark` | Black + single phosphor-green light source, isolation | Darkness, isolation, winter, grief, hidden things, fear, cold, sleeplessness |
+| `datascape` | Deep blacks, green grid/wireframe depth corridors, amber accents | Nature, seasons, water, agriculture, travel, weather, rivers, mountains |
+| `surveillance-feed` | Grainy phosphor-green wash, human scale, voyeuristic framing | Narrative, marriages, courts, travelers, families, ceremonies, human emotion |
+| `overload` | Hot amber/orange bursts, dynamic glitch artifacts, high contrast | Animals, combat, hunts, dramatic journeys, storms, military, physical struggle |
+| `deep-signal` | Blue-black void + gold/white signal points, radio-telescope aesthetic | Stars, heaven, mythical beasts, cosmic order, immortals, divination, emperors |
+
+If the verse is abstract (fortune/misfortune without concrete imagery), choose by tone: ominous → `terminal-dark`, auspicious → `datascape` or `surveillance-feed`, mixed → `overload`.
+
+## The 7 Composition Rules (MANDATORY — same structure, tech-noir vocabulary)
+
+Every prompt MUST follow all 7:
+
+1. **Frame the scene** — include server rack corridors, doorframes, cable bundles, antenna towers, window mullions, or monitor bezels. Never a subject floating in open space.
+2. **Force depth** — every prompt must have foreground, midground, and background elements.
+3. **Demand contrast** — at least one strong light source (phosphor glow, amber indicator, sodium vapor) against deep blacks.
+4. **Include a warm accent** — even in monochrome green scenes, one element carries amber, orange sodium vapor, or hot-white overexposure.
+5. **Favor diagonals and verticals** — avoid flat horizontal compositions.
+6. **Pack in discoverable detail** — secondary elements: status LEDs, scrolling text reflections, condensation on glass, cable shadows.
+7. **Use cinematic scene language** — end with "phosphor-green tech-noir, CRT scanlines, deep blacks." but embed CRT/cinematic metaphors throughout. NEVER use photographic language ("shallow depth of field", "bokeh", "35mm").
+
+## Tech-Noir Language Register
+
+Embed these metaphors throughout the prompt — they are the style engine:
+
+| Concept | Tech-Noir Language |
+|---------|-------------------|
+| Mist, fog, clouds | "static noise", "signal fog", "scan distortion haze" |
+| Light sources | "phosphor glow", "amber indicator light", "sodium-vapor wash" |
+| Water, rivers | "data streams", "liquid-crystal reflections", "pooling light on wet asphalt" |
+| Mountains, ridges | "server stack ridges", "antenna tower skyline", "concrete bulkhead walls" |
+| Trees, canopies | "cable bundles overhead", "antenna lattice", "scaffolding canopy" |
+| Snow, frost | "white noise", "pixel dust", "static grain on cold surfaces" |
+| Wind, storms | "electromagnetic interference", "signal storm", "cascade failure sparks" |
+| Stars, sky | "status LEDs in darkness", "signal points on a void", "console lights like a constellation" |
+| Silk, fabric | "data ribbons", "trailing phosphor traces", "wire bundles like silk" |
+| Flowers, blossoms | "sparking contacts", "blooming phosphor burns", "amber warning clusters" |
+| Warm glow | "amber terminal cursor", "sodium hallway light", "orange diagnostic readout" |
+| Ancient/weathered | "legacy hardware", "corroded circuit traces", "dust-filmed monitors" |
+
+## Content Safety Rules (MANDATORY — same as ink painting mode)
 
 Content filters on image generation APIs reject explicit bodily harm. All prompts MUST follow these rules:
 
@@ -56,42 +144,60 @@ Content filters on image generation APIs reject explicit bodily harm. All prompt
 
 | Blocked concept | Safe alternative |
 |----------------|-----------------|
-| Blood on surfaces | "dark stains like spilled ink", "vermillion streaks on stone" |
-| Wounds / piercing | Show aftermath — "a sword embedded in earth", "an arrow lodged in a wooden post" |
-| Self-harm | Landscape metaphor — "a candle guttering in a sealed room", "a tree split by its own weight" |
-| Fallen bodies | Emptiness — "abandoned armor on bare ground", "crows settling on a silent field" |
-| Restraint | Environmental — "a narrow gorge with no exit", "walls closing to a slit of sky" |
-| Animal predation | Show the chase or stillness after — "scattered feathers on snow", "a wolf's shadow crossing moonlit ground" |
-| Dismemberment | Broken objects — "a shattered puppet", "a split tree trunk", "a cracked bronze vessel" |
+| Blood on surfaces | "dark stains like leaked coolant", "amber streaks across the terminal" |
+| Wounds / piercing | Show aftermath — "a blade embedded in a console panel", "a cracked monitor spider-webbing from impact" |
+| Self-harm | Environmental metaphor — "a server powering down in a sealed room", "a signal flatline on a dying monitor" |
+| Fallen bodies | Emptiness — "abandoned gear on bare concrete", "an empty chair before a still-glowing screen" |
+| Restraint | Environmental — "a corridor narrowing to a slit of phosphor light", "walls of server racks closing in" |
+| Animal predation | Show the chase or aftermath — "scattered circuitry on the floor", "a predator's shadow crossing the sensor grid" |
+| Dismemberment | Broken objects — "a shattered monitor", "a split cable trunk sparking", "a cracked chassis" |
 
 **The principle:** Show the weight of violence through atmosphere, aftermath, and metaphor — never through the act itself.
 
+## Tech-Noir Reference Prompts
+
+### terminal-dark
+> A frozen drainage canal under a black sky, sleet driving sideways through sodium-vapor light. In the foreground, bare power lines sag under crusts of ice like dead scan lines. Midground, a lone figure hunches against the wind on a concrete overpass, coat whipping. Beyond, apartment towers vanish into signal fog. One amber window glows — a single warm pixel swallowed by the dark. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+
+### datascape
+> An empty night market in a canal district, rain falling in phosphor-green sheets. Metal stall frames with torn tarpaulins drip steadily. Pooling light on wet asphalt reflects neon kanji from a shuttered shop. A single vendor sits under a corrugated awning, face lit by a tablet screen. Behind, a concrete bridge arches over a swollen drainage channel. One amber lantern, rain-streaked, buzzes from a junction box. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+
+### surveillance-feed
+> A ceremony in a courtyard filmed through a dirty lens, static grain across every surface. Two groups face each other across a folding table under fluorescent strips. At center, a woman stands before a corrugated wall tagged with faded characters. Condensation on the lens softens the edges. Sodium-vapor light from the street casts amber into the green wash. The framing is voyeuristic — we are watching through a camera that was never meant to be beautiful. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+
+### overload
+> A figure surrounded — on the left a massive dog lunges, caught mid-frame in amber motion blur. On the right a second shape coils to strike. Ahead, a wall of chain-link fence topped with razor wire. Behind, red-orange sparks cascade from a blown transformer. The figure stands at center, arms raised against the glare. Glitch artifacts tear the diagonal composition. Every direction is threat. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+
+### deep-signal
+> A crane with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+
 ## Anti-Patterns (produce bad results)
 
-- **Style-as-suffix**: writing a scene then appending "ink wash style" — models ignore suffixes
+- **Style-as-suffix**: writing a classical scene then appending "tech-noir aesthetic" — models ignore suffixes
 - **Over-instruction**: 70+ word prompts with competing directives — model gets confused
 - **Flat composition**: horizontal scenes, evenly lit, no framing elements — boring output
 - **Sparse scenes**: too few elements, too much empty space — feels unfinished
-- **Photographic language**: "medium format", "film grain" — model goes photorealistic
+- **Photographic language**: "medium format", "bokeh", "35mm" — model goes photorealistic instead of stylized
 - **Explicit violence**: "blood pools", "fangs pierce flesh" — content filter rejects the prompt
+- **Losing the verse**: replacing the verse's subject entirely with tech imagery — the classical subject must remain, rendered through tech-noir language
+
+---
+
+# SHARED RULES (both modes)
 
 ## Output Format
 
 Present the result conversationally:
 
-**Style:** `ink-landscape` — the verse's imagery of water and travel maps directly to shanshui
+**Mode:** `ink-painting` or `tech-noir`
+
+**Style:** `datascape` — the verse's imagery of water and travel maps to depth corridors
 
 **Prompt:**
-> A lone traveler descends a mountain path like a brushstroke mid-sweep, pine boughs framing the narrow trail above. Below, a river catches pale light like spilled mercury; a vermillion-cloaked figure crosses a stone bridge in the midground. Mist fills the valley behind, fading into distant peaks. Chinese ink painting.
+> [the 50-60 word prompt]
 
 **Translation:**
-> The white colt grazes the courtyard field; it leaps and is gone in a flash.
-
----
-
-## Reference Prompts
-
-See `examples/prompt-examples.md` for 8 validated reference prompts (one per style) to calibrate tone and structure before generating.
+> [faithful English translation of the verse]
 
 ## Classical Chinese Reading Notes
 
