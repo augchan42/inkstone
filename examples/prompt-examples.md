@@ -72,7 +72,7 @@ Validated reference prompts — read this file when generating prompts to calibr
 
 ### deep-signal
 
-"A crane with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir, CRT scanlines, deep blacks."
+"A white crane bird with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane bird calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir, CRT scanlines, deep blacks."
 
 ### deep-signal (mythical)
 

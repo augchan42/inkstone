@@ -169,7 +169,7 @@ Content filters on image generation APIs reject explicit bodily harm. All prompt
 > A figure surrounded — on the left a massive dog lunges, caught mid-frame in amber motion blur. On the right a second shape coils to strike. Ahead, a wall of chain-link fence topped with razor wire. Behind, red-orange sparks cascade from a blown transformer. The figure stands at center, arms raised against the glare. Glitch artifacts tear the diagonal composition. Every direction is threat. Phosphor-green tech-noir, CRT scanlines, deep blacks.
 
 ### deep-signal
-> A crane with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+> A white crane bird with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane bird calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir, CRT scanlines, deep blacks.
 
 ## Anti-Patterns (produce bad results)
 
@@ -198,6 +198,24 @@ Present the result conversationally:
 
 **Translation:**
 > [faithful English translation of the verse]
+
+## Disambiguation Rules (MANDATORY)
+
+Some English words have multiple meanings that confuse image generation models. Always use the unambiguous form:
+
+| Ambiguous | Model sees | Write instead |
+|-----------|-----------|---------------|
+| "crane" | construction crane | "crane bird", "white crane", "red-crowned crane" |
+| "swallow" | the verb | "swallow bird", "barn swallow" |
+| "bat" | baseball bat | "bat creature", "flying bat" |
+| "iris" | camera iris | "iris flower" / "iris of the eye" |
+| "trunk" | car trunk | "tree trunk" / "elephant trunk" |
+| "fly" | the verb | "fly insect", "housefly" |
+| "seal" | wax seal | "seal animal", "harbor seal" |
+| "horn" | musical horn | "animal horn", "ox horn" |
+| "mole" | spy/blemish | "mole animal" |
+
+When in doubt, add the category word (bird, animal, flower, insect) after the noun.
 
 ## Classical Chinese Reading Notes
 
