@@ -25,6 +25,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | Skill | Description |
 |-------|-------------|
 | **verse-to-prompt** | Generate Chinese ink painting prompts from classical verse — 7 composition rules, 5 style categories, content safety patterns |
+| **image-to-scene** | Convert ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference |
 | **create-explanation** | Produce bilingual scholarly explanations for Jiaoshi Yilin verses |
 
 ### Design / UX
@@ -63,6 +64,22 @@ Paste any classical Chinese verse — Yilin, I Ching lines, Tang poetry, fortune
 
 **Translation:**
 > The white colt grazes the courtyard field; it leaps and is gone in a flash.
+
+### Animate an ink painting into video
+
+Pass the original image prompt (from verse-to-prompt) or describe the painting:
+
+```
+/image-to-scene A white colt grazes in a walled courtyard, its mane catching pale morning light like brushed silk. Stone walls frame the scene; a gnarled plum tree leans at a diagonal in the midground. Beyond the open gate, mist swallows a mountain path. A single amber lantern glows above the gate arch. The colt is mid-leap, already half-gone. Chinese ink painting.
+```
+
+**Motion:** `kinetic-burst` — the colt mid-leap is the dominant motion anchor
+
+**Prompt (5s):**
+> Static camera, the white colt completes its leap through the open gate as plum blossoms drift from trembling branches, morning mist swirling in its wake, settling into stillness.
+
+**Duration:** 5s recommended — single action moment  
+**Estimated cost:** ~$0.90 (Seedance 2.0, Replicate, 720p image-to-video)
 
 ### Generate a bilingual explanation
 

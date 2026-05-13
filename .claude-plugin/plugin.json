@@ -17,6 +17,7 @@
     "./skills/ui-ux-architect",
     "./skills/nextjs-i18n-seo",
     "./skills/media-kit",
-    "./skills/arxiv-search"
+    "./skills/arxiv-search",
+    "./skills/image-to-scene"
   ]
 }
