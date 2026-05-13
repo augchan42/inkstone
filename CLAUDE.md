@@ -1,0 +1,58 @@
+# CLAUDE.md
+
+This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+
+## What This Is
+
+Inkstone (硯台) is a Claude Code plugin — a collection of agent skills for creative and design workflows. It is installed via the Claude Code plugin marketplace (`/plugin marketplace add augchan42/inkstone`). There is no build step, no tests, no dependencies to install. The repo is pure Markdown skill definitions.
+
+## Repository Structure
+
+```
+.claude-plugin/
+  plugin.json          # Plugin manifest — name, version, skill paths
+  marketplace.json     # Marketplace listing metadata
+skills/
+  <skill-name>/
+    SKILL.md           # Skill definition (frontmatter + instructions)
+    *.md               # Optional reference files loaded by the skill
+examples/
+  prompt-examples.md   # Validated reference prompts for ink painting & tech-noir modes
+```
+
+## How Skills Work
+
+Each skill is a `SKILL.md` with YAML frontmatter (`name`, `description`, `user-invocable`, `argument-hint`) followed by the full instruction set that Claude Code receives when the skill is invoked. Skills have no runtime code — they are prompt engineering documents that define behavior through instructions, examples, and rules.
+
+When a skill has companion reference files (e.g., `blakean-scene/blakean-reference.md`, `ui-ux-architect/audit-dimensions.md`), the SKILL.md instructs the agent to read them at execution time.
+
+## Adding a New Skill
+
+1. Create `skills/<skill-name>/SKILL.md` with the required frontmatter
+2. Add the skill path to the `skills` array in `.claude-plugin/plugin.json`
+3. Add it to the skills table in `README.md` under the appropriate category
+4. Bump the version in `plugin.json` if publishing
+
+## The 7 Skills
+
+- **verse-to-prompt** — Converts classical Chinese verse into 50-60 word image generation prompts. Two modes: ink painting (default) and tech-noir (`--tech-noir`). Enforces 7 mandatory composition rules, 5 style categories per mode, content safety substitution patterns, and disambiguation rules for ambiguous English words.
+- **create-explanation** — Generates bilingual (English + Traditional Chinese) scholarly explanations of classical Chinese oracular verses. English 100-150 words, Chinese 150-200 characters.
+- **blakean-scene** — Converts abstract symbolic concepts into 240-280 word Blakean embodied scene prompts using an 8-layer prompt architecture and 8 compositional patterns. Reads `blakean-reference.md` for pattern details.
+- **ui-ux-architect** — UI/UX audit against 13 dimensions with Jobs/Ive design philosophy. Uses mobile-mcp for live device inspection. Design-only scope — does not touch logic/state/APIs.
+- **media-kit** — Interactive multi-phase workflow: interview → write bios (4 lengths) → crop/process photos → generate page → bundle zip.
+- **arxiv-search** — Queries the arXiv API (Atom XML) by topic, author, or paper ID. No auth needed.
+- **nextjs-i18n-seo** — Diagnoses and fixes the 307→301 redirect bug in Next.js App Router i18n middleware that kills PageRank transfer.
+
+## Key Domain Knowledge
+
+The ink painting skills encode methodology from generating 4,096 unique images for SixLines.online using `fal-ai/z-image/turbo`. Core insight: **style is not a suffix** — appending "Chinese ink painting style" to a prompt fails; instead, prompts must read like the caption under an ink painting, with painterly metaphors woven throughout. Same principle applies to tech-noir mode.
+
+Content safety substitutions exist because 52 of 4,096 images failed generation filters. Violence from ancient texts is depicted through atmosphere and aftermath, never the act itself.
+
+## Conventions
+
+- Prompts target 50-60 words (verse-to-prompt) or 240-280 words (blakean-scene) — stay within these ranges
+- Always end ink painting prompts with "Chinese ink painting." and tech-noir prompts with "Phosphor-green tech-noir, CRT scanlines, deep blacks."
+- Disambiguation is mandatory: write "crane bird" not "crane", "swallow bird" not "swallow", etc.
+- Traditional Chinese (繁體中文) is used in bilingual outputs, not Simplified
+- Bio writing avoids year counts ("enterprise architecture background" not "12 years of...")
