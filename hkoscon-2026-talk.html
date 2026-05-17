@@ -644,44 +644,53 @@ body.edit-active [contenteditable] {
      =================================================== -->
 
 <!-- SLIDE 1: TITLE -->
-<section class="slide title-slide" data-slide="0">
+<section class="slide title-slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="ink-wash-bl"></div>
   <div class="slide-content">
-    <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2.5rem)">硯</div>
+    <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2.5rem)">硯台</div>
     <h1 class="reveal">Teaching Taste<br>to an Agent</h1>
     <p class="reveal font-light" style="font-size: var(--h3-size); color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: clamp(0.3rem, 1vh, 0.8rem);">Ink Painting Prompts from Classical Verse</p>
     <div class="divider reveal"></div>
     <p class="reveal font-italic" style="font-family: var(--font-display); font-size: var(--body-size); color: var(--muted);">Augustin Chan &middot; HKOSCon 2026 &middot; 6 June</p>
   </div>
-  <div class="slide-number">INKSTONE 硯台</div>
+  <div class="slide-number" data-fixed>INKSTONE 硯台</div>
 </section>
 
 <!-- SLIDE 2: ABOUT THE SPEAKER -->
-<section class="slide" data-slide="1">
+<section class="slide">
   <div class="paper-texture"></div>
-  <div class="accent-bar"></div>
-  <div class="slide-content" style="display: flex; align-items: center; justify-content: center; gap: clamp(2rem, 5vw, 5rem); flex-wrap: wrap;">
-    <div class="reveal" style="flex-shrink: 0;">
-      <img src="speaker-headshot.png" alt="Augustin Chan" style="width: clamp(140px, 18vw, 220px); height: clamp(140px, 18vw, 220px); border-radius: 50%; object-fit: cover; box-shadow: 0 6px 30px rgba(0,0,0,0.12); border: 3px solid var(--border);">
+  <div class="slide-content" style="flex-direction: row; padding: 0; gap: 0; max-height: none;">
+    <!-- Photo — tall left panel -->
+    <div class="reveal-scale" style="flex: 0 0 auto; width: clamp(280px, 35vw, 480px); align-self: stretch; overflow: hidden; background: var(--tone);">
+      <img src="speaker-portrait.jpeg" alt="Augustin Chan" style="width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: center 20%;">
     </div>
-    <div class="reveal" style="transition-delay: 0.15s;">
-      <h2 style="font-size: var(--title-size); margin-bottom: clamp(0.2rem, 0.5vh, 0.4rem);">Augustin Chan</h2>
-      <p style="font-size: var(--h3-size); color: var(--clay); font-weight: 500; margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">CTO &amp; Founder, Digital Rain Technologies</p>
-      <p style="font-size: var(--body-size); line-height: 1.6;">Builder of <strong>Six Lines</strong> &mdash; the I-Ching app behind this talk</p>
-      <p style="font-size: var(--body-size); line-height: 1.6;">Co-host, <strong>Hong Kong AI Podcast</strong></p>
-    </div>
-    <div class="reveal" style="transition-delay: 0.3s; text-align: center; flex-shrink: 0;">
-      <img src="qr-linkedin.png" alt="LinkedIn QR" style="width: clamp(160px, 20vw, 260px); border-radius: clamp(6px, 0.8vw, 12px);">
-      <p style="font-size: var(--body-size); color: var(--muted); margin-top: 0.5em; font-weight: 500;">Connect on LinkedIn</p>
+    <!-- Info — right side -->
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: var(--slide-padding); padding-left: clamp(2rem, 4vw, 4rem); gap: clamp(0.5rem, 1.5vh, 1rem);">
+      <div class="accent-bar" style="position: relative; top: 0; left: 0; margin-bottom: clamp(0.3rem, 1vh, 0.8rem);"></div>
+      <h2 class="reveal" style="font-size: var(--title-size); margin-bottom: 0;">Augustin Chan</h2>
+      <p class="reveal" style="font-size: var(--h3-size); color: var(--clay); font-weight: 500;">CTO &amp; Founder, Digital Rain Technologies</p>
+      <div style="height: 1px; background: var(--border); width: clamp(40px, 8vw, 80px); margin: clamp(0.2rem, 0.5vh, 0.4rem) 0;"></div>
+      <p class="reveal" style="font-size: var(--body-size); line-height: 1.6;">Builder of <strong>Six Lines</strong> &mdash; the I-Ching app behind this talk</p>
+      <p class="reveal" style="font-size: var(--body-size); line-height: 1.6;">Co-host, <strong>Hong Kong AI Podcast</strong></p>
+      <div class="reveal" style="transition-delay: 0.4s; margin-top: auto; display: flex; align-items: flex-end; gap: clamp(1.5rem, 3vw, 3rem); padding-bottom: clamp(1rem, 3vh, 2rem);">
+        <div style="text-align: center; flex-shrink: 0;">
+          <img src="qr-sixlines.png" alt="Six Lines QR" style="width: clamp(100px, 12vw, 160px); border-radius: clamp(4px, 0.5vw, 8px);">
+          <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">sixlines.online</p>
+        </div>
+        <div style="text-align: center; flex-shrink: 0;">
+          <img src="qr-linkedin.png" alt="LinkedIn QR" style="width: clamp(100px, 12vw, 160px); border-radius: clamp(4px, 0.5vw, 8px);">
+          <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">LinkedIn</p>
+        </div>
+      </div>
     </div>
   </div>
-  <div class="slide-number">02</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 3: HONG KONG AI PODCAST -->
-<section class="slide podcast-slide" data-slide="2">
+<section class="slide podcast-slide">
   <div class="slide-content">
     <div class="podcast-card">
       <div class="reveal-scale">
@@ -700,11 +709,60 @@ body.edit-active [contenteditable] {
       </div>
     </div>
   </div>
-  <div class="slide-number">03</div>
+  <div class="slide-number"></div>
 </section>
 
-<!-- SLIDE 4: THE CHALLENGE -->
-<section class="slide" data-slide="3">
+<!-- SLIDE 4: THE I-CHING (PRIMER) -->
+<section class="slide">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);">The I-Ching &middot; <span class="font-cjk">易經</span></h2>
+    <p class="reveal" style="max-width: 700px; text-align: center; font-size: var(--body-size);">64 hexagrams. Six lines each — solid or broken. Every possible pattern of change.</p>
+    <div class="reveal" style="transition-delay: 0.2s; display: flex; justify-content: center; gap: clamp(1.5rem, 3vw, 3rem); margin: clamp(0.8rem, 2vh, 1.5rem) 0; font-family: var(--font-cjk); font-size: clamp(1.5rem, 3vw, 2.5rem); color: var(--foreground);">
+      <div style="text-align: center;">
+        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9776;</div>
+        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☰ Heaven</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9783;</div>
+        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☷ Earth</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9778;</div>
+        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☲ Fire</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9781;</div>
+        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☵ Water</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9777;</div>
+        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☱ Lake</div>
+      </div>
+      <div style="text-align: center;">
+        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9780;</div>
+        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☴ Wind</div>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay: 0.3s; border-left: 3px solid var(--clay); padding-left: clamp(0.6rem, 1vw, 1rem); text-align: left; max-width: 700px; margin: clamp(0.5rem, 1.5vh, 1rem) auto;">
+      <p style="font-size: var(--body-size);"><strong style="color: var(--clay);">Jiaoshi Yilin</strong> <span class="font-cjk">焦氏易林</span> &middot; ~40 BCE</p>
+      <p style="font-size: var(--body-size);">One verse for every hexagram-to-hexagram transformation.<br>64 &times; 64 = <strong>4,096 poems</strong>. The complete forest of changes.</p>
+    </div>
+    <div class="image-grid reveal-scale" style="transition-delay: 0.4s; grid-template-columns: repeat(5, 1fr); max-width: min(90vw, 750px); margin: clamp(0.5rem, 1.5vh, 1rem) auto 0;">
+      <img src="yilin-1-9.webp" alt="Yilin verse 1-9" style="aspect-ratio: 1; object-fit: cover;">
+      <img src="yilin-15-48.webp" alt="Yilin verse 15-48" style="aspect-ratio: 1; object-fit: cover;">
+      <img src="yilin-2-40.webp" alt="Yilin verse 2-40" style="aspect-ratio: 1; object-fit: cover;">
+      <img src="yilin-44-44.webp" alt="Yilin verse 44-44" style="aspect-ratio: 1; object-fit: cover;">
+      <img src="yilin-61-61.webp" alt="Yilin verse 61-61" style="aspect-ratio: 1; object-fit: cover;">
+    </div>
+  </div>
+  <div class="slide-number"></div>
+</section>
+
+<!-- SLIDE 5: THE CHALLENGE -->
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
@@ -726,11 +784,11 @@ body.edit-active [contenteditable] {
     </div>
     <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.8rem, 2vh, 1.5rem);">焦氏易林 &middot; Built for <strong>SixLines.online</strong> — I-Ching reference &amp; Chinese almanac for iOS</p>
   </div>
-  <div class="slide-number">04</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 4: WHAT IS TASTE? (NEW) -->
-<section class="slide" data-slide="4">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="ink-wash-bl"></div>
@@ -745,11 +803,11 @@ body.edit-active [contenteditable] {
     </div>
     <p class="reveal text-muted" style="font-size: var(--body-size); margin-top: clamp(1rem, 2.5vh, 2rem); max-width: 650px;">The challenge: how do you teach something you can only recognize — never fully articulate — to a machine?</p>
   </div>
-  <div class="slide-number">05</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 5: THE ITERATIVE LOOP (NEW) -->
-<section class="slide" data-slide="5">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
@@ -778,7 +836,7 @@ body.edit-active [contenteditable] {
     <p class="reveal" style="font-size: var(--h3-size); color: var(--clay); font-weight: 600; margin-top: clamp(1rem, 3vh, 2rem);">Repeat until the rules can stand alone.</p>
     <p class="reveal text-muted" style="font-size: var(--body-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 600px;">The rules encoded in the skill are the <em>output</em> of this loop — not the input.</p>
   </div>
-  <div class="slide-number">06</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- ===================================================
@@ -786,7 +844,7 @@ body.edit-active [contenteditable] {
      =================================================== -->
 
 <!-- SLIDE 6: NOT ALL VERSES PAINT PICTURES -->
-<section class="slide" data-slide="6">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -810,11 +868,11 @@ body.edit-active [contenteditable] {
       </div>
     </div>
   </div>
-  <div class="slide-number">07</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 7: ROUND 1 — STYLE AS SUFFIX (hero image) -->
-<section class="slide" data-slide="7">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
@@ -825,11 +883,11 @@ body.edit-active [contenteditable] {
     </div>
     <p class="reveal" style="font-size: var(--body-size); color: var(--muted); margin-top: clamp(0.4rem, 1vh, 0.8rem);">Flat. Lifeless. <span class="text-clay" style="font-weight: 600;">The model treated "ink wash" as a filter, not a language.</span></p>
   </div>
-  <div class="slide-number">08</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 8: ROUND 2 — TRY A DIFFERENT STYLE -->
-<section class="slide" data-slide="8">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
@@ -840,11 +898,11 @@ body.edit-active [contenteditable] {
     </div>
     <p class="reveal" style="font-size: var(--body-size); color: var(--muted); margin-top: clamp(0.4rem, 1vh, 0.8rem);"><span class="text-clay" style="font-weight: 600;">Not even an ink painting.</span> It's a photograph. The suffix leaked into the medium.</p>
   </div>
-  <div class="slide-number">09</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 9: STYLE IS NOT A SUFFIX -->
-<section class="slide" data-slide="9">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="accent-bar"></div>
@@ -862,11 +920,11 @@ brushstroke frozen mid-sweep</span>, roots gripping stone
 above a gorge filled with morning mist. Chinese ink painting."</div>
     </div>
   </div>
-  <div class="slide-number">10</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 10: THE BREAKTHROUGH PROMPT -->
-<section class="slide" data-slide="10">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="accent-bar"></div>
@@ -888,11 +946,11 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
       <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Painterly</span>
     </div>
   </div>
-  <div class="slide-number">11</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 11: SAME VERSE, ALL 7 RULES — RESULT -->
-<section class="slide" data-slide="11">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
@@ -902,7 +960,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
     </div>
     <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.4rem, 1vh, 0.8rem);">key 48-59 &middot; <span class="font-cjk">井 &rarr; 渙</span> &middot; ink-landscape &middot; 60 words &middot; fal-ai/z-image/turbo</p>
   </div>
-  <div class="slide-number">12</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- ===================================================
@@ -910,7 +968,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
      =================================================== -->
 
 <!-- SLIDE 12: WHAT THE AI ANALYZED (NEW) -->
-<section class="slide" data-slide="12">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -941,11 +999,11 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">13</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 13: WHAT THE HUMAN KEPT (NEW) -->
-<section class="slide" data-slide="13">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -977,7 +1035,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">14</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- ===================================================
@@ -985,7 +1043,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
      =================================================== -->
 
 <!-- SLIDE 14: THE RESULTS — GALLERY -->
-<section class="slide" data-slide="14">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
@@ -1006,11 +1064,11 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
       <span>figures-in-mist</span>
     </div>
   </div>
-  <div class="slide-number">15</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 15: ABSTRACT VERSES (simplified to 2-col) -->
-<section class="slide" data-slide="15">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -1033,11 +1091,11 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">16</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 16: CONTENT SAFETY (trimmed to 3 rows) -->
-<section class="slide" data-slide="16">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -1055,11 +1113,11 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
     </table>
     <p class="reveal text-muted" style="font-size: var(--body-size); margin-top: clamp(0.8rem, 2vh, 1.5rem); transition-delay: 0.4s; font-weight: 500;">The constraint forced better art — <span class="text-clay">absence evokes more dread than depiction.</span></p>
   </div>
-  <div class="slide-number">17</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 17: FOUR ROUNDS TO A SKILL (NEW) -->
-<section class="slide" data-slide="17">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="accent-bar"></div>
@@ -1111,7 +1169,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">18</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- ===================================================
@@ -1119,7 +1177,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
      =================================================== -->
 
 <!-- SLIDE 18: WHAT IS A SKILL? -->
-<section class="slide" data-slide="18">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -1143,11 +1201,11 @@ Given a verse, produce:
 ...</div>
     <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.3rem, 0.8vh, 0.5rem); transition-delay: 0.4s;">A skill carries pre-tested expertise. The agent doesn't rediscover — it inherits.</p>
   </div>
-  <div class="slide-number">19</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 19: PLUGINS VS SKILLS -->
-<section class="slide" data-slide="19">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -1185,11 +1243,11 @@ walled courtyard...</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">20</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 20: THE INKSTONE PLUGIN (trimmed to 6 cards) -->
-<section class="slide" data-slide="20">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -1205,7 +1263,7 @@ walled courtyard...</div>
     </div>
     <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.4rem, 1vh, 0.6rem);"><span class="font-mono">/plugin marketplace add augchan42/inkstone</span></p>
   </div>
-  <div class="slide-number">21</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- ===================================================
@@ -1213,7 +1271,7 @@ walled courtyard...</div>
      =================================================== -->
 
 <!-- SLIDE 21: TAKEAWAYS (rewritten around taste thesis) -->
-<section class="slide" data-slide="21">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="ink-wash-bl"></div>
@@ -1239,11 +1297,11 @@ walled courtyard...</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">22</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 22: BEYOND CLAUDE CODE -->
-<section class="slide" data-slide="22">
+<section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
   <div class="slide-content">
@@ -1274,16 +1332,16 @@ walled courtyard...</div>
     </div>
     <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 700px;">The underlying idea is tool-agnostic: encode domain expertise into structured documents that agents consume at runtime.</p>
   </div>
-  <div class="slide-number">23</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- SLIDE 23: THANK YOU -->
-<section class="slide title-slide" data-slide="23">
+<section class="slide title-slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
   <div class="ink-wash-bl"></div>
   <div class="slide-content">
-    <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2rem);">硯</div>
+    <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2rem);">硯台</div>
     <h1 class="reveal" style="font-size: clamp(2rem, 5vw, 4rem);">多謝 &middot; Thank You</h1>
     <div class="divider reveal"></div>
     <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 4rem); align-items: center; justify-content: center; flex-wrap: wrap;">
@@ -1300,7 +1358,7 @@ walled courtyard...</div>
       </div>
     </div>
   </div>
-  <div class="slide-number">24</div>
+  <div class="slide-number"></div>
 </section>
 
 <!-- ===========================================
@@ -1316,6 +1374,7 @@ class SlidePresentation {
     this.progressBar = document.getElementById('progressBar');
     this.navDotsContainer = document.getElementById('navDots');
 
+    this.setupSlideNumbers();
     this.setupIntersectionObserver();
     this.setupKeyboardNav();
     this.setupTouchNav();
@@ -1324,6 +1383,16 @@ class SlidePresentation {
     this.setupNavDots();
 
     this.slides[0].classList.add('visible');
+  }
+
+  setupSlideNumbers() {
+    this.slides.forEach((slide, i) => {
+      slide.setAttribute('data-slide', i);
+      const numEl = slide.querySelector('.slide-number');
+      if (numEl && !numEl.dataset.fixed) {
+        numEl.textContent = String(i + 1).padStart(2, '0');
+      }
+    });
   }
 
   setupIntersectionObserver() {
