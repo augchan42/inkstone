@@ -1,0 +1,1508 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Teaching Taste to an Agent — Augustin Chan — HKOSCon 2026</title>
+<link href="https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Source+Sans+3:wght@300;400;500;600&family=Noto+Serif+TC:wght@400;600&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+/* ===========================================
+   CSS CUSTOM PROPERTIES — SCHOLAR'S PAPER THEME
+   =========================================== */
+:root {
+  --paper: #FAF9F5;
+  --tone: #F5F2EC;
+  --foreground: rgba(0, 0, 0, 0.85);
+  --muted: #87867F;
+  --clay: #C24E38;
+  --clay-light: rgba(194, 78, 56, 0.08);
+  --clay-medium: rgba(194, 78, 56, 0.15);
+  --border: #E8E6DC;
+  --ink-wash: rgba(0, 0, 0, 0.04);
+  --gold: #c9a96e;
+
+  --font-display: 'Cormorant Garamond', serif;
+  --font-body: 'Source Sans 3', sans-serif;
+  --font-cjk: 'Noto Serif TC', serif;
+  --font-mono: 'JetBrains Mono', monospace;
+
+  --title-size: clamp(2.2rem, 6vw, 5rem);
+  --h2-size: clamp(1.8rem, 4.5vw, 3.5rem);
+  --h3-size: clamp(1.3rem, 3vw, 2.5rem);
+  --body-size: clamp(1rem, 2.2vw, 1.75rem);
+  --small-size: clamp(0.85rem, 1.6vw, 1.35rem);
+  --code-size: clamp(0.85rem, 1.5vw, 1.2rem);
+
+  --slide-padding: clamp(1.5rem, 4vw, 4rem);
+  --content-gap: clamp(0.75rem, 2vw, 2rem);
+  --element-gap: clamp(0.3rem, 1vw, 1rem);
+
+  --ease-out-expo: cubic-bezier(0.16, 1, 0.3, 1);
+  --duration-normal: 0.6s;
+}
+
+/* ===========================================
+   RESET & BASE
+   =========================================== */
+*, *::before, *::after { margin: 0; padding: 0; box-sizing: border-box; }
+
+/* ===========================================
+   VIEWPORT FITTING: MANDATORY BASE STYLES
+   =========================================== */
+html, body { height: 100%; overflow-x: hidden; }
+html { scroll-snap-type: y mandatory; scroll-behavior: smooth; }
+
+.slide {
+  width: 100vw; height: 100vh; height: 100dvh;
+  overflow: hidden;
+  scroll-snap-align: start;
+  display: flex; flex-direction: column;
+  position: relative;
+  background: var(--paper);
+}
+
+.slide-content {
+  flex: 1; display: flex; flex-direction: column;
+  justify-content: center;
+  max-height: 100%; overflow: hidden;
+  padding: var(--slide-padding);
+}
+
+img, .image-container {
+  max-width: 100%;
+  max-height: min(50vh, 400px);
+  object-fit: contain;
+}
+
+.card, .container, .content-box {
+  max-width: min(90vw, 1000px);
+  max-height: min(80vh, 700px);
+}
+
+.feature-list, .bullet-list { gap: clamp(0.4rem, 1vh, 1rem); }
+.feature-list li, .bullet-list li { font-size: var(--body-size); line-height: 1.4; }
+
+.grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fit, minmax(min(100%, 250px), 1fr));
+  gap: clamp(0.5rem, 1.5vw, 1rem);
+}
+
+@media (max-height: 700px) {
+  :root {
+    --slide-padding: clamp(0.75rem, 3vw, 2rem);
+    --content-gap: clamp(0.4rem, 1.5vw, 1rem);
+    --title-size: clamp(1.5rem, 4.5vw, 2.8rem);
+    --h2-size: clamp(1.1rem, 3vw, 2rem);
+  }
+}
+@media (max-height: 600px) {
+  :root {
+    --slide-padding: clamp(0.5rem, 2.5vw, 1.5rem);
+    --content-gap: clamp(0.3rem, 1vw, 0.75rem);
+    --title-size: clamp(1.2rem, 4vw, 2.2rem);
+    --body-size: clamp(0.7rem, 1.2vw, 0.95rem);
+  }
+  .nav-dots, .keyboard-hint, .decorative { display: none; }
+}
+@media (max-height: 500px) {
+  :root {
+    --slide-padding: clamp(0.4rem, 2vw, 1rem);
+    --title-size: clamp(1rem, 3.5vw, 1.8rem);
+    --h2-size: clamp(0.9rem, 2.5vw, 1.4rem);
+    --body-size: clamp(0.65rem, 1vw, 0.85rem);
+  }
+}
+@media (max-width: 600px) {
+  :root { --title-size: clamp(1.5rem, 8vw, 2.8rem); }
+  .grid { grid-template-columns: 1fr; }
+  .two-col { flex-direction: column !important; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.2s !important;
+  }
+  html { scroll-behavior: auto; }
+}
+
+/* ===========================================
+   THEME — SCHOLAR'S PAPER
+   =========================================== */
+body { background: var(--paper); font-family: var(--font-body); color: var(--foreground); }
+
+/* Paper texture overlay */
+.paper-texture {
+  position: absolute; inset: 0; pointer-events: none; z-index: 0;
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.025'/%3E%3C/svg%3E");
+  opacity: 0.5;
+}
+
+/* Ink wash blobs */
+.ink-wash-tr {
+  position: absolute; top: -15%; right: -5%;
+  width: 50vw; height: 50vw;
+  border-radius: 45% 55% 50% 50% / 50% 45% 55% 50%;
+  background: radial-gradient(ellipse at 40% 40%, rgba(0,0,0,0.045) 0%, rgba(0,0,0,0.02) 40%, transparent 65%);
+  filter: blur(30px); pointer-events: none; z-index: 0;
+}
+.ink-wash-bl {
+  position: absolute; bottom: -20%; left: -10%;
+  width: 35vw; height: 35vw; border-radius: 50%;
+  background: radial-gradient(ellipse at center, rgba(194,78,56,0.03) 0%, rgba(201,169,110,0.015) 40%, transparent 65%);
+  filter: blur(50px); pointer-events: none; z-index: 0;
+}
+
+/* Accent bar — top-left */
+.accent-bar {
+  position: absolute;
+  top: clamp(1.5rem, 4vh, 3rem);
+  left: clamp(1.5rem, 4vw, 3rem);
+  width: 3px; height: clamp(20px, 3.5vh, 36px);
+  background: var(--clay);
+  z-index: 2;
+}
+
+/* Slide number — bottom-left */
+.slide-number {
+  position: absolute;
+  bottom: clamp(1rem, 3vh, 2rem);
+  left: clamp(1.5rem, 4vw, 3rem);
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 500;
+  color: var(--border);
+  letter-spacing: 0.05em;
+  z-index: 2;
+}
+
+/* ===========================================
+   TYPOGRAPHY
+   =========================================== */
+h1 {
+  font-family: var(--font-display);
+  font-size: var(--title-size);
+  font-weight: 600;
+  color: var(--foreground);
+  letter-spacing: 0.01em;
+  line-height: 1.08;
+}
+
+h2 {
+  font-family: var(--font-display);
+  font-size: var(--h2-size);
+  font-weight: 600;
+  color: var(--foreground);
+  line-height: 1.15;
+  margin-bottom: var(--content-gap);
+}
+
+h3 {
+  font-family: var(--font-display);
+  font-size: var(--h3-size);
+  font-weight: 600;
+  color: var(--foreground);
+  line-height: 1.25;
+}
+
+p, li {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  line-height: 1.55;
+  color: var(--foreground);
+}
+
+.text-muted { color: var(--muted); }
+.text-clay { color: var(--clay); }
+.text-gold { color: var(--gold); }
+.font-cjk { font-family: var(--font-cjk); }
+.font-mono { font-family: var(--font-mono); font-size: var(--code-size); }
+.font-italic { font-style: italic; }
+.font-light { font-weight: 300; }
+
+.seal-mark {
+  display: inline-flex; align-items: center; justify-content: center;
+  width: clamp(48px, 6vw, 72px); height: clamp(48px, 6vw, 72px);
+  border: 2px solid var(--clay);
+  font-family: var(--font-cjk);
+  color: var(--clay);
+  font-size: clamp(1.2rem, 2.8vw, 1.8rem);
+  font-weight: 600;
+  transform: rotate(-3deg);
+}
+
+/* ===========================================
+   ANIMATIONS
+   =========================================== */
+.reveal {
+  opacity: 0; transform: translateY(25px);
+  transition: opacity var(--duration-normal) var(--ease-out-expo),
+              transform var(--duration-normal) var(--ease-out-expo);
+}
+.slide.visible .reveal { opacity: 1; transform: translateY(0); }
+.reveal:nth-child(1) { transition-delay: 0.1s; }
+.reveal:nth-child(2) { transition-delay: 0.2s; }
+.reveal:nth-child(3) { transition-delay: 0.3s; }
+.reveal:nth-child(4) { transition-delay: 0.4s; }
+.reveal:nth-child(5) { transition-delay: 0.5s; }
+.reveal:nth-child(6) { transition-delay: 0.6s; }
+
+.reveal-stamp {
+  opacity: 0; transform: rotate(-3deg) scale(1.4);
+  transition: opacity 0.4s ease-out, transform 0.4s ease-out;
+}
+.slide.visible .reveal-stamp { opacity: 1; transform: rotate(-3deg) scale(1); }
+
+.reveal-scale {
+  opacity: 0; transform: scale(0.92);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.visible .reveal-scale { opacity: 1; transform: scale(1); }
+
+.reveal-left {
+  opacity: 0; transform: translateX(-30px);
+  transition: opacity 0.6s var(--ease-out-expo), transform 0.6s var(--ease-out-expo);
+}
+.slide.visible .reveal-left { opacity: 1; transform: translateX(0); }
+
+/* ===========================================
+   LAYOUT HELPERS
+   =========================================== */
+.centered { text-align: center; align-items: center; }
+.two-col {
+  display: flex; gap: clamp(1rem, 3vw, 3rem);
+  align-items: center;
+}
+.two-col > * { flex: 1; min-width: 0; }
+.two-col .col-narrow { flex: 0 0 auto; max-width: 45%; }
+
+.image-grid {
+  display: grid;
+  gap: clamp(0.4rem, 1vw, 0.8rem);
+}
+.image-grid.cols-3 { grid-template-columns: repeat(3, 1fr); }
+.image-grid.cols-5 { grid-template-columns: repeat(5, 1fr); }
+.image-grid img {
+  width: 100%; border-radius: clamp(4px, 0.5vw, 8px);
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+
+.quote-block {
+  border-left: 3px solid var(--clay);
+  padding-left: clamp(0.8rem, 1.5vw, 1.2rem);
+  font-family: var(--font-display);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  font-style: italic;
+  color: var(--foreground);
+  line-height: 1.5;
+}
+
+.code-block {
+  background: rgba(0,0,0,0.04);
+  border: 1px solid var(--border);
+  border-radius: clamp(4px, 0.5vw, 8px);
+  padding: clamp(0.6rem, 1.5vw, 1.2rem);
+  font-family: var(--font-mono);
+  font-size: var(--code-size);
+  line-height: 1.6;
+  overflow: hidden;
+  white-space: pre-wrap;
+  color: var(--foreground);
+}
+.code-block .comment { color: var(--muted); }
+.code-block .accent { color: var(--clay); }
+
+.tag {
+  display: inline-block;
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 500;
+  color: var(--clay);
+  border: 1px solid var(--clay-medium);
+  padding: clamp(2px, 0.3vh, 4px) clamp(6px, 0.8vw, 12px);
+  border-radius: 2px;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+}
+
+.stat-number {
+  font-family: var(--font-display);
+  font-size: clamp(2rem, 5vw, 4rem);
+  font-weight: 700;
+  color: var(--clay);
+  line-height: 1;
+}
+
+.stat-label {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  color: var(--muted);
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+}
+
+.rule-item {
+  display: flex; gap: clamp(0.5rem, 1vw, 1rem);
+  align-items: flex-start;
+}
+.rule-num {
+  font-family: var(--font-display);
+  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-weight: 700;
+  color: var(--clay);
+  line-height: 1;
+  flex-shrink: 0;
+  min-width: clamp(1.2rem, 2.5vw, 2rem);
+}
+.rule-text {
+  font-family: var(--font-body);
+  font-size: var(--body-size);
+  line-height: 1.4;
+}
+.rule-text strong { font-weight: 600; }
+
+.table-simple {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: var(--body-size);
+}
+.table-simple th {
+  text-align: left;
+  font-weight: 500;
+  color: var(--muted);
+  font-size: var(--small-size);
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  padding: clamp(0.3rem, 0.6vh, 0.5rem) clamp(0.3rem, 0.5vw, 0.5rem);
+  border-bottom: 1px solid var(--border);
+}
+.table-simple td {
+  padding: clamp(0.3rem, 0.6vh, 0.5rem) clamp(0.3rem, 0.5vw, 0.5rem);
+  border-bottom: 1px solid rgba(232,230,220,0.5);
+  vertical-align: top;
+}
+.table-simple .style-name { font-weight: 600; white-space: nowrap; }
+.table-simple .style-dot {
+  display: inline-block; width: 8px; height: 8px;
+  border-radius: 50%; margin-right: 6px;
+  vertical-align: middle;
+}
+
+.skill-card {
+  background: var(--tone);
+  border: 1px solid var(--border);
+  border-radius: clamp(4px, 0.5vw, 8px);
+  padding: clamp(0.5rem, 1vw, 0.8rem);
+}
+.skill-card h4 {
+  font-family: var(--font-mono);
+  font-size: var(--small-size);
+  font-weight: 500;
+  color: var(--clay);
+  margin-bottom: 0.25em;
+}
+.skill-card p {
+  font-size: var(--small-size);
+  color: var(--muted);
+  line-height: 1.4;
+}
+
+/* Comparison layout */
+.comparison {
+  display: grid; grid-template-columns: 1fr 1fr;
+  gap: clamp(0.5rem, 1.5vw, 1.5rem);
+}
+.comparison-item { text-align: center; }
+.comparison-item img {
+  width: 100%; border-radius: clamp(4px, 0.5vw, 8px);
+  max-height: min(35vh, 280px); object-fit: cover;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.08);
+}
+.comparison-label {
+  font-size: var(--small-size);
+  color: var(--muted);
+  margin-top: clamp(0.3rem, 0.5vh, 0.5rem);
+}
+.comparison-label.bad { color: var(--muted); }
+.comparison-label.good { color: var(--clay); font-weight: 500; }
+
+/* Pipeline flow */
+.pipeline {
+  display: flex; align-items: stretch;
+  gap: 0; width: 100%; max-width: min(92vw, 1000px); margin: 0 auto;
+}
+.pipeline-step {
+  flex: 1; min-width: 0;
+  padding: clamp(0.4rem, 0.8vw, 0.7rem);
+  display: flex; flex-direction: column;
+  gap: clamp(0.2rem, 0.4vh, 0.3rem);
+}
+.pipeline-step:not(:last-child) {
+  border-right: 1px solid var(--border);
+}
+.pipeline-step-label {
+  font-family: var(--font-body);
+  font-size: var(--small-size);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.1em;
+  color: var(--clay);
+}
+.pipeline-arrow {
+  flex: 0 0 auto; display: flex; align-items: center;
+  padding: 0 clamp(0.3rem, 0.5vw, 0.5rem);
+  font-size: clamp(1rem, 2vw, 1.5rem);
+  color: var(--border);
+}
+.pipeline-highlight {
+  background: var(--clay-light);
+  padding: 1px clamp(3px, 0.3vw, 5px);
+  border-radius: 2px;
+  font-weight: 500;
+}
+
+/* Three-way comparison */
+.comparison-3 {
+  display: grid; grid-template-columns: 1fr 1fr 1fr;
+  gap: clamp(0.4rem, 1vw, 1rem);
+}
+.comparison-3 .comparison-item {
+  text-align: left;
+  padding: clamp(0.4rem, 0.8vw, 0.7rem);
+  border: 1px solid var(--border);
+  border-radius: clamp(4px, 0.5vw, 8px);
+}
+.comparison-3 .comparison-item.winner {
+  border-color: var(--clay);
+  background: var(--clay-light);
+}
+.comparison-3 .approach-label {
+  font-family: var(--font-body);
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 0.08em;
+  margin-bottom: clamp(0.2rem, 0.4vh, 0.3rem);
+}
+.comparison-3 .approach-label.bad { color: var(--muted); }
+.comparison-3 .approach-label.mid { color: var(--gold); }
+.comparison-3 .approach-label.good { color: var(--clay); }
+.comparison-3 .prompt-text {
+  font-family: var(--font-mono);
+  font-size: clamp(0.8rem, 1.2vw, 1rem);
+  line-height: 1.45;
+  color: var(--foreground);
+  margin-bottom: clamp(0.2rem, 0.4vh, 0.3rem);
+}
+.comparison-3 img {
+  width: 100%; border-radius: clamp(3px, 0.4vw, 6px);
+  max-height: min(22vh, 170px); object-fit: cover;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.06);
+}
+
+/* ===========================================
+   PROGRESS BAR
+   =========================================== */
+.progress-bar {
+  position: fixed; top: 0; left: 0;
+  height: 2px; background: var(--clay);
+  z-index: 9999; transition: width 0.3s ease;
+  width: 0;
+}
+
+/* ===========================================
+   NAV DOTS
+   =========================================== */
+.nav-dots {
+  position: fixed; right: clamp(0.5rem, 1.5vw, 1.5rem);
+  top: 50%; transform: translateY(-50%);
+  display: flex; flex-direction: column;
+  gap: clamp(4px, 0.6vh, 8px);
+  z-index: 9998;
+}
+.nav-dot {
+  width: 6px; height: 6px; border-radius: 50%;
+  background: var(--border);
+  border: none; cursor: pointer;
+  transition: all 0.3s ease;
+  padding: 0;
+}
+.nav-dot.active {
+  background: var(--clay);
+  transform: scale(1.4);
+}
+
+/* ===========================================
+   INLINE EDITING
+   =========================================== */
+.edit-hotzone {
+  position: fixed; top: 0; left: 0;
+  width: 80px; height: 80px;
+  z-index: 10000; cursor: pointer;
+}
+.edit-toggle {
+  position: fixed; top: clamp(0.5rem, 1.5vh, 1rem); left: clamp(0.5rem, 1.5vw, 1rem);
+  background: var(--tone); border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: clamp(4px, 0.5vh, 8px) clamp(8px, 1vw, 12px);
+  font-size: var(--small-size);
+  color: var(--muted);
+  cursor: pointer;
+  opacity: 0; pointer-events: none;
+  transition: opacity 0.3s ease;
+  z-index: 10001;
+}
+.edit-toggle.show, .edit-toggle.active { opacity: 1; pointer-events: auto; }
+.edit-banner {
+  position: fixed; top: 0; left: 0; right: 0;
+  background: var(--clay); color: #fff;
+  text-align: center; font-size: var(--small-size);
+  padding: clamp(2px, 0.3vh, 4px) 0;
+  z-index: 9999;
+  display: none;
+}
+.edit-banner.active { display: block; }
+body.edit-active [contenteditable] {
+  outline: 1px dashed var(--clay-medium);
+  outline-offset: 2px;
+  cursor: text;
+}
+
+/* ===========================================
+   SLIDE-SPECIFIC STYLES
+   =========================================== */
+
+/* Title slide */
+.title-slide .slide-content {
+  align-items: center; text-align: center;
+}
+.title-slide .divider {
+  width: clamp(40px, 8vw, 80px); height: 1px;
+  background: var(--clay); opacity: 0.5;
+  margin: clamp(0.8rem, 2vh, 1.5rem) 0;
+}
+
+/* Section divider slides */
+.section-slide {
+  background: var(--tone);
+}
+.section-slide .slide-content {
+  align-items: center; text-align: center;
+}
+.section-slide .section-number {
+  font-family: var(--font-display);
+  font-size: clamp(3rem, 8vw, 6rem);
+  font-weight: 700;
+  color: var(--border);
+  line-height: 1;
+}
+
+</style>
+</head>
+<body>
+
+<!-- Progress bar -->
+<div class="progress-bar" id="progressBar"></div>
+
+<!-- Nav dots -->
+<nav class="nav-dots" id="navDots" aria-label="Slide navigation"></nav>
+
+<!-- Edit mode -->
+<div class="edit-hotzone" id="editHotzone"></div>
+<button class="edit-toggle" id="editToggle" title="Edit mode (E)">&#9998; Edit</button>
+<div class="edit-banner" id="editBanner">Edit mode — click any text to edit &middot; Ctrl+S to save</div>
+
+<!-- ===================================================
+     SLIDE 1: TITLE
+     =================================================== -->
+<section class="slide title-slide" data-slide="0">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="ink-wash-bl"></div>
+  <div class="slide-content">
+    <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2.5rem)">硯</div>
+    <h1 class="reveal">Teaching Taste<br>to an Agent</h1>
+    <p class="reveal font-light" style="font-size: var(--h3-size); color: var(--muted); letter-spacing: 0.1em; text-transform: uppercase; margin-top: clamp(0.3rem, 1vh, 0.8rem);">Ink Painting Prompts from Classical Verse</p>
+    <div class="divider reveal"></div>
+    <p class="reveal font-italic" style="font-family: var(--font-display); font-size: var(--body-size); color: var(--muted);">Augustin Chan &middot; HKOSCon 2026 &middot; 6 June</p>
+  </div>
+  <div class="slide-number">INKSTONE 硯台</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 2: ABOUT THE SPEAKER
+     =================================================== -->
+<section class="slide" data-slide="1">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content" style="display: flex; align-items: center; justify-content: center; gap: clamp(2.5rem, 6vw, 6rem); flex-wrap: wrap;">
+    <div class="reveal" style="flex-shrink: 0;">
+      <img src="speaker-headshot.png" alt="Augustin Chan" style="width: clamp(160px, 22vw, 280px); height: clamp(160px, 22vw, 280px); border-radius: 50%; object-fit: cover; box-shadow: 0 6px 30px rgba(0,0,0,0.12); border: 3px solid var(--border);">
+    </div>
+    <div class="reveal" style="transition-delay: 0.15s;">
+      <h2 style="font-size: var(--title-size); margin-bottom: clamp(0.2rem, 0.5vh, 0.4rem);">Augustin Chan</h2>
+      <p style="font-size: var(--h3-size); color: var(--clay); font-weight: 500; margin-bottom: clamp(0.8rem, 2vh, 1.5rem);">CTO &amp; Founder, Digital Rain Technologies</p>
+      <p style="font-size: var(--body-size); line-height: 1.6;">Builder of <strong>Six Lines</strong> &mdash; the I Ching app behind this talk</p>
+      <p style="font-size: var(--body-size); line-height: 1.6;">Co-host, <strong>Hong Kong AI Podcast</strong></p>
+    </div>
+  </div>
+  <div class="slide-number">02</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 3: THE CHALLENGE
+     =================================================== -->
+<section class="slide" data-slide="2">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal">The Challenge</h2>
+    <p class="reveal" style="max-width: 700px; text-align: center; margin: 0 auto clamp(1rem, 2vh, 1.5rem);">Generate <strong>4,096 unique ink paintings</strong> from a 2,000-year-old Chinese divination text — one for every hexagram-to-hexagram transformation.</p>
+    <div class="reveal" style="display: flex; gap: clamp(1.5rem, 4vw, 4rem); justify-content: center; flex-wrap: wrap; margin-top: clamp(0.5rem, 1.5vh, 1rem);">
+      <div style="text-align: center;">
+        <div class="stat-number">4,096</div>
+        <div class="stat-label">verses</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number">64&times;64</div>
+        <div class="stat-label">hexagram pairs</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number">~40 <span style="font-size: 0.5em; font-weight: 400;">BCE</span></div>
+        <div class="stat-label">Jiaoshi Yilin</div>
+      </div>
+    </div>
+    <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.8rem, 2vh, 1.5rem);">焦氏易林 &middot; Built for <strong>SixLines.online</strong> — I Ching reference &amp; Chinese almanac for iOS</p>
+  </div>
+  <div class="slide-number">03</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 4: THE SOURCE TEXT
+     =================================================== -->
+<section class="slide" data-slide="3">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Not All Verses Paint Pictures</h2>
+    <p class="reveal" style="max-width: 650px; margin-bottom: clamp(0.8rem, 2vh, 1.5rem);">Oracular poetry ranges from vivid nature imagery to abstract fortune declarations. The agent must handle all three tiers:</p>
+    <div class="reveal" style="display: flex; gap: clamp(1rem, 2vw, 2rem); flex-wrap: wrap;">
+      <div style="flex: 1; min-width: 180px; border-left: 3px solid var(--clay); padding-left: clamp(0.5rem, 1vw, 1rem);">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">18.6%</div>
+        <div class="stat-label" style="margin-bottom: 0.3em;">Tier 1 — Rich imagery</div>
+        <p style="font-size: var(--small-size); color: var(--muted); font-style: italic;">霜降閉戶，蟄虫隱處<br>"When frost falls, doors are sealed"</p>
+      </div>
+      <div style="flex: 1; min-width: 180px; border-left: 3px solid var(--gold); padding-left: clamp(0.5rem, 1vw, 1rem);">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem); color: var(--gold);">50.0%</div>
+        <div class="stat-label" style="margin-bottom: 0.3em;">Tier 2 — Needs expansion</div>
+        <p style="font-size: var(--small-size); color: var(--muted); font-style: italic;">Sparse imagery that must be<br>creatively expanded to fill a scene</p>
+      </div>
+      <div style="flex: 1; min-width: 180px; border-left: 3px solid var(--border); padding-left: clamp(0.5rem, 1vw, 1rem);">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem); color: var(--muted);">31.4%</div>
+        <div class="stat-label" style="margin-bottom: 0.3em;">Tier 3 — Abstract / duplicate</div>
+        <p style="font-size: var(--small-size); color: var(--muted); font-style: italic;">福祐日成 — "Blessings grow daily"<br>No visual content at all</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">04</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 5: ROUND 1 — WHAT WENT WRONG
+     =================================================== -->
+<section class="slide" data-slide="4">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Round 1: Style as Suffix</h2>
+    <p class="reveal" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">First attempt: describe the scene, then append <span class="font-mono" style="background: var(--clay-light); padding: 1px 6px; border-radius: 2px;">"Chinese ink painting style"</span>. Results were wildly inconsistent.</p>
+    <div class="comparison reveal-scale" style="transition-delay: 0.3s;">
+      <div class="comparison-item">
+        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round1-muddy-stump.webp" alt="Round 1 failure — muddy stump">
+        <p class="comparison-label bad">Muddy, photorealistic, no composition</p>
+      </div>
+      <div class="comparison-item">
+        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round1-bulls.webp" alt="Round 1 failure — bulls">
+        <p class="comparison-label bad">Stock photography, not ink painting</p>
+      </div>
+    </div>
+    <p class="reveal text-muted" style="font-size: var(--small-size); text-align: center; margin-top: clamp(0.3rem, 0.8vh, 0.5rem);">The model ignores trailing style directives. It responds to the <em>language</em> of the prompt.</p>
+  </div>
+  <div class="slide-number">05</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 6: THE DISCOVERY
+     =================================================== -->
+<section class="slide" data-slide="5">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <div class="tag reveal" style="margin-bottom: clamp(1rem, 2.5vh, 2rem);">Core Discovery</div>
+    <h2 class="reveal" style="font-size: clamp(1.8rem, 4.5vw, 3.5rem); max-width: 800px;">Style Is Not a Suffix</h2>
+    <p class="reveal" style="max-width: 650px; text-align: center; margin: clamp(0.5rem, 1.5vh, 1rem) auto 0;">The prompt must <em>read like the caption under an ink painting</em> — painterly metaphors woven throughout, not appended at the end.</p>
+    <div class="reveal" style="margin-top: clamp(1rem, 2.5vh, 2rem); max-width: 700px; text-align: left;">
+      <div class="code-block"><span class="comment"># Bad — style as suffix</span>
+"A tree on a hill. <span class="accent">Chinese ink painting style.</span>"
+
+<span class="comment"># Good — painterly language embedded in the scene</span>
+"A gnarled pine leans from a cliff face <span class="accent">like a
+brushstroke frozen mid-sweep</span>, roots gripping stone
+above a gorge filled with morning mist. Chinese ink painting."</div>
+    </div>
+  </div>
+  <div class="slide-number">06</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 7: ROUND 2 — LANGUAGE REGISTER WORKS
+     =================================================== -->
+<section class="slide" data-slide="6">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Round 2: Same Verse, Different Register</h2>
+    <p class="reveal" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">The verse <span class="font-cjk">井之渙</span> — testing wabi-sabi description vs. embedded painterly language:</p>
+    <div class="comparison reveal-scale" style="transition-delay: 0.3s;">
+      <div class="comparison-item">
+        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round2-wabisabi.webp" alt="Round 2 — wabi-sabi approach">
+        <p class="comparison-label bad">"Pale early-spring light, everything wet and glistening. Ink wash with cool blue-green tints."</p>
+      </div>
+      <div class="comparison-item">
+        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round2-painterly.webp" alt="Round 2 — embedded painterly language">
+        <p class="comparison-label good">"Water spills over the stone lip in thin silver threads, tracing dark lines down worn steps like brushstrokes on parchment."</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">07</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 8: THE 7 COMPOSITION RULES
+     =================================================== -->
+<section class="slide" data-slide="7">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">The 7 Composition Rules</h2>
+    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: clamp(0.3rem, 0.8vh, 0.6rem) clamp(1rem, 3vw, 3rem);">
+      <div class="rule-item reveal"><div class="rule-num">1</div><div class="rule-text"><strong>Frame the scene</strong> — gorges, gates, tree canopies. Never a subject floating in open space.</div></div>
+      <div class="rule-item reveal"><div class="rule-num">2</div><div class="rule-text"><strong>Force depth</strong> — foreground, midground, background. Always.</div></div>
+      <div class="rule-item reveal"><div class="rule-num">3</div><div class="rule-text"><strong>Demand contrast</strong> — strong light against darkness, or dark against light.</div></div>
+      <div class="rule-item reveal"><div class="rule-num">4</div><div class="rule-text"><strong>Warm accent</strong> — even in monochrome: amber, vermillion, pink, or gold.</div></div>
+      <div class="rule-item reveal"><div class="rule-num">5</div><div class="rule-text"><strong>Favor diagonals</strong> — avoid flat horizontal compositions.</div></div>
+      <div class="rule-item reveal"><div class="rule-num">6</div><div class="rule-text"><strong>Discoverable detail</strong> — reward the second look with secondary subjects.</div></div>
+      <div class="rule-item reveal" style="grid-column: span 2;"><div class="rule-num">7</div><div class="rule-text"><strong>Painterly scene language</strong> — "like ink drops", "pale threads", "like shattered porcelain". End with "Chinese ink painting." but never use photographic language.</div></div>
+    </div>
+  </div>
+  <div class="slide-number">08</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 9: THE 5 STYLE CATEGORIES
+     =================================================== -->
+<section class="slide" data-slide="8">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">5 Style Categories</h2>
+    <table class="table-simple reveal" style="transition-delay: 0.2s;">
+      <thead>
+        <tr><th>Style</th><th>Palette</th><th>Best for</th></tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td class="style-name"><span class="style-dot" style="background: #2a2a3a;"></span>atmospheric-night</td>
+          <td>Dark, strong light in darkness</td>
+          <td>Grief, isolation, winter, fear</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="style-dot" style="background: #5a7a5a;"></span>ink-landscape</td>
+          <td>Classic shanshui, depth corridors</td>
+          <td>Nature, seasons, water, agriculture</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="style-dot" style="background: #8a7aa0;"></span>figures-in-mist</td>
+          <td>Ink wash + soft watercolor tints</td>
+          <td>Marriages, courts, travelers</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="style-dot" style="background: #b87a3a;"></span>bold-action</td>
+          <td>Dynamic diagonals, warm ochre</td>
+          <td>Animals, combat, hunts, storms</td>
+        </tr>
+        <tr>
+          <td class="style-name"><span class="style-dot" style="background: #1a2a4a;"></span>cosmic-night</td>
+          <td>Deep blue/black + gold/white</td>
+          <td>Stars, heaven, mythical beasts</td>
+        </tr>
+      </tbody>
+    </table>
+    <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.5rem, 1vh, 0.8rem);">Abstract verses (fortune/misfortune) fall back to tone: ominous &rarr; atmospheric-night, auspicious &rarr; ink-landscape</p>
+  </div>
+  <div class="slide-number">09</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 10: GALLERY — PROOF BATCH
+     =================================================== -->
+<section class="slide" data-slide="9">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal">The Results</h2>
+    <p class="reveal text-muted" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">Proof batch across all five styles — fal-ai/z-image/turbo, square_hd (1024&times;1024)</p>
+    <div class="image-grid cols-5 reveal-scale" style="transition-delay: 0.3s; max-width: min(90vw, 900px); margin: 0 auto;">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-dragon-gate.webp" alt="Dragon Gate — ink-landscape">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-sleepless.webp" alt="Sleepless — atmospheric-night">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-tiger.webp" alt="Tiger — bold-action">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-phoenix-qilin.webp" alt="Phoenix — cosmic-night">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-procession.webp" alt="Procession — figures-in-mist">
+    </div>
+    <div class="reveal" style="display: flex; justify-content: center; gap: clamp(1rem, 3vw, 3rem); margin-top: clamp(0.4rem, 1vh, 0.8rem); font-size: var(--small-size); color: var(--muted);">
+      <span>ink-landscape</span>
+      <span>atmospheric-night</span>
+      <span>bold-action</span>
+      <span>cosmic-night</span>
+      <span>figures-in-mist</span>
+    </div>
+  </div>
+  <div class="slide-number">10</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 11: REFERENCE PROMPT ANATOMY
+     =================================================== -->
+<section class="slide" data-slide="10">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Anatomy of a Prompt</h2>
+    <div class="two-col">
+      <div class="reveal-left" style="transition-delay: 0.2s;">
+        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round1-winner-crows.webp" alt="Crows — atmospheric-night" style="width: 100%; border-radius: clamp(4px, 0.5vw, 8px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-height: min(45vh, 360px); object-fit: cover;">
+      </div>
+      <div>
+        <div class="tag reveal" style="margin-bottom: clamp(0.4rem, 1vh, 0.8rem);">atmospheric-night</div>
+        <div class="quote-block reveal" style="font-size: clamp(0.8rem, 1.3vw, 1.05rem); transition-delay: 0.3s;">
+          A frozen river valley under a dark sky split by driving snow. Bare willow branches bend under crusts of ice <span class="text-clay">like white brushstrokes</span>. A lone figure hunches against the north wind on a stone bridge. Beyond, snow-covered hills vanish into the storm. The figure's lantern is <span class="text-clay">a single point of amber warmth</span> swallowed by the gray. Chinese ink painting.
+        </div>
+        <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.4rem, 0.8vh, 0.6rem); transition-delay: 0.4s;">57 words &middot; Frame &rarr; Depth &rarr; Contrast &rarr; Warm accent &rarr; Painterly language</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">11</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 12: ABSTRACT VERSE PIPELINE
+     =================================================== -->
+<section class="slide" data-slide="11">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">But What About Abstract Verses?</h2>
+    <p class="reveal" style="margin-bottom: clamp(0.4rem, 1vh, 0.7rem);">31% of verses have <em>no concrete imagery at all</em>. The skill maps abstract fortune to concrete scene:</p>
+    <div class="pipeline reveal-scale" style="transition-delay: 0.3s;">
+      <div class="pipeline-step">
+        <div class="pipeline-step-label">Verse (1-14)</div>
+        <p class="font-cjk" style="font-size: clamp(0.8rem, 1.3vw, 1.05rem); line-height: 1.6;">上帝之生，<br>福祐日成。<br>脩德行惠，<br>樂安且寧。</p>
+        <p class="text-muted" style="font-size: clamp(0.8rem, 1.2vw, 1rem); font-style: italic; margin-top: auto;">乾 &rarr; 大有<br>"Born of the Supreme Lord, blessings ripen daily. Cultivate virtue, bestow grace."</p>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="pipeline-step-label">Skill Mapping</div>
+        <p style="font-size: clamp(0.8rem, 1.3vw, 1.1rem); line-height: 1.5;">
+          <strong>Tone:</strong> <span class="pipeline-highlight">auspicious, heavenly</span><br>
+          <strong>Style:</strong> <span class="pipeline-highlight">cosmic-night</span><br>
+          <strong>Subjects:</strong> <span class="pipeline-highlight">celestial light, altar, offerings</span><br>
+          <strong>Foreground:</strong> incense smoke spiraling upward<br>
+          <strong>Midground:</strong> altar with bronze vessels, jade discs on crimson silk<br>
+          <strong>Background:</strong> terraced gardens descending into mist<br>
+          <strong>Warm accent:</strong> golden rays, deep vermillion cloth<br>
+          <strong>Frame:</strong> palace courtyard walls, parting clouds
+        </p>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step">
+        <div class="pipeline-step-label">Generated Prompt</div>
+        <p style="font-size: clamp(0.8rem, 1.3vw, 1.1rem); line-height: 1.5; font-style: italic;">
+          Celestial light pours through parting clouds onto a palace courtyard where an altar stands laden with offerings. <span class="pipeline-highlight">Golden rays strike bronze vessels</span> and jade discs arranged on crimson silk. Foreground, <span class="pipeline-highlight">incense smoke spirals upward like ink in water</span>. Beyond the palace walls, terraced gardens descend into soft mist. The altar cloth <span class="pipeline-highlight">glows deep vermillion</span> beneath the heavenly illumination. Chinese ink painting.
+        </p>
+        <p class="text-muted" style="font-size: clamp(0.75rem, 1.1vw, 0.95rem); margin-top: auto;">54 words &middot; All 7 rules applied</p>
+      </div>
+      <div class="pipeline-arrow">&rarr;</div>
+      <div class="pipeline-step" style="max-width: 22%;">
+        <div class="pipeline-step-label">Result</div>
+        <img src="https://cdn.sixlines.online/yilin-inkbrush/1-14.webp" alt="1-14: Celestial altar — cosmic-night" style="width: 100%; border-radius: clamp(3px, 0.4vw, 6px); box-shadow: 0 2px 10px rgba(0,0,0,0.08); max-height: min(30vh, 240px); object-fit: cover;">
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">12</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 13: ROUND 1 — STYLE AS SUFFIX
+     =================================================== -->
+<section class="slide" data-slide="12">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal" style="margin-bottom: clamp(0.2rem, 0.5vh, 0.4rem);">Round 1: Style as Suffix</h2>
+    <p class="reveal font-mono" style="font-size: clamp(0.75rem, 1.3vw, 1.1rem); color: var(--muted); margin-bottom: clamp(0.3rem, 1vh, 0.6rem);">"…overflowing well, water branching… <span class="text-clay">Ink wash with soft watercolor tints.</span>"</p>
+    <div class="reveal-scale" style="transition-delay: 0.2s; margin: 0 auto;">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round1-well.webp" alt="Round 1 — flat, lifeless ink wash well" style="max-height: min(58vh, 460px); border-radius: clamp(6px, 0.8vw, 12px); box-shadow: 0 6px 30px rgba(0,0,0,0.12); object-fit: contain;">
+    </div>
+    <p class="reveal" style="font-size: clamp(0.9rem, 1.6vw, 1.25rem); color: var(--muted); margin-top: clamp(0.4rem, 1vh, 0.8rem);">Flat. Lifeless. <span class="text-clay" style="font-weight: 600;">The model treated "ink wash" as a filter, not a language.</span></p>
+  </div>
+  <div class="slide-number">13</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 14: ROUND 2A — DIFFERENT STYLE, SAME PROBLEM
+     =================================================== -->
+<section class="slide" data-slide="13">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal" style="margin-bottom: clamp(0.2rem, 0.5vh, 0.4rem);">Round 2: Try a Different Style?</h2>
+    <p class="reveal font-mono" style="font-size: clamp(0.75rem, 1.3vw, 1.1rem); color: var(--muted); margin-bottom: clamp(0.3rem, 1vh, 0.6rem);">"…overflowing well… <span class="text-clay">Wabi-sabi aesthetic, muted tones.</span>"</p>
+    <div class="reveal-scale" style="transition-delay: 0.2s; margin: 0 auto;">
+      <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/round2-wabisabi.webp" alt="Round 2 wabi-sabi — a photograph, not ink painting" style="max-height: min(58vh, 460px); border-radius: clamp(6px, 0.8vw, 12px); box-shadow: 0 6px 30px rgba(0,0,0,0.12); object-fit: contain;">
+    </div>
+    <p class="reveal" style="font-size: clamp(0.9rem, 1.6vw, 1.25rem); color: var(--muted); margin-top: clamp(0.4rem, 1vh, 0.8rem);"><span class="text-clay" style="font-weight: 600;">Not even an ink painting.</span> It's a photograph. The suffix leaked into the medium.</p>
+  </div>
+  <div class="slide-number">14</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 15: THE BREAKTHROUGH — LANGUAGE IS STYLE
+     =================================================== -->
+<section class="slide" data-slide="14">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);">The Breakthrough: Language <em>Is</em> Style</h2>
+    <p class="reveal" style="font-size: clamp(0.8rem, 1.3vw, 1.05rem); color: var(--muted); margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">Stop appending style. <span class="text-clay" style="font-weight: 600;">Write the prompt as if it were the caption under the painting.</span></p>
+    <div class="reveal" style="max-width: min(85vw, 800px); margin: 0 auto; transition-delay: 0.2s;">
+      <div class="quote-block" style="font-size: clamp(0.95rem, 1.7vw, 1.35rem); line-height: 1.55; border-left-width: 4px;">
+        An overflowing well sends water spilling in four branching streams across barren hillside, <span class="text-clay">carving shallow channels in the earth</span>. Foreground, the well mouth brims over, <span class="text-clay">water sheeting across worn stone</span>. Midground, the streams diverge eastward, spreading thin over sun-baked ground, nourishing sparse grasses. Beyond, <span class="text-clay">desolate brown hills roll to a hazy horizon</span>, the water lost among them. <span class="text-clay">Amber reflections glint</span> where the shallow streams catch the last daylight. Chinese ink painting.
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay: 0.4s; margin-top: clamp(0.6rem, 1.5vh, 1rem); display: flex; flex-wrap: wrap; justify-content: center; gap: clamp(0.3rem, 0.6vw, 0.5rem);">
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Frame</span>
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Depth</span>
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Contrast</span>
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Warm accent</span>
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Diagonals</span>
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Detail</span>
+      <span style="font-size: var(--small-size); background: var(--clay-light); color: var(--clay); padding: 4px 12px; border-radius: 3px; font-weight: 500;">&#10003; Painterly</span>
+    </div>
+  </div>
+  <div class="slide-number">15</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 16: THE RESULT — SAME VERSE, ALL 7 RULES
+     =================================================== -->
+<section class="slide" data-slide="15">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);"><span class="text-clay">Same verse. All 7 rules.</span></h2>
+    <div class="reveal-scale" style="transition-delay: 0.15s; margin: 0 auto;">
+      <img src="https://cdn.sixlines.online/yilin-inkbrush/48-59.webp" alt="Production result — 48-59 overflowing well, ink-landscape" style="max-height: min(68vh, 540px); border-radius: clamp(6px, 0.8vw, 12px); box-shadow: 0 8px 40px rgba(0,0,0,0.15); object-fit: contain;">
+    </div>
+    <p class="reveal text-muted" style="font-size: clamp(0.75rem, 1.2vw, 1rem); margin-top: clamp(0.4rem, 1vh, 0.8rem);">key 48-59 &middot; <span class="font-cjk">井 &rarr; 渙</span> &middot; ink-landscape &middot; 60 words &middot; fal-ai/z-image/turbo</p>
+  </div>
+  <div class="slide-number">16</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 17: CONTENT SAFETY
+     =================================================== -->
+<section class="slide" data-slide="16">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Content Safety: 52 of 4,096 Failed</h2>
+    <p class="reveal" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">Ancient texts contain warfare, predation, suffering. Image APIs reject explicit harm. The solution: <em>depict through atmosphere and aftermath, never the act itself.</em></p>
+    <table class="table-simple reveal" style="transition-delay: 0.3s; max-width: 750px;">
+      <thead>
+        <tr><th>Blocked Concept</th><th>Safe Alternative</th></tr>
+      </thead>
+      <tbody>
+        <tr><td>Blood on surfaces</td><td>"Dark stains like spilled ink"</td></tr>
+        <tr><td>Fallen bodies</td><td>"Abandoned armor on bare ground", "an empty seat at a banquet table"</td></tr>
+        <tr><td>Animal predation</td><td>"Scattered feathers on snow", "a wolf's shadow crossing moonlit ground"</td></tr>
+        <tr><td>Dismemberment</td><td>"A shattered puppet", "a split tree trunk"</td></tr>
+      </tbody>
+    </table>
+    <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.5rem, 1vh, 0.8rem); transition-delay: 0.4s;">The constraint forced better art — absence evokes more dread than depiction.</p>
+  </div>
+  <div class="slide-number">17</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 18: FROM DISCOVERY TO SKILL
+     =================================================== -->
+<section class="slide" data-slide="17">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <div class="tag reveal" style="margin-bottom: clamp(0.8rem, 2vh, 1.5rem);">Part 2</div>
+    <h2 class="reveal" style="font-size: clamp(1.8rem, 4.5vw, 3.5rem); max-width: 750px;">From Discovery to Skill</h2>
+    <p class="reveal" style="max-width: 600px; text-align: center; margin: clamp(0.5rem, 1.5vh, 1rem) auto 0;">Four rounds of testing, 30+ comparison images, and 4,096 production runs distilled into a single reusable document — a <strong>skill</strong>.</p>
+    <div class="reveal" style="display: flex; gap: clamp(1.5rem, 4vw, 4rem); justify-content: center; margin-top: clamp(1rem, 2.5vh, 2rem); flex-wrap: wrap;">
+      <div style="text-align: center;">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">5</div>
+        <div class="stat-label">style categories</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">7</div>
+        <div class="stat-label">composition rules</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">8</div>
+        <div class="stat-label">reference prompts</div>
+      </div>
+      <div style="text-align: center;">
+        <div class="stat-number" style="font-size: clamp(1.5rem, 3vw, 2.5rem);">7</div>
+        <div class="stat-label">safety substitutions</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">18</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 19: WHAT IS A SKILL?
+     =================================================== -->
+<section class="slide" data-slide="18">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">What Is a Skill?</h2>
+    <p class="reveal" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">A <strong>SKILL.md</strong> file with YAML frontmatter + instructions. No runtime code — pure prompt engineering that encodes domain expertise.</p>
+    <div class="code-block reveal" style="transition-delay: 0.3s; max-width: 700px;">---
+name: verse-to-prompt
+description: Convert classical Chinese verse into image prompts
+user-invocable: true
+argument-hint: [paste your verse here]
+---
+
+# Verse &rarr; Image Prompt
+
+Given a verse, produce:
+1. A <span class="accent">style classification</span> with rationale
+2. A <span class="accent">50-60 word English prompt</span> ending "Chinese ink painting."
+3. A <span class="accent">faithful English translation</span>
+
+## The 7 Composition Rules (MANDATORY)
+...</div>
+    <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.3rem, 0.8vh, 0.5rem); transition-delay: 0.4s;">A skill carries pre-tested expertise. The agent doesn't rediscover principles — it inherits them.</p>
+  </div>
+  <div class="slide-number">19</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 20: PLUGINS VS SKILLS
+     =================================================== -->
+<section class="slide" data-slide="19">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Plugins vs Skills</h2>
+    <div class="two-col" style="margin-top: clamp(0.3rem, 1vh, 0.5rem);">
+      <div class="reveal-left" style="transition-delay: 0.2s; border: 1px solid var(--border); border-radius: clamp(4px, 0.5vw, 8px); padding: clamp(0.8rem, 1.5vw, 1.2rem); background: var(--tone);">
+        <h3 style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);"><span class="text-clay">Plugin</span> = Package</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: clamp(0.2rem, 0.5vh, 0.4rem);">
+          <li style="font-size: var(--body-size);">&#9632; A Git repository with a manifest</li>
+          <li style="font-size: var(--body-size);">&#9632; Contains 1+ skills, agents, hooks</li>
+          <li style="font-size: var(--body-size);">&#9632; Installed via <span class="font-mono">/plugin install</span></li>
+          <li style="font-size: var(--body-size);">&#9632; Versioned, shareable, discoverable</li>
+        </ul>
+        <div class="code-block" style="margin-top: clamp(0.3rem, 0.8vh, 0.5rem); font-size: clamp(0.8rem, 1.3vw, 1.1rem);">.claude-plugin/
+  plugin.json    <span class="comment"># manifest</span>
+skills/
+  verse-to-prompt/SKILL.md
+  blakean-scene/SKILL.md
+  ...</div>
+      </div>
+      <div class="reveal" style="transition-delay: 0.3s; border: 1px solid var(--border); border-radius: clamp(4px, 0.5vw, 8px); padding: clamp(0.8rem, 1.5vw, 1.2rem);">
+        <h3 style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);">Skill = Behavior</h3>
+        <ul style="list-style: none; display: flex; flex-direction: column; gap: clamp(0.2rem, 0.5vh, 0.4rem);">
+          <li style="font-size: var(--body-size);">&#9632; A single SKILL.md file</li>
+          <li style="font-size: var(--body-size);">&#9632; Defines one specific capability</li>
+          <li style="font-size: var(--body-size);">&#9632; Invoked via <span class="font-mono">/skill-name</span></li>
+          <li style="font-size: var(--body-size);">&#9632; No code — instructions only</li>
+        </ul>
+        <div class="code-block" style="margin-top: clamp(0.3rem, 0.8vh, 0.5rem); font-size: clamp(0.8rem, 1.3vw, 1.1rem);"><span class="comment"># Usage:</span>
+/verse-to-prompt 白駒食場，一躍而去。
+
+<span class="accent">Style:</span> ink-landscape
+<span class="accent">Prompt:</span> A white colt grazes in a
+walled courtyard...</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">20</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 21: THE INKSTONE PLUGIN
+     =================================================== -->
+<section class="slide" data-slide="20">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">The Inkstone Plugin &middot; <span class="font-cjk">硯台</span></h2>
+    <p class="reveal text-muted" style="font-size: var(--small-size); margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">8 skills across creative, design, and productivity workflows</p>
+    <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(min(100%, 200px), 1fr)); gap: clamp(0.4rem, 0.8vw, 0.6rem);">
+      <div class="skill-card reveal"><h4>verse-to-prompt</h4><p>Classical verse &rarr; ink painting prompts (7 rules, 5 styles)</p></div>
+      <div class="skill-card reveal"><h4>image-to-scene</h4><p>Ink paintings &rarr; video motion prompts (Seedance 2.0)</p></div>
+      <div class="skill-card reveal"><h4>create-explanation</h4><p>Bilingual scholarly explanations of oracular verse</p></div>
+      <div class="skill-card reveal"><h4>blakean-scene</h4><p>Abstract concepts &rarr; 240-word Blakean embodied scenes</p></div>
+      <div class="skill-card reveal"><h4>ui-ux-architect</h4><p>Design audit &middot; 13 dimensions &middot; Jobs/Ive philosophy</p></div>
+      <div class="skill-card reveal"><h4>media-kit</h4><p>Speaker bio writing, photo processing, page generation</p></div>
+      <div class="skill-card reveal"><h4>arxiv-search</h4><p>Query arXiv API by topic, author, or paper ID</p></div>
+      <div class="skill-card reveal"><h4>nextjs-i18n-seo</h4><p>Fix the 307&rarr;301 redirect bug in Next.js App Router i18n</p></div>
+    </div>
+  </div>
+  <div class="slide-number">21</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 22: BEYOND CLAUDE CODE
+     =================================================== -->
+<section class="slide" data-slide="21">
+  <div class="paper-texture"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content">
+    <h2 class="reveal">Beyond Claude Code</h2>
+    <p class="reveal" style="max-width: 700px; margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">The skill format is spreading. <strong>CLAUDE.md</strong> files — project-level instructions — are already supported across tools:</p>
+    <div style="display: flex; flex-direction: column; gap: clamp(0.4rem, 0.8vh, 0.6rem); max-width: 700px;">
+      <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.6rem, 1vw, 1rem); background: var(--tone); border-radius: 4px;">
+        <span style="font-size: clamp(1rem, 2vw, 1.5rem); min-width: 2em; text-align: center;">&#9654;</span>
+        <div>
+          <strong>Claude Code</strong> — full plugin system with SKILL.md, agents, hooks, MCP servers
+          <span class="text-muted" style="font-size: var(--small-size);"> &middot; Anthropic</span>
+        </div>
+      </div>
+      <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.6rem, 1vw, 1rem); background: var(--tone); border-radius: 4px;">
+        <span style="font-size: clamp(1rem, 2vw, 1.5rem); min-width: 2em; text-align: center;">&#9654;</span>
+        <div>
+          <strong>OpenCode</strong> — reads CLAUDE.md for project context, supports skill-style instructions
+          <span class="text-muted" style="font-size: var(--small-size);"> &middot; open source &middot; see Jules' talk today!</span>
+        </div>
+      </div>
+      <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.6rem, 1vw, 1rem); background: var(--tone); border-radius: 4px;">
+        <span style="font-size: clamp(1rem, 2vw, 1.5rem); min-width: 2em; text-align: center;">&#9654;</span>
+        <div>
+          <strong>Gemini CLI</strong> — has its own skill/conductor pattern
+          <span class="text-muted" style="font-size: var(--small-size);"> &middot; Google &middot; see Connie's talk today!</span>
+        </div>
+      </div>
+    </div>
+    <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 700px;">The underlying idea is tool-agnostic: encode domain expertise into structured documents that agents consume at runtime. No code required — just well-written instructions.</p>
+  </div>
+  <div class="slide-number">22</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 23: KEY TAKEAWAYS
+     =================================================== -->
+<section class="slide" data-slide="22">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="ink-wash-bl"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal">Takeaways</h2>
+    <div style="max-width: 650px; text-align: left; margin: 0 auto; display: flex; flex-direction: column; gap: clamp(0.6rem, 1.5vh, 1.2rem);">
+      <div class="reveal" style="border-left: 3px solid var(--clay); padding-left: clamp(0.6rem, 1vw, 1rem);">
+        <h3>Style is language, not instruction</h3>
+        <p class="text-muted" style="font-size: var(--small-size);">Write in the register you want. The model mirrors your language, not your metadata.</p>
+      </div>
+      <div class="reveal" style="border-left: 3px solid var(--gold); padding-left: clamp(0.6rem, 1vw, 1rem);">
+        <h3>Constraints produce better art</h3>
+        <p class="text-muted" style="font-size: var(--small-size);">Content safety rules forced creative solutions. Word limits demanded precision. Both improved output.</p>
+      </div>
+      <div class="reveal" style="border-left: 3px solid var(--muted); padding-left: clamp(0.6rem, 1vw, 1rem);">
+        <h3>Skills encode taste</h3>
+        <p class="text-muted" style="font-size: var(--small-size);">Domain knowledge distilled into a document outperforms generic prompting every time.</p>
+      </div>
+      <div class="reveal" style="border-left: 3px solid var(--border); padding-left: clamp(0.6rem, 1vw, 1rem);">
+        <h3>Plugins distribute expertise</h3>
+        <p class="text-muted" style="font-size: var(--small-size);">Open-source your aesthetic judgment. Let others invoke what took you months to learn.</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">23</div>
+</section>
+
+<!-- ===================================================
+     SLIDE 24: THANK YOU
+     =================================================== -->
+<section class="slide title-slide" data-slide="23">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="ink-wash-bl"></div>
+  <div class="slide-content">
+    <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2rem);">硯</div>
+    <h1 class="reveal" style="font-size: clamp(2rem, 5vw, 4rem);">多謝 &middot; Thank You</h1>
+    <div class="divider reveal"></div>
+    <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 4rem); align-items: center; justify-content: center; flex-wrap: wrap;">
+      <div style="display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vh, 0.5rem); font-size: var(--body-size);">
+        <p><strong>App:</strong> <span class="text-clay">sixlines.online</span></p>
+        <p><strong>Plugin:</strong> <span class="font-mono" style="font-size: var(--small-size);">/plugin marketplace add augchan42/inkstone</span></p>
+        <p><strong>Blog:</strong> <span class="text-clay">augustinchan.dev</span></p>
+        <p><strong>X:</strong> <span class="text-clay">@aug_digitalrain</span></p>
+        <p class="text-muted" style="font-size: var(--small-size);">aug@digitalrain.studio</p>
+      </div>
+      <div style="text-align: center;">
+        <img src="qr-linkedin.png" alt="LinkedIn QR" style="width: clamp(100px, 14vw, 180px); border-radius: clamp(4px, 0.5vw, 8px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.4em;">Connect on LinkedIn</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number">24</div>
+</section>
+
+<!-- ===========================================
+     JAVASCRIPT
+     =========================================== -->
+<script>
+/* === SLIDE PRESENTATION CONTROLLER === */
+class SlidePresentation {
+  constructor() {
+    this.slides = document.querySelectorAll('.slide');
+    this.currentSlide = 0;
+    this.isScrolling = false;
+    this.progressBar = document.getElementById('progressBar');
+    this.navDotsContainer = document.getElementById('navDots');
+
+    this.setupIntersectionObserver();
+    this.setupKeyboardNav();
+    this.setupTouchNav();
+    this.setupWheelNav();
+    this.setupProgressBar();
+    this.setupNavDots();
+
+    this.slides[0].classList.add('visible');
+  }
+
+  setupIntersectionObserver() {
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(entry => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('visible');
+          const idx = Array.from(this.slides).indexOf(entry.target);
+          if (idx >= 0) {
+            this.currentSlide = idx;
+            this.updateProgressBar();
+            this.updateNavDots();
+          }
+        }
+      });
+    }, { threshold: 0.5 });
+
+    this.slides.forEach(slide => observer.observe(slide));
+  }
+
+  setupKeyboardNav() {
+    document.addEventListener('keydown', (e) => {
+      if (e.target.getAttribute('contenteditable')) return;
+      switch(e.key) {
+        case 'ArrowDown': case 'ArrowRight': case ' ': case 'PageDown':
+          e.preventDefault(); this.goToSlide(this.currentSlide + 1); break;
+        case 'ArrowUp': case 'ArrowLeft': case 'PageUp':
+          e.preventDefault(); this.goToSlide(this.currentSlide - 1); break;
+        case 'Home': e.preventDefault(); this.goToSlide(0); break;
+        case 'End': e.preventDefault(); this.goToSlide(this.slides.length - 1); break;
+      }
+    });
+  }
+
+  setupTouchNav() {
+    let startY = 0;
+    document.addEventListener('touchstart', (e) => { startY = e.touches[0].clientY; }, { passive: true });
+    document.addEventListener('touchend', (e) => {
+      const dy = startY - e.changedTouches[0].clientY;
+      if (Math.abs(dy) > 50) {
+        this.goToSlide(this.currentSlide + (dy > 0 ? 1 : -1));
+      }
+    }, { passive: true });
+  }
+
+  setupWheelNav() {
+    let timeout;
+    document.addEventListener('wheel', (e) => {
+      if (this.isScrolling) return;
+      clearTimeout(timeout);
+      timeout = setTimeout(() => {
+        if (Math.abs(e.deltaY) > 30) {
+          this.isScrolling = true;
+          this.goToSlide(this.currentSlide + (e.deltaY > 0 ? 1 : -1));
+          setTimeout(() => { this.isScrolling = false; }, 800);
+        }
+      }, 50);
+    }, { passive: true });
+  }
+
+  goToSlide(idx) {
+    idx = Math.max(0, Math.min(idx, this.slides.length - 1));
+    this.slides[idx].scrollIntoView({ behavior: 'smooth' });
+    this.currentSlide = idx;
+    this.updateProgressBar();
+    this.updateNavDots();
+  }
+
+  setupProgressBar() { this.updateProgressBar(); }
+
+  updateProgressBar() {
+    const pct = ((this.currentSlide + 1) / this.slides.length) * 100;
+    this.progressBar.style.width = pct + '%';
+  }
+
+  setupNavDots() {
+    this.navDotsContainer.innerHTML = '';
+    this.slides.forEach((_, i) => {
+      const dot = document.createElement('button');
+      dot.className = 'nav-dot' + (i === 0 ? ' active' : '');
+      dot.setAttribute('aria-label', 'Go to slide ' + (i + 1));
+      dot.addEventListener('click', () => this.goToSlide(i));
+      this.navDotsContainer.appendChild(dot);
+    });
+  }
+
+  updateNavDots() {
+    const dots = this.navDotsContainer.querySelectorAll('.nav-dot');
+    dots.forEach((dot, i) => {
+      dot.classList.toggle('active', i === this.currentSlide);
+    });
+  }
+}
+
+/* === INLINE EDITOR === */
+class InlineEditor {
+  constructor() {
+    this.isActive = false;
+    this.storageKey = 'inkstone-talk-edits';
+    this.setupToggle();
+    this.restoreEdits();
+  }
+
+  setupToggle() {
+    const hotzone = document.getElementById('editHotzone');
+    const toggle = document.getElementById('editToggle');
+    let hideTimeout = null;
+
+    toggle.addEventListener('click', () => this.toggleEditMode());
+
+    hotzone.addEventListener('mouseenter', () => {
+      clearTimeout(hideTimeout);
+      toggle.classList.add('show');
+    });
+    hotzone.addEventListener('mouseleave', () => {
+      hideTimeout = setTimeout(() => {
+        if (!this.isActive) toggle.classList.remove('show');
+      }, 400);
+    });
+    toggle.addEventListener('mouseenter', () => clearTimeout(hideTimeout));
+    toggle.addEventListener('mouseleave', () => {
+      hideTimeout = setTimeout(() => {
+        if (!this.isActive) toggle.classList.remove('show');
+      }, 400);
+    });
+
+    hotzone.addEventListener('click', () => this.toggleEditMode());
+
+    document.addEventListener('keydown', (e) => {
+      if ((e.key === 'e' || e.key === 'E') && !e.target.getAttribute('contenteditable')) {
+        this.toggleEditMode();
+      }
+      if (e.ctrlKey && e.key === 's' && this.isActive) {
+        e.preventDefault();
+        this.saveEdits();
+        this.exportFile();
+      }
+    });
+  }
+
+  toggleEditMode() {
+    this.isActive = !this.isActive;
+    const toggle = document.getElementById('editToggle');
+    const banner = document.getElementById('editBanner');
+
+    if (this.isActive) {
+      document.body.classList.add('edit-active');
+      toggle.classList.add('active');
+      toggle.innerHTML = '&#10003; Done';
+      banner.classList.add('active');
+      document.querySelectorAll('h1, h2, h3, h4, p, li, span, td, .stat-number, .stat-label, .tag, .quote-block').forEach(el => {
+        if (!el.closest('.nav-dots') && !el.closest('.edit-banner') && !el.closest('.code-block') && !el.closest('.edit-toggle')) {
+          el.setAttribute('contenteditable', 'true');
+        }
+      });
+    } else {
+      document.body.classList.remove('edit-active');
+      toggle.classList.remove('active');
+      toggle.innerHTML = '&#9998; Edit';
+      banner.classList.remove('active');
+      document.querySelectorAll('[contenteditable]').forEach(el => el.removeAttribute('contenteditable'));
+      this.saveEdits();
+    }
+  }
+
+  saveEdits() {
+    const data = {};
+    document.querySelectorAll('.slide').forEach((slide, i) => {
+      data['slide-' + i] = slide.innerHTML;
+    });
+    localStorage.setItem(this.storageKey, JSON.stringify(data));
+  }
+
+  restoreEdits() {
+    const data = JSON.parse(localStorage.getItem(this.storageKey) || 'null');
+    if (!data) return;
+    document.querySelectorAll('.slide').forEach((slide, i) => {
+      if (data['slide-' + i]) slide.innerHTML = data['slide-' + i];
+    });
+  }
+
+  exportFile() {
+    const editableEls = Array.from(document.querySelectorAll('[contenteditable]'));
+    editableEls.forEach(el => el.removeAttribute('contenteditable'));
+    document.body.classList.remove('edit-active');
+
+    const editToggle = document.getElementById('editToggle');
+    const editBanner = document.getElementById('editBanner');
+    editToggle?.classList.remove('active', 'show');
+    editBanner?.classList.remove('active');
+
+    const html = '<!DOCTYPE html>\n' + document.documentElement.outerHTML;
+
+    document.body.classList.add('edit-active');
+    editableEls.forEach(el => el.setAttribute('contenteditable', 'true'));
+    editToggle?.classList.add('active');
+    editBanner?.classList.add('active');
+
+    const blob = new Blob([html], { type: 'text/html' });
+    const a = document.createElement('a');
+    a.href = URL.createObjectURL(blob);
+    a.download = 'hkoscon-2026-inkstone-talk.html';
+    a.click();
+    URL.revokeObjectURL(a.href);
+  }
+}
+
+const presentation = new SlidePresentation();
+const editor = new InlineEditor();
+</script>
+</body>
+</html>
