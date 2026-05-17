@@ -802,7 +802,7 @@ body.edit-active [contenteditable] {
           <div class="stat-label">Jiaoshi Yilin</div>
         </div>
       </div>
-      <p class="reveal text-muted" style="font-size: var(--body-size);">Built for <strong>SixLines.online</strong> — I-Ching reference &amp; Chinese almanac for iOS</p>
+      <p class="reveal text-muted" style="font-size: var(--body-size);">Built for <strong>SixLines.online</strong> — I-Ching reference &amp; Chinese almanac <svg style="display:inline-block;vertical-align:-0.1em;width:0.85em;height:0.85em;" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg> <svg style="display:inline-block;vertical-align:-0.1em;width:0.85em;height:0.85em;" viewBox="0 0 576 512" fill="currentColor"><path d="M420.55 301.93a24 24 0 1 1 24-24 24 24 0 0 1-24 24m-265.1 0a24 24 0 1 1 24-24 24 24 0 0 1-24 24m273.7-144.48l47.94-83a10 10 0 1 0-17.27-10l-48.54 84.07a301 301 0 0 0-246.56 0L116.18 64.45a10 10 0 1 0-17.27 10l47.94 83C64.53 202.22 8.24 285.55 0 384h576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg></p>
     </div>
   </div>
   <div class="slide-number"></div>
@@ -1255,6 +1255,7 @@ walled courtyard...</div>
     </div>
     <div class="reveal" style="margin-top: clamp(0.4rem, 1vh, 0.6rem); display: flex; flex-direction: column; gap: clamp(0.25rem, 0.6vh, 0.4rem); max-width: 820px;">
       <p style="font-size: var(--small-size);"><strong>Claude Code:</strong> <span class="font-mono">/plugin marketplace add augchan42/inkstone</span></p>
+      <p style="font-size: var(--small-size);"><strong>GitHub:</strong> <span class="text-clay">github.com/augchan42/inkstone</span></p>
       <p class="text-muted" style="font-size: var(--small-size);"><strong>Cursor:</strong> Same skills in Agent chat &mdash; ask naturally (e.g. <span class="font-mono">&quot;use verse-to-prompt on &hellip;&quot;</span>) or copy to <span class="font-mono">.cursor/skills/</span>. No <span class="font-mono">/plugin</span> commands.</p>
     </div>
   </div>
@@ -1294,33 +1295,27 @@ walled courtyard...</div>
 <section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
-  <div class="slide-content">
+  <div class="slide-content centered">
     <h2 class="reveal">Beyond Claude Code</h2>
-    <p class="reveal" style="max-width: 700px; margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">The idea is spreading. Several tools already support structured agent instructions:</p>
-    <div style="display: flex; flex-direction: column; gap: clamp(0.4rem, 0.8vh, 0.6rem); max-width: 700px;">
-      <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.6rem, 1vw, 1rem); background: var(--tone); border-radius: 4px;">
-        <span style="font-size: clamp(1rem, 2vw, 1.5rem); min-width: 2em; text-align: center;">&#9654;</span>
-        <div>
-          <strong>Claude Code</strong> — full plugin system with SKILL.md, agents, hooks, MCP servers
-          <span class="text-muted" style="font-size: var(--small-size);"> &middot; Anthropic</span>
-        </div>
+    <p class="reveal text-muted" style="margin-bottom: clamp(1rem, 2.5vh, 2rem);">The idea is spreading. Several tools already support structured agent instructions:</p>
+    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: clamp(1rem, 2vw, 2rem); width: 100%;">
+      <div class="reveal" style="background: var(--tone); border-radius: clamp(6px, 0.8vw, 12px); padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 1.5vw, 1.5rem); border-top: 3px solid var(--clay);">
+        <h3 style="font-size: var(--h3-size); margin-bottom: 0.4em;">GitHub Copilot</h3>
+        <p style="font-size: var(--body-size); line-height: 1.5;">Agent mode reads SKILL.md from <span class="font-mono">.github/skills/</span> or <span class="font-mono">.agents/skills/</span></p>
+        <p class="text-muted" style="font-size: var(--small-size); margin-top: 0.6em;">VS Code &middot; CLI &middot; cloud agent</p>
       </div>
-      <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.6rem, 1vw, 1rem); background: var(--tone); border-radius: 4px;">
-        <span style="font-size: clamp(1rem, 2vw, 1.5rem); min-width: 2em; text-align: center;">&#9654;</span>
-        <div>
-          <strong>OpenCode</strong> — reads CLAUDE.md for project context, supports skill-style instructions
-          <span class="text-muted" style="font-size: var(--small-size);"> &middot; open source &middot; see Jules' talk today!</span>
-        </div>
+      <div class="reveal" style="background: var(--tone); border-radius: clamp(6px, 0.8vw, 12px); padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 1.5vw, 1.5rem); border-top: 3px solid var(--gold);">
+        <h3 style="font-size: var(--h3-size); margin-bottom: 0.4em;">OpenCode</h3>
+        <p style="font-size: var(--body-size); line-height: 1.5;">Reads CLAUDE.md for project context, supports skill-style instructions</p>
+        <p class="text-muted" style="font-size: var(--small-size); margin-top: 0.6em;">Open source &middot; see Jules' talk today!</p>
       </div>
-      <div class="reveal" style="display: flex; align-items: center; gap: clamp(0.5rem, 1vw, 1rem); padding: clamp(0.4rem, 0.8vh, 0.6rem) clamp(0.6rem, 1vw, 1rem); background: var(--tone); border-radius: 4px;">
-        <span style="font-size: clamp(1rem, 2vw, 1.5rem); min-width: 2em; text-align: center;">&#9654;</span>
-        <div>
-          <strong>Gemini CLI</strong> — has its own skill/conductor pattern
-          <span class="text-muted" style="font-size: var(--small-size);"> &middot; Google &middot; see Connie's talk today!</span>
-        </div>
+      <div class="reveal" style="background: var(--tone); border-radius: clamp(6px, 0.8vw, 12px); padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 1.5vw, 1.5rem); border-top: 3px solid var(--border);">
+        <h3 style="font-size: var(--h3-size); margin-bottom: 0.4em;">Cursor</h3>
+        <p style="font-size: var(--body-size); line-height: 1.5;">Copy SKILL.md into <span class="font-mono">.cursor/skills/</span> &mdash; or just ask naturally in chat</p>
+        <p class="text-muted" style="font-size: var(--small-size); margin-top: 0.6em;">No /plugin commands needed</p>
       </div>
     </div>
-    <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 700px;">The underlying idea is tool-agnostic: encode domain expertise into structured documents that agents consume at runtime.</p>
+    <p class="reveal" style="font-size: var(--body-size); margin-top: clamp(1rem, 2.5vh, 2rem); color: var(--clay); font-weight: 600;">Encode domain expertise into structured documents that agents consume at runtime.</p>
   </div>
   <div class="slide-number"></div>
 </section>
@@ -1332,11 +1327,12 @@ walled courtyard...</div>
   <div class="slide-content">
     <div class="seal-mark reveal-stamp" style="margin-bottom: clamp(1rem, 3vh, 2rem);">硯台</div>
     <h1 class="reveal" style="font-size: clamp(2rem, 5vw, 4rem);">多謝 &middot; Thank You</h1>
+    <p class="reveal" style="font-size: var(--h3-size); color: var(--clay); font-weight: 600; margin-top: clamp(0.2rem, 0.5vh, 0.4rem);">Questions?</p>
     <div class="divider reveal"></div>
     <div class="reveal" style="display: flex; gap: clamp(2rem, 5vw, 4rem); align-items: center; justify-content: center; flex-wrap: wrap;">
       <div style="display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vh, 0.5rem); font-size: var(--body-size);">
-        <p><strong>App:</strong> <span class="text-clay">sixlines.online</span></p>
-        <p><strong>Plugin:</strong> <span class="font-mono" style="font-size: var(--small-size);">/plugin marketplace add augchan42/inkstone</span></p>
+        <p><strong>App:</strong> <span class="text-clay">sixlines.online</span> <svg style="display:inline-block;vertical-align:-0.1em;width:0.75em;height:0.75em;" viewBox="0 0 384 512" fill="currentColor"><path d="M318.7 268.7c-.2-36.7 16.4-64.4 50-84.8-18.8-26.9-47.2-41.7-84.7-44.6-35.5-2.8-74.3 20.7-88.5 20.7-15 0-49.4-19.7-76.4-19.7C63.3 141.2 4 184.8 4 273.5c0 26.2 4.8 53.3 14.4 81.2 12.8 36.7 59 126.7 107.2 125.2 25.2-.6 43-17.9 75.8-17.9 31.8 0 48.3 17.9 76.4 17.9 48.6-.7 90.4-82.5 102.6-119.3-65.2-30.7-61.7-90-61.7-91.9zm-56.6-164.2c27.3-32.4 24.8-61.9 24-72.5-24.1 1.4-52 16.4-67.9 34.9-17.5 19.8-27.8 44.3-25.6 71.9 26.1 2 49.9-11.4 69.5-34.3z"/></svg> <svg style="display:inline-block;vertical-align:-0.1em;width:0.75em;height:0.75em;" viewBox="0 0 576 512" fill="currentColor"><path d="M420.55 301.93a24 24 0 1 1 24-24 24 24 0 0 1-24 24m-265.1 0a24 24 0 1 1 24-24 24 24 0 0 1-24 24m273.7-144.48l47.94-83a10 10 0 1 0-17.27-10l-48.54 84.07a301 301 0 0 0-246.56 0L116.18 64.45a10 10 0 1 0-17.27 10l47.94 83C64.53 202.22 8.24 285.55 0 384h576c-8.24-98.45-64.54-181.78-146.85-226.55"/></svg></p>
+        <p><strong>Plugin:</strong> <span class="text-clay">github.com/augchan42/inkstone</span></p>
         <p><strong>Blog:</strong> <span class="text-clay">augustinchan.dev</span></p>
         <p><strong>X:</strong> <span class="text-clay">@aug_digitalrain</span></p>
         <p class="text-muted" style="font-size: var(--small-size);">aug@digitalrain.studio</p>
