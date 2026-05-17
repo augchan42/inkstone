@@ -667,22 +667,15 @@ body.edit-active [contenteditable] {
       <img src="speaker-portrait.jpeg" alt="Augustin Chan" style="width: 100%; height: 100%; max-height: none; object-fit: cover; object-position: center 20%;">
     </div>
     <!-- Info — right side -->
-    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: var(--slide-padding); padding-left: clamp(2rem, 4vw, 4rem); gap: clamp(0.5rem, 1.5vh, 1rem);">
-      <div class="accent-bar" style="position: relative; top: 0; left: 0; margin-bottom: clamp(0.3rem, 1vh, 0.8rem);"></div>
-      <h2 class="reveal" style="font-size: var(--title-size); margin-bottom: 0;">Augustin Chan</h2>
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: flex-start; padding: var(--slide-padding); padding-top: clamp(3rem, 8vh, 6rem); padding-left: clamp(2rem, 4vw, 4rem); gap: clamp(0.5rem, 1.5vh, 1rem); position: relative;">
+      <h2 class="reveal" style="font-size: var(--title-size); margin-bottom: 0; border-left: 4px solid var(--clay); padding-left: clamp(0.5rem, 1vw, 1rem);">Augustin Chan</h2>
       <p class="reveal" style="font-size: var(--h3-size); color: var(--clay); font-weight: 500;">CTO &amp; Founder, Digital Rain Technologies</p>
-      <div style="height: 1px; background: var(--border); width: clamp(40px, 8vw, 80px); margin: clamp(0.2rem, 0.5vh, 0.4rem) 0;"></div>
-      <p class="reveal" style="font-size: var(--body-size); line-height: 1.6;">Builder of <strong>Six Lines</strong> &mdash; the I-Ching app behind this talk</p>
-      <p class="reveal" style="font-size: var(--body-size); line-height: 1.6;">Co-host, <strong>Hong Kong AI Podcast</strong></p>
-      <div class="reveal" style="transition-delay: 0.4s; margin-top: auto; display: flex; align-items: flex-end; gap: clamp(1.5rem, 3vw, 3rem); padding-bottom: clamp(1rem, 3vh, 2rem);">
-        <div style="text-align: center; flex-shrink: 0;">
-          <img src="qr-sixlines.png" alt="Six Lines QR" style="width: clamp(100px, 12vw, 160px); border-radius: clamp(4px, 0.5vw, 8px);">
-          <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">sixlines.online</p>
-        </div>
-        <div style="text-align: center; flex-shrink: 0;">
-          <img src="qr-linkedin.png" alt="LinkedIn QR" style="width: clamp(100px, 12vw, 160px); border-radius: clamp(4px, 0.5vw, 8px);">
-          <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">LinkedIn</p>
-        </div>
+      <p class="reveal" style="font-size: var(--h3-size); line-height: 1.6;"><strong>Six Lines I-Ching</strong> &mdash; the app behind this talk</p>
+      <p class="reveal" style="font-size: var(--h3-size); line-height: 1.6;">Co-host, <strong>Hong Kong AI Podcast</strong></p>
+      <p class="reveal" style="font-size: var(--h3-size); line-height: 1.6;">Writing at <strong>augustinchan.dev</strong></p>
+      <div class="reveal" style="transition-delay: 0.4s; position: absolute; bottom: clamp(1.5rem, 4vh, 3rem); right: clamp(1.5rem, 4vw, 3rem); text-align: center;">
+        <img src="qr-linkedin.png" alt="LinkedIn QR" style="width: clamp(140px, 18vw, 240px); border-radius: clamp(4px, 0.5vw, 8px);">
+        <p style="font-size: var(--body-size); color: var(--muted); margin-top: 0.3em;">LinkedIn</p>
       </div>
     </div>
   </div>
@@ -718,44 +711,16 @@ body.edit-active [contenteditable] {
   <div class="ink-wash-tr"></div>
   <div class="accent-bar"></div>
   <div class="slide-content centered">
-    <h2 class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);">The I-Ching &middot; <span class="font-cjk">易經</span></h2>
-    <p class="reveal" style="max-width: 700px; text-align: center; font-size: var(--body-size);">64 hexagrams. Six lines each — solid or broken. Every possible pattern of change.</p>
-    <div class="reveal" style="transition-delay: 0.2s; display: flex; justify-content: center; gap: clamp(1.5rem, 3vw, 3rem); margin: clamp(0.8rem, 2vh, 1.5rem) 0; font-family: var(--font-cjk); font-size: clamp(1.5rem, 3vw, 2.5rem); color: var(--foreground);">
-      <div style="text-align: center;">
-        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9776;</div>
-        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☰ Heaven</div>
-      </div>
-      <div style="text-align: center;">
-        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9783;</div>
-        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☷ Earth</div>
-      </div>
-      <div style="text-align: center;">
-        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9778;</div>
-        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☲ Fire</div>
-      </div>
-      <div style="text-align: center;">
-        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9781;</div>
-        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☵ Water</div>
-      </div>
-      <div style="text-align: center;">
-        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9777;</div>
-        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☱ Lake</div>
-      </div>
-      <div style="text-align: center;">
-        <div style="line-height: 0.6; letter-spacing: 0.1em;">&#9780;</div>
-        <div style="font-size: var(--small-size); color: var(--muted); margin-top: 0.3em;">☴ Wind</div>
-      </div>
-    </div>
-    <div class="reveal" style="transition-delay: 0.3s; border-left: 3px solid var(--clay); padding-left: clamp(0.6rem, 1vw, 1rem); text-align: left; max-width: 700px; margin: clamp(0.5rem, 1.5vh, 1rem) auto;">
-      <p style="font-size: var(--body-size);"><strong style="color: var(--clay);">Jiaoshi Yilin</strong> <span class="font-cjk">焦氏易林</span> &middot; ~40 BCE</p>
-      <p style="font-size: var(--body-size);">One verse for every hexagram-to-hexagram transformation.<br>64 &times; 64 = <strong>4,096 poems</strong>. The complete forest of changes.</p>
-    </div>
-    <div class="image-grid reveal-scale" style="transition-delay: 0.4s; grid-template-columns: repeat(5, 1fr); max-width: min(90vw, 750px); margin: clamp(0.5rem, 1.5vh, 1rem) auto 0;">
-      <img src="yilin-1-9.webp" alt="Yilin verse 1-9" style="aspect-ratio: 1; object-fit: cover;">
-      <img src="yilin-15-48.webp" alt="Yilin verse 15-48" style="aspect-ratio: 1; object-fit: cover;">
-      <img src="yilin-2-40.webp" alt="Yilin verse 2-40" style="aspect-ratio: 1; object-fit: cover;">
-      <img src="yilin-44-44.webp" alt="Yilin verse 44-44" style="aspect-ratio: 1; object-fit: cover;">
-      <img src="yilin-61-61.webp" alt="Yilin verse 61-61" style="aspect-ratio: 1; object-fit: cover;">
+    <h2 class="reveal" style="margin-bottom: clamp(0.8rem, 2vh, 1.5rem);">The I-Ching &middot; <span class="font-cjk">易經</span></h2>
+    <p class="reveal" style="max-width: 700px; text-align: center; font-size: var(--h3-size);">64 hexagrams. Six lines — solid or broken.<br>Every possible pattern of change.</p>
+    <div class="reveal" style="transition-delay: 0.2s; display: flex; flex-direction: column; align-items: center; gap: clamp(0.5rem, 1vh, 0.8rem); margin: clamp(2rem, 5vh, 4rem) 0;">
+      <div style="width: clamp(120px, 18vw, 210px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div>
+      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
+      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
+      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
+      <div style="width: clamp(120px, 18vw, 210px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div>
+      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
+      <p style="font-size: var(--h3-size); color: var(--muted); margin-top: clamp(0.5rem, 1.5vh, 1rem);"><span class="font-cjk">蒙</span> &middot; Youthful Folly</p>
     </div>
   </div>
   <div class="slide-number"></div>
