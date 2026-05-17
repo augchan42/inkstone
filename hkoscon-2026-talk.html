@@ -713,15 +713,37 @@ body.edit-active [contenteditable] {
   <div class="slide-content centered">
     <h2 class="reveal" style="margin-bottom: clamp(0.8rem, 2vh, 1.5rem);">The I-Ching &middot; <span class="font-cjk">易經</span></h2>
     <p class="reveal" style="max-width: 700px; text-align: center; font-size: var(--h3-size);">64 hexagrams. Six lines — solid or broken.<br>Every possible pattern of change.</p>
-    <div class="reveal" style="transition-delay: 0.2s; display: flex; flex-direction: column; align-items: center; gap: clamp(0.5rem, 1vh, 0.8rem); margin: clamp(2rem, 5vh, 4rem) 0;">
-      <div style="width: clamp(120px, 18vw, 210px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div>
-      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
-      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
-      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
-      <div style="width: clamp(120px, 18vw, 210px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div>
-      <div style="display: flex; gap: clamp(24px, 4.5vw, 45px);"><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div><div style="width: clamp(46px, 7vw, 82px); height: clamp(12px, 1.8vh, 20px); background: var(--foreground); border-radius: 4px;"></div></div>
-      <p style="font-size: var(--h3-size); color: var(--muted); margin-top: clamp(0.5rem, 1.5vh, 1rem);"><span class="font-cjk">蒙</span> &middot; Youthful Folly</p>
+    <div class="reveal" style="transition-delay: 0.2s; display: flex; align-items: center; gap: clamp(2rem, 5vw, 4rem); margin: clamp(2rem, 5vh, 4rem) 0;">
+      <!-- Hexagram lines (style from 8bitoracle) -->
+      <div style="display: flex; flex-direction: column; align-items: center; width: clamp(100px, 14vw, 180px);">
+        <!-- Upper trigram: Gen/Mountain — solid, broken, broken (top to bottom) -->
+        <div style="width: 100%; display: flex; flex-direction: column; gap: clamp(6px, 1vh, 10px);">
+          <div style="width: 100%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div>
+          <div style="width: 100%; display: flex; justify-content: space-between;"><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div></div>
+          <div style="width: 100%; display: flex; justify-content: space-between;"><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div></div>
+        </div>
+        <!-- Gap between trigrams -->
+        <div style="height: clamp(1.2rem, 3vh, 2.5rem);"></div>
+        <!-- Lower trigram: Kan/Water — broken, solid, broken (top to bottom) -->
+        <div style="width: 100%; display: flex; flex-direction: column; gap: clamp(6px, 1vh, 10px);">
+          <div style="width: 100%; display: flex; justify-content: space-between;"><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div></div>
+          <div style="width: 100%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div>
+          <div style="width: 100%; display: flex; justify-content: space-between;"><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div><div style="width: 45%; height: clamp(10px, 1.5vh, 16px); background: var(--foreground);"></div></div>
+        </div>
+      </div>
+      <!-- Trigram labels -->
+      <div style="display: flex; flex-direction: column; color: var(--muted); gap: clamp(0.5rem, 1.5vh, 1.2rem);">
+        <div style="display: flex; align-items: baseline; gap: clamp(0.4rem, 0.8vw, 0.8rem);">
+          <span style="font-family: var(--font-cjk); font-size: clamp(1.8rem, 4vw, 3.5rem);">艮</span>
+          <span style="font-size: var(--body-size); font-family: var(--font-body);">Mountain</span>
+        </div>
+        <div style="display: flex; align-items: baseline; gap: clamp(0.4rem, 0.8vw, 0.8rem);">
+          <span style="font-family: var(--font-cjk); font-size: clamp(1.8rem, 4vw, 3.5rem);">坎</span>
+          <span style="font-size: var(--body-size); font-family: var(--font-body);">Water</span>
+        </div>
+      </div>
     </div>
+    <p class="reveal" style="transition-delay: 0.3s; font-size: var(--h3-size); color: var(--muted);"><span class="font-cjk">蒙</span> &middot; Youthful Folly</p>
   </div>
   <div class="slide-number"></div>
 </section>
