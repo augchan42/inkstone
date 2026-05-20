@@ -812,11 +812,11 @@ body.edit-active [contenteditable] {
 <section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
-  <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(2rem, 4vw, 4rem);">
-    <div class="reveal-scale" style="flex: 0 0 auto;">
-      <img src="screenshot-yilin-verse.png" alt="Six Lines app — verse with ink painting" style="height: min(75vh, 600px); border-radius: clamp(8px, 1vw, 16px); box-shadow: 0 8px 40px rgba(0,0,0,0.15);">
+  <div class="slide-content" style="flex-direction: row; padding: 0; gap: 0; max-height: none;">
+    <div class="reveal-scale" style="flex: 0 0 auto; width: clamp(280px, 30vw, 440px); align-self: stretch; overflow: hidden; background: var(--tone); display: flex; align-items: center; justify-content: center;">
+      <img src="screenshot-yilin-verse.png" alt="Six Lines app — verse with ink painting" style="width: 85%; height: 92%; max-height: none; object-fit: contain;">
     </div>
-    <div style="flex: 1; display: flex; flex-direction: column; gap: clamp(1rem, 2.5vh, 2rem);">
+    <div style="flex: 1; display: flex; flex-direction: column; justify-content: center; padding: var(--slide-padding); padding-left: clamp(2rem, 4vw, 4rem); gap: clamp(1rem, 2.5vh, 2rem);">
       <h2 class="reveal">The Challenge</h2>
       <p class="reveal" style="font-size: var(--h3-size); line-height: 1.5;">Generate <strong>4,096 unique ink paintings</strong> — one for every verse in the Jiaoshi Yilin <span class="font-cjk">焦氏易林</span></p>
       <div class="reveal" style="display: flex; gap: clamp(1.5rem, 3vw, 3rem); flex-wrap: wrap;">
