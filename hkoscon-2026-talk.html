@@ -475,19 +475,19 @@ p, li {
   display: flex;
   align-items: center;
   justify-content: center;
-  gap: clamp(0.3rem, 0.8vw, 0.6rem);
+  gap: clamp(0.5rem, 1.5vw, 1.2rem);
   flex-wrap: wrap;
-  margin: clamp(1rem, 3vh, 2rem) auto;
-  max-width: min(90vw, 800px);
+  margin: clamp(1.5rem, 5vh, 4rem) auto;
+  max-width: min(92vw, 1100px);
 }
 .loop-node {
   background: var(--tone);
-  border: 2px solid var(--border);
-  border-radius: clamp(6px, 0.8vw, 12px);
-  padding: clamp(0.6rem, 1.2vw, 1rem) clamp(0.8rem, 1.5vw, 1.4rem);
+  border: 3px solid var(--border);
+  border-radius: clamp(8px, 1.2vw, 16px);
+  padding: clamp(1rem, 2.5vw, 2rem) clamp(1.2rem, 2.5vw, 2.5rem);
   text-align: center;
   flex: 1;
-  min-width: 120px;
+  min-width: 160px;
 }
 .loop-node.active {
   border-color: var(--clay);
@@ -495,16 +495,16 @@ p, li {
 }
 .loop-node-title {
   font-family: var(--font-display);
-  font-size: var(--body-size);
+  font-size: var(--h3-size);
   font-weight: 600;
-  margin-bottom: 0.2em;
+  margin-bottom: 0.3em;
 }
 .loop-node-sub {
-  font-size: var(--small-size);
+  font-size: var(--body-size);
   color: var(--muted);
 }
 .loop-arrow {
-  font-size: clamp(1.2rem, 2.5vw, 2rem);
+  font-size: clamp(1.8rem, 3.5vw, 3rem);
   color: var(--clay);
   flex-shrink: 0;
 }
@@ -886,8 +886,8 @@ body.edit-active [contenteditable] {
         <div class="loop-node-sub">Selects rules to keep</div>
       </div>
     </div>
-    <p class="reveal" style="font-size: var(--h3-size); color: var(--clay); font-weight: 600; margin-top: clamp(1rem, 3vh, 2rem);">Repeat until the rules can stand alone.</p>
-    <p class="reveal text-muted" style="font-size: var(--body-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 600px;">The rules encoded in the skill are the <em>output</em> of this loop — not the input.</p>
+    <p class="reveal" style="font-size: var(--h2-size); color: var(--clay); font-weight: 600; margin-top: clamp(1.5rem, 4vh, 3rem);">Repeat until the rules can stand alone.</p>
+    <p class="reveal text-muted" style="font-size: var(--h3-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 800px;">The rules in the skill are the <em>output</em> of this loop — not the input.</p>
   </div>
   <div class="slide-number"></div>
 </section>
@@ -1000,16 +1000,16 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
 <section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
-  <div class="slide-content" style="flex-direction: row; align-items: center; gap: clamp(1.5rem, 3vw, 3rem);">
-    <div style="flex: 1; display: flex; flex-direction: column; align-items: center;">
+  <div class="slide-content" style="flex-direction: row; padding: 0; gap: 0; max-height: none;">
+    <div style="flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: center; padding: var(--slide-padding);">
       <h2 class="reveal" style="margin-bottom: clamp(0.5rem, 1.2vh, 1rem);"><span class="text-clay">Same verse. All 7 rules.</span></h2>
       <div class="reveal-scale" style="transition-delay: 0.15s;">
         <img src="https://cdn.sixlines.online/yilin-inkbrush/48-59.webp" alt="Production result — 48-59 overflowing well, ink-landscape" style="max-height: min(72vh, 580px); border-radius: clamp(6px, 0.8vw, 12px); box-shadow: 0 8px 40px rgba(0,0,0,0.15); object-fit: contain;">
       </div>
       <p class="reveal text-muted" style="font-size: var(--small-size); margin-top: clamp(0.4rem, 1vh, 0.8rem);">key 48-59 &middot; <span class="font-cjk">井 &rarr; 渙</span> &middot; ink-landscape &middot; fal-ai/z-image/turbo</p>
     </div>
-    <div class="reveal" style="transition-delay: 0.3s; flex: 0 0 clamp(200px, 22vw, 320px); font-size: var(--code-size); line-height: 1.6; color: var(--muted); font-style: italic; opacity: 0.8; border-left: 2px solid var(--border); padding-left: clamp(0.8rem, 1.5vw, 1.2rem);">
-      An overflowing well sends water spilling in four branching streams across barren hillside, carving shallow channels in the earth. Foreground, the well mouth brims over, water sheeting across worn stone. Midground, the streams diverge eastward, spreading thin over sun-baked ground, nourishing sparse grasses. Beyond, desolate brown hills roll to a hazy horizon, the water lost among them. Amber reflections glint where the shallow streams catch the last daylight. Chinese ink painting.
+    <div class="reveal" style="transition-delay: 0.3s; flex: 0 0 clamp(340px, 42vw, 620px); align-self: stretch; display: flex; align-items: center; background: var(--tone); border-left: 3px solid var(--border); padding: clamp(1.5rem, 3vh, 2.5rem) clamp(1.5rem, 3vw, 2.5rem);">
+      <p style="font-size: clamp(1.15rem, 2.4vw, 1.75rem); line-height: 1.5; color: var(--foreground); font-family: var(--font-body); font-weight: 300;">An overflowing well sends water spilling in four branching streams across barren hillside, carving shallow channels in the earth. Foreground, the well mouth brims over, water sheeting across worn stone. Midground, the streams diverge eastward, spreading thin over sun-baked ground, nourishing sparse grasses. Beyond, desolate brown hills roll to a hazy horizon, the water lost among them. Amber reflections glint where the shallow streams catch the last daylight. <span style="color: var(--clay); font-weight: 600;">Chinese ink painting.</span></p>
     </div>
   </div>
   <div class="slide-number"></div>
@@ -1041,8 +1041,8 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
           <p class="text-muted" style="font-size: var(--small-size);">Gates, tree canopies, gorge walls — context creates composition.</p>
         </div>
       </div>
-      <div class="reveal-scale col-narrow" style="transition-delay: 0.3s;">
-        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-dragon-gate.webp" alt="Dragon Gate — all principles applied" style="width: 100%; border-radius: clamp(6px, 0.8vw, 12px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-height: min(50vh, 400px); object-fit: cover;">
+      <div class="reveal-scale" style="transition-delay: 0.3s; flex: 1;">
+        <img src="https://hmkcrc9k6rau3h6j.public.blob.vercel-storage.com/proof-dragon-gate.webp" alt="Dragon Gate — all principles applied" style="width: 100%; border-radius: clamp(6px, 0.8vw, 12px); box-shadow: 0 4px 20px rgba(0,0,0,0.1); max-height: min(60vh, 500px); object-fit: cover;">
         <p class="text-muted" style="font-size: var(--small-size); margin-top: 0.4em; text-align: center;">All four principles visible</p>
       </div>
     </div>
@@ -1053,33 +1053,47 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
 <section class="slide">
   <div class="paper-texture"></div>
   <div class="accent-bar"></div>
-  <div class="slide-content">
-    <h2 class="reveal">What the Human Kept</h2>
-    <p class="reveal text-muted" style="margin-bottom: clamp(0.5rem, 1.5vh, 1rem);">From dozens of AI observations, selectively encoded into the skill:</p>
-    <div class="two-col reveal" style="transition-delay: 0.2s; align-items: flex-start;">
-      <div style="border: 1px solid var(--border); border-radius: clamp(4px, 0.5vw, 8px); padding: clamp(0.8rem, 1.5vw, 1.2rem); background: var(--tone);">
-        <h3 style="font-size: var(--body-size); color: var(--clay); margin-bottom: clamp(0.4rem, 1vh, 0.8rem);">7 Composition Rules</h3>
-        <ol style="list-style: none; display: flex; flex-direction: column; gap: clamp(0.2rem, 0.5vh, 0.4rem); padding: 0;">
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">1.</span> Frame the scene</li>
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">2.</span> Force depth</li>
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">3.</span> Demand contrast</li>
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">4.</span> Warm accent</li>
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">5.</span> Favor diagonals</li>
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">6.</span> Discoverable detail</li>
-          <li style="font-size: var(--body-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">7.</span> Painterly language</li>
-        </ol>
+  <div class="slide-content" style="flex-direction: row; padding: 0; gap: 0; max-height: none;">
+    <div style="flex: 1; align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: var(--slide-padding); padding-left: clamp(2rem, 5vw, 5rem); background: var(--tone);">
+      <h2 class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);">What the Human Kept</h2>
+      <p class="reveal text-muted" style="font-size: var(--body-size); margin-bottom: clamp(1rem, 2.5vh, 2rem);">From dozens of AI observations, encoded into the skill:</p>
+      <h3 class="reveal" style="font-size: var(--h3-size); color: var(--clay); margin-bottom: clamp(0.5rem, 1.2vh, 1rem);">7 Composition Rules</h3>
+      <ol class="reveal" style="list-style: none; display: flex; flex-direction: column; gap: clamp(0.4rem, 1vh, 0.8rem); padding: 0;">
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">1.</span> Frame the scene</li>
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">2.</span> Force depth</li>
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">3.</span> Demand contrast</li>
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">4.</span> Warm accent</li>
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">5.</span> Favor diagonals</li>
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">6.</span> Discoverable detail</li>
+        <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">7.</span> Painterly language</li>
+      </ol>
+    </div>
+    <div class="reveal" style="transition-delay: 0.2s; flex: 0 0 clamp(180px, 22vw, 320px); align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.4rem, 0.8vh, 0.6rem); padding: clamp(1rem, 2vh, 1.5rem) clamp(0.3rem, 0.5vw, 0.5rem);">
+      <h3 style="font-size: var(--body-size); color: var(--gold); text-align: center; margin-bottom: clamp(0.1rem, 0.3vh, 0.2rem);">5 Style Categories</h3>
+      <div style="text-align: center;">
+        <img src="https://cdn.sixlines.online/yilin-inkbrush/52-39.webp" alt="atmospheric-night" style="width: 100%; max-height: min(19vh, 155px); object-fit: cover; border-radius: clamp(3px, 0.4vw, 6px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.15em;"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #2a2a3a; vertical-align: middle; margin-right: 4px;"></span>atmospheric-night</p>
       </div>
-      <div style="border: 1px solid var(--border); border-radius: clamp(4px, 0.5vw, 8px); padding: clamp(0.8rem, 1.5vw, 1.2rem);">
-        <h3 style="font-size: var(--body-size); color: var(--gold); margin-bottom: clamp(0.4rem, 1vh, 0.8rem);">5 Style Categories</h3>
-        <ul style="list-style: none; display: flex; flex-direction: column; gap: clamp(0.3rem, 0.6vh, 0.5rem); padding: 0;">
-          <li style="font-size: var(--body-size);"><span class="table-simple"><span class="style-dot" style="background: #2a2a3a;"></span></span> atmospheric-night</li>
-          <li style="font-size: var(--body-size);"><span class="table-simple"><span class="style-dot" style="background: #5a7a5a;"></span></span> ink-landscape</li>
-          <li style="font-size: var(--body-size);"><span class="table-simple"><span class="style-dot" style="background: #8a7aa0;"></span></span> figures-in-mist</li>
-          <li style="font-size: var(--body-size);"><span class="table-simple"><span class="style-dot" style="background: #b87a3a;"></span></span> bold-action</li>
-          <li style="font-size: var(--body-size);"><span class="table-simple"><span class="style-dot" style="background: #1a2a4a;"></span></span> cosmic-night</li>
-        </ul>
-        <p class="text-muted" style="font-size: var(--small-size); margin-top: clamp(0.4rem, 1vh, 0.6rem);">LLM interprets verse tone, selects palette</p>
+      <div style="text-align: center;">
+        <img src="https://cdn.sixlines.online/yilin-inkbrush/47-29.webp" alt="ink-landscape" style="width: 100%; max-height: min(19vh, 155px); object-fit: cover; border-radius: clamp(3px, 0.4vw, 6px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.15em;"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #5a7a5a; vertical-align: middle; margin-right: 4px;"></span>ink-landscape</p>
       </div>
+      <div style="text-align: center;">
+        <img src="https://cdn.sixlines.online/yilin-inkbrush/3-20.webp" alt="figures-in-mist" style="width: 100%; max-height: min(19vh, 155px); object-fit: cover; border-radius: clamp(3px, 0.4vw, 6px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.15em;"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #8a7aa0; vertical-align: middle; margin-right: 4px;"></span>figures-in-mist</p>
+      </div>
+    </div>
+    <div class="reveal" style="transition-delay: 0.3s; flex: 0 0 clamp(180px, 22vw, 320px); align-self: stretch; display: flex; flex-direction: column; justify-content: center; gap: clamp(0.4rem, 0.8vh, 0.6rem); padding: clamp(1rem, 2vh, 1.5rem) clamp(0.3rem, 0.5vw, 0.5rem);">
+      <div style="height: clamp(1rem, 2.5vh, 2rem);"></div>
+      <div style="text-align: center;">
+        <img src="https://cdn.sixlines.online/yilin-inkbrush/29-7.webp" alt="bold-action" style="width: 100%; max-height: min(19vh, 155px); object-fit: cover; border-radius: clamp(3px, 0.4vw, 6px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.15em;"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #b87a3a; vertical-align: middle; margin-right: 4px;"></span>bold-action</p>
+      </div>
+      <div style="text-align: center;">
+        <img src="https://cdn.sixlines.online/yilin-inkbrush/1-14.webp" alt="cosmic-night" style="width: 100%; max-height: min(19vh, 155px); object-fit: cover; border-radius: clamp(3px, 0.4vw, 6px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.15em;"><span style="display: inline-block; width: 8px; height: 8px; border-radius: 50%; background: #1a2a4a; vertical-align: middle; margin-right: 4px;"></span>cosmic-night</p>
+      </div>
+      <p class="text-muted" style="font-size: var(--small-size); text-align: center; margin-top: clamp(0.3rem, 0.8vh, 0.5rem);">AI reads verse tone &rarr; selects palette</p>
     </div>
   </div>
   <div class="slide-number"></div>

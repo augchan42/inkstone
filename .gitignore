@@ -1,0 +1,6 @@
+.vercel
+.playwright-mcp/
+slide*.png
+sample-*.jpeg
+*-check*.png
+*-elitism.png
