@@ -865,29 +865,24 @@ body.edit-active [contenteditable] {
   <div class="accent-bar"></div>
   <div class="slide-content centered">
     <h2 class="reveal">The Iterative Loop</h2>
-    <div class="loop-diagram reveal-scale" style="transition-delay: 0.2s;">
-      <div class="loop-node active">
-        <div class="loop-node-title">Human Judges</div>
-        <div class="loop-node-sub">"This one works."</div>
+    <div style="position: relative; max-width: min(72vw, 800px); margin: clamp(1.5rem, 4vh, 3rem) auto 0;">
+      <div class="loop-diagram reveal-scale" style="transition-delay: 0.2s; margin: 0; justify-content: center;">
+        <div class="loop-node active" style="flex: 0 0 clamp(160px, 22vw, 280px);">
+          <div class="loop-node-title">Human Judges Output</div>
+          <div class="loop-node-sub">"Like this, not that"</div>
+        </div>
+        <div class="loop-arrow">&rarr;</div>
+        <div class="loop-node" style="flex: 0 0 clamp(160px, 22vw, 280px);">
+          <div class="loop-node-title">AI Extracts &amp; Encodes Rules</div>
+          <div class="loop-node-sub">Figures out why, updates the skill</div>
+        </div>
       </div>
-      <div class="loop-arrow">&rarr;</div>
-      <div class="loop-node">
-        <div class="loop-node-title">Tells AI</div>
-        <div class="loop-node-sub">"Here's what's good."</div>
-      </div>
-      <div class="loop-arrow">&rarr;</div>
-      <div class="loop-node">
-        <div class="loop-node-title">AI Analyzes</div>
-        <div class="loop-node-sub">"Here's why it works."</div>
-      </div>
-      <div class="loop-arrow">&rarr;</div>
-      <div class="loop-node active">
-        <div class="loop-node-title">Human Encodes</div>
-        <div class="loop-node-sub">Selects rules to keep</div>
+      <div class="reveal-scale" style="transition-delay: 0.4s; width: 80%; margin: 0 auto; height: clamp(22px, 3vh, 36px); border-bottom: 3px solid var(--clay); border-left: 3px solid var(--clay); border-right: 3px solid var(--clay); border-radius: 0 0 clamp(10px, 1.5vw, 18px) clamp(10px, 1.5vw, 18px); position: relative;">
+        <div style="position: absolute; left: 1.5px; top: 0; transform: translate(-50%, -100%); width: 0; height: 0; border-left: clamp(7px, 1vw, 11px) solid transparent; border-right: clamp(7px, 1vw, 11px) solid transparent; border-bottom: clamp(9px, 1.2vw, 14px) solid var(--clay);"></div>
       </div>
     </div>
-    <p class="reveal" style="font-size: var(--h2-size); color: var(--clay); font-weight: 600; margin-top: clamp(1.5rem, 4vh, 3rem);">Repeat until the rules can stand alone.</p>
-    <p class="reveal text-muted" style="font-size: var(--h3-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 800px;">The rules in the skill are the <em>output</em> of this loop — not the input.</p>
+    <p class="reveal" style="font-size: var(--h2-size); color: var(--clay); font-weight: 600; margin-top: clamp(1.5rem, 4vh, 3rem);">Re-run. Judge again. Repeat.</p>
+    <p class="reveal text-muted" style="font-size: var(--body-size); margin-top: clamp(0.5rem, 1.5vh, 1rem); max-width: 800px;">The pipeline is a black box. You can't reason about the model — you can only judge its output.</p>
   </div>
   <div class="slide-number"></div>
 </section>
@@ -1056,7 +1051,7 @@ above a gorge filled with morning mist. Chinese ink painting."</div>
   <div class="slide-content" style="flex-direction: row; padding: 0; gap: 0; max-height: none;">
     <div style="flex: 1; align-self: stretch; display: flex; flex-direction: column; justify-content: center; padding: var(--slide-padding); padding-left: clamp(2rem, 5vw, 5rem); background: var(--tone);">
       <h2 class="reveal" style="margin-bottom: clamp(0.3rem, 0.8vh, 0.5rem);">What the Human Kept</h2>
-      <p class="reveal text-muted" style="font-size: var(--body-size); margin-bottom: clamp(1rem, 2.5vh, 2rem);">From dozens of AI observations, encoded into the skill:</p>
+      <p class="reveal text-muted" style="font-size: var(--body-size); margin-bottom: clamp(1rem, 2.5vh, 2rem);">The AI distilled these from human preferences:</p>
       <h3 class="reveal" style="font-size: var(--h3-size); color: var(--clay); margin-bottom: clamp(0.5rem, 1.2vh, 1rem);">7 Composition Rules</h3>
       <ol class="reveal" style="list-style: none; display: flex; flex-direction: column; gap: clamp(0.4rem, 1vh, 0.8rem); padding: 0;">
         <li style="font-size: var(--h3-size); display: flex; gap: 0.5em;"><span class="text-clay" style="font-weight: 700;">1.</span> Frame the scene</li>
