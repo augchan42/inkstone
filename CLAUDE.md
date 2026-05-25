@@ -33,7 +33,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 3. Add it to the skills table in `README.md` under the appropriate category
 4. Bump the version in `plugin.json` if publishing
 
-## The 9 Skills
+## The 10 Skills
 
 - **verse-to-prompt** — Converts classical Chinese verse into 50-60 word image generation prompts. Two modes: ink painting (default) and tech-noir (`--tech-noir`). Enforces 7 mandatory composition rules, 5 style categories per mode, content safety substitution patterns, and disambiguation rules for ambiguous English words.
 - **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference.
@@ -44,6 +44,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 - **arxiv-search** — Queries the arXiv API (Atom XML) by topic, author, or paper ID. No auth needed.
 - **nextjs-i18n-seo** — Diagnoses and fixes the 307→301 redirect bug in Next.js App Router i18n middleware that kills PageRank transfer.
 - **market-pulse** — App Store market overview via web search — competitor movements, trending keywords, Apple featuring, new releases. No paid API subscriptions needed.
+- **voice-calibration** — Interactive voice profiling via live terminal prompts. Asks 8 writing prompts (4 general, 4 domain-specific), collects raw typed responses, and distills a reusable voice profile capturing sentence rhythm, rhetorical habits, vocabulary, and tonal signature. Profiles saved to `skills/voice-calibration/profiles/`.
 
 ## Key Domain Knowledge
 
