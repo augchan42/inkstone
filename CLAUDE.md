@@ -33,15 +33,17 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 3. Add it to the skills table in `README.md` under the appropriate category
 4. Bump the version in `plugin.json` if publishing
 
-## The 7 Skills
+## The 9 Skills
 
 - **verse-to-prompt** — Converts classical Chinese verse into 50-60 word image generation prompts. Two modes: ink painting (default) and tech-noir (`--tech-noir`). Enforces 7 mandatory composition rules, 5 style categories per mode, content safety substitution patterns, and disambiguation rules for ambiguous English words.
+- **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference.
 - **create-explanation** — Generates bilingual (English + Traditional Chinese) scholarly explanations of classical Chinese oracular verses. English 100-150 words, Chinese 150-200 characters.
 - **blakean-scene** — Converts abstract symbolic concepts into 240-280 word Blakean embodied scene prompts using an 8-layer prompt architecture and 8 compositional patterns. Reads `blakean-reference.md` for pattern details.
 - **ui-ux-architect** — UI/UX audit against 13 dimensions with Jobs/Ive design philosophy. Uses mobile-mcp for live device inspection. Design-only scope — does not touch logic/state/APIs.
 - **media-kit** — Interactive multi-phase workflow: interview → write bios (4 lengths) → crop/process photos → generate page → bundle zip.
 - **arxiv-search** — Queries the arXiv API (Atom XML) by topic, author, or paper ID. No auth needed.
 - **nextjs-i18n-seo** — Diagnoses and fixes the 307→301 redirect bug in Next.js App Router i18n middleware that kills PageRank transfer.
+- **market-pulse** — App Store market overview via web search — competitor movements, trending keywords, Apple featuring, new releases. No paid API subscriptions needed.
 
 ## Key Domain Knowledge
 

@@ -41,6 +41,12 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **media-kit** | Build a speaker media kit — bio writing, photo prep, and page generation for event organizers |
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
 
+### App Store
+
+| Skill | Description |
+|-------|-------------|
+| **market-pulse** | App Store market overview via web search — competitor movements, trending keywords, Apple featuring, new releases. No paid API needed |
+
 ### Web
 
 | Skill | Description |
