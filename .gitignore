@@ -11,3 +11,7 @@ sample-*.jpeg
 # Skill install artifacts (npx skills add)
 .agents/
 skills-lock.json
+
+# Personal voice profiles (voice-calibration output) — keep local, not published
+skills/voice-calibration/profiles/*
+!skills/voice-calibration/profiles/.gitkeep
