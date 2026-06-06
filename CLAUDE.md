@@ -35,7 +35,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 ## The 10 Skills
 
-- **verse-to-prompt** — Converts classical Chinese verse into 50-60 word image generation prompts. Two modes: ink painting (default) and tech-noir (`--tech-noir`). Enforces 7 mandatory composition rules, 5 style categories per mode, content safety substitution patterns, and disambiguation rules for ambiguous English words.
+- **verse-to-prompt** — Converts classical Chinese verse into 50-60 word image generation prompts. Three modes: ink painting (default), stipple (`--stipple`, the production matrix skin — reuses the ink scene and only swaps the render suffix per ADR-173), and tech-noir (`--tech-noir`, an experimental CRT cyberpunk reinterpretation). Enforces 7 mandatory composition rules, 5 style categories, content safety substitution patterns, and disambiguation rules for ambiguous English words.
 - **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference.
 - **create-explanation** — Generates bilingual (English + Traditional Chinese) scholarly explanations of classical Chinese oracular verses. English 100-150 words, Chinese 150-200 characters.
 - **blakean-scene** — Converts abstract symbolic concepts into 240-280 word Blakean embodied scene prompts using an 8-layer prompt architecture and 8 compositional patterns. Reads `blakean-reference.md` for pattern details.
@@ -55,7 +55,7 @@ Content safety substitutions exist because 52 of 4,096 images failed generation 
 ## Conventions
 
 - Prompts target 50-60 words (verse-to-prompt) or 240-280 words (blakean-scene) — stay within these ranges
-- Always end ink painting prompts with "Chinese ink painting." and tech-noir prompts with "Phosphor-green tech-noir, CRT scanlines, deep blacks."
+- End ink painting prompts with "Chinese ink painting."; stipple (matrix skin) prompts reuse the ink scene and end with the luminous-stipple suffix ("Golden age science fiction stipple illustration, … phosphor-green and amber palette on black."); tech-noir prompts end with "phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic."
 - Disambiguation is mandatory: write "crane bird" not "crane", "swallow bird" not "swallow", etc.
 - Traditional Chinese (繁體中文) is used in bilingual outputs, not Simplified
 - Bio writing avoids year counts ("enterprise architecture background" not "12 years of...")

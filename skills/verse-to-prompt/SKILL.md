@@ -2,7 +2,7 @@
 name: verse-to-prompt
 description: Convert classical Chinese verses into image generation prompts — ink painting (default) or tech-noir variant. Use when visualizing Yilin, I Ching, Tang poetry, or classical Chinese text.
 user-invocable: true
-argument-hint: [paste your verse here] or [--tech-noir paste your verse here]
+argument-hint: [paste your verse here] or [--stipple ...] or [--tech-noir ...]
 ---
 
 # Verse → Image Prompt
@@ -11,10 +11,16 @@ Convert a classical Chinese verse into an English image generation prompt, follo
 
 ## Mode Selection
 
-- **Default (ink painting):** Classical ink painting aesthetic
-- **Tech-noir (`--tech-noir` flag):** Phosphor-green CRT aesthetic for the 8bitoracle matrix skin
+- **Default (ink painting):** Classical ink painting aesthetic.
+- **Stipple (`--stipple` flag):** The **production matrix skin** — luminous golden-age sci-fi stipple. This is the actual style of the 4,096 matrix-skin images on SixLines.online (ADR-173). It reuses the ink-painting scene verbatim and only swaps the render suffix.
+- **Tech-noir (`--tech-noir` flag):** An **experimental** phosphor-green CRT cyberpunk reinterpretation. Not the production matrix look — it re-renders the scene in a tech register. Use only when you specifically want that alternative.
 
-If the user passes `--tech-noir` or mentions "tech-noir", "matrix skin", "phosphor", or "CRT" — use the **Tech-Noir** rules below. Otherwise use the **Ink Painting** rules.
+Routing:
+- `--stipple`, or "matrix skin", "stipple", "phosphor stipple", "the actual matrix images" → **Stipple Mode**
+- `--tech-noir`, or "tech-noir", "CRT cyberpunk", "phosphor-green reinterpretation" → **Tech-Noir Mode**
+- otherwise → **Ink Painting Mode**
+
+Note: "matrix skin" maps to **Stipple**, not Tech-Noir — the shipped matrix images are stipple.
 
 ---
 
@@ -70,13 +76,56 @@ Every prompt MUST follow all 7:
 
 ---
 
-# TECH-NOIR MODE
+# STIPPLE MODE (matrix skin — production-accurate)
+
+This is the **actual style used for the 4,096 matrix-skin images on SixLines.online** (ADR-173, "luminous stipple").
+
+## Core Principle: Do NOT Rewrite the Scene
+
+Stipple mode is **identical to Ink Painting mode in every way** — same 5 style categories, same 7 composition rules, same scene description — with exactly **one** change: swap the closing `Chinese ink painting.` for the stipple suffix below.
+
+This was a deliberate, tested decision. Rewriting verses into cyberpunk/tech settings was tried first and **failed**: the double translation (verse → new setting → new style) lost compositional quality and produced cluttered images where the ink versions breathe. Keeping the proven ink-painting scene and changing only the render carries the model's compositional understanding straight across to the new look.
+
+## Your Task
+
+Given a verse, produce:
+1. A **style classification** with a one-line rationale (use the 5 **Ink Painting** style categories — `atmospheric-night`, `ink-landscape`, `figures-in-mist`, `bold-action`, `cosmic-night`)
+2. A **50-60 word English prompt** composed exactly as in Ink Painting mode (all 7 composition rules, painterly scene language throughout), but ending with the stipple suffix instead of `Chinese ink painting.`
+3. A **faithful English translation** of the verse
+
+## The Suffix (use verbatim)
+
+End every prompt with this exact string:
+
+> Golden age science fiction stipple illustration, thousands of individual ink dots building luminous tonal gradients, figures emerging from darkness through pure pointillism technique, ethereal glowing quality, meticulous dot-work rendering every form, phosphor-green and amber palette on black.
+
+## Rules
+
+- Follow the **5 Style Categories** and **7 Composition Rules** from Ink Painting mode exactly — including embedding painterly metaphors in the scene. The stipple suffix replaces only the `Chinese ink painting.` close; it is **not** a substitute for painterly scene language.
+- Keep the classical subject and setting from the verse. The matrix look comes entirely from the render suffix — never from re-setting the scene in technology.
+- All **Content Safety Rules** and **Disambiguation Rules** (shared section below) apply.
+
+## Example — same scene, suffix swapped
+
+**Ink painting:**
+> The Big Dipper wheels above a mountain observatory… Gold stars burn against deep indigo… **Chinese ink painting.**
+
+**Stipple (matrix skin):**
+> The Big Dipper wheels above a mountain observatory… Gold stars burn against deep indigo… **Golden age science fiction stipple illustration, thousands of individual ink dots building luminous tonal gradients, figures emerging from darkness through pure pointillism technique, ethereal glowing quality, meticulous dot-work rendering every form, phosphor-green and amber palette on black.**
+
+The scene description is unchanged — only the final sentence differs.
+
+---
+
+# TECH-NOIR MODE (experimental — not the production matrix skin)
+
+> **Experimental / alternative variant.** The shipped matrix images use **Stipple Mode** above, which keeps the ink scene and only changes the render. Tech-Noir instead *re-renders* the verse in a CRT cyberpunk register — more aggressive, and easy to push too far toward photoreal clutter. Use it only when you specifically want a phosphor-green sci-fi reinterpretation rather than the production stipple look.
 
 ## Your Task
 
 Given a verse (raw text, any format), produce:
 1. A **style classification** with a one-line rationale
-2. A **50-60 word English prompt** ending with "phosphor-green tech-noir, CRT scanlines, deep blacks."
+2. A **50-60 word English prompt** ending with "phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic."
 3. A **faithful English translation** of the verse
 
 ## Core Principle: Language Register Is the Style Engine
@@ -84,6 +133,8 @@ Given a verse (raw text, any format), produce:
 Style-as-suffix fails. Appending "tech-noir aesthetic" to a scene produces inconsistent results. Instead, **the prompt must read like a tech-noir scene** — cinematic metaphors woven throughout, not appended. The verse's classical subjects stay (travelers, animals, courts, landscapes), but they are rendered through tech-noir visual language.
 
 A verse about a tiger should still have a tiger — but as "a tiger's silhouette caught in motion-sensor phosphor glow, chain-link fence framing the foreground." The verse drives the content; the register drives the rendering.
+
+**Keep it illustrated, not photographic.** This mode's failure mode is drifting into photoreal cyberpunk — literal, cluttered server rooms and rain-slick streets that lose the breathing composition of the source. Treat every tech element as a *stylized graphic* — flat phosphor shapes, cel-shaded silhouettes, scanline texture, high-contrast blocks — not a photographed object. Borrow the original scene's composition and negative space; **restyle it, don't re-photograph it.** When in doubt, lean toward the graphic-novel / vector-CRT end of the spectrum. (If you want the production matrix-skin look instead, use **Stipple Mode**.)
 
 ## The 5 Tech-Noir Style Categories
 
@@ -107,7 +158,7 @@ Every prompt MUST follow all 7:
 4. **Include a warm accent** — even in monochrome green scenes, one element carries amber, orange sodium vapor, or hot-white overexposure.
 5. **Favor diagonals and verticals** — avoid flat horizontal compositions.
 6. **Pack in discoverable detail** — secondary elements: status LEDs, scrolling text reflections, condensation on glass, cable shadows.
-7. **Use cinematic scene language** — end with "phosphor-green tech-noir, CRT scanlines, deep blacks." but embed CRT/cinematic metaphors throughout. NEVER use photographic language ("shallow depth of field", "bokeh", "35mm").
+7. **Use cinematic scene language** — end with "phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic." but embed CRT/cinematic metaphors throughout. NEVER use photographic language ("shallow depth of field", "bokeh", "35mm").
 
 ## Tech-Noir Language Register
 
@@ -156,20 +207,22 @@ Content filters on image generation APIs reject explicit bodily harm. All prompt
 
 ## Tech-Noir Reference Prompts
 
+These illustrate the *content register* (what to depict). Their wording skews cinematic/photoreal — when composing, pull the **render** toward the stylized, graphic-novel / vector-CRT end (per the Core Principle), and always close with the updated suffix.
+
 ### terminal-dark
-> A frozen drainage canal under a black sky, sleet driving sideways through sodium-vapor light. In the foreground, bare power lines sag under crusts of ice like dead scan lines. Midground, a lone figure hunches against the wind on a concrete overpass, coat whipping. Beyond, apartment towers vanish into signal fog. One amber window glows — a single warm pixel swallowed by the dark. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+> A frozen drainage canal under a black sky, sleet driving sideways through sodium-vapor light. In the foreground, bare power lines sag under crusts of ice like dead scan lines. Midground, a lone figure hunches against the wind on a concrete overpass, coat whipping. Beyond, apartment towers vanish into signal fog. One amber window glows — a single warm pixel swallowed by the dark. Phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic.
 
 ### datascape
-> An empty night market in a canal district, rain falling in phosphor-green sheets. Metal stall frames with torn tarpaulins drip steadily. Pooling light on wet asphalt reflects neon kanji from a shuttered shop. A single vendor sits under a corrugated awning, face lit by a tablet screen. Behind, a concrete bridge arches over a swollen drainage channel. One amber lantern, rain-streaked, buzzes from a junction box. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+> An empty night market in a canal district, rain falling in phosphor-green sheets. Metal stall frames with torn tarpaulins drip steadily. Pooling light on wet asphalt reflects neon kanji from a shuttered shop. A single vendor sits under a corrugated awning, face lit by a tablet screen. Behind, a concrete bridge arches over a swollen drainage channel. One amber lantern, rain-streaked, buzzes from a junction box. Phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic.
 
 ### surveillance-feed
-> A ceremony in a courtyard filmed through a dirty lens, static grain across every surface. Two groups face each other across a folding table under fluorescent strips. At center, a woman stands before a corrugated wall tagged with faded characters. Condensation on the lens softens the edges. Sodium-vapor light from the street casts amber into the green wash. The framing is voyeuristic — we are watching through a camera that was never meant to be beautiful. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+> A ceremony in a courtyard filmed through a dirty lens, static grain across every surface. Two groups face each other across a folding table under fluorescent strips. At center, a woman stands before a corrugated wall tagged with faded characters. Condensation on the lens softens the edges. Sodium-vapor light from the street casts amber into the green wash. The framing is voyeuristic — we are watching through a camera that was never meant to be beautiful. Phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic.
 
 ### overload
-> A figure surrounded — on the left a massive dog lunges, caught mid-frame in amber motion blur. On the right a second shape coils to strike. Ahead, a wall of chain-link fence topped with razor wire. Behind, red-orange sparks cascade from a blown transformer. The figure stands at center, arms raised against the glare. Glitch artifacts tear the diagonal composition. Every direction is threat. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+> A figure surrounded — on the left a massive dog lunges, caught mid-frame in amber motion blur. On the right a second shape coils to strike. Ahead, a wall of chain-link fence topped with razor wire. Behind, red-orange sparks cascade from a blown transformer. The figure stands at center, arms raised against the glare. Glitch artifacts tear the diagonal composition. Every direction is threat. Phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic.
 
 ### deep-signal
-> A white crane bird with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane bird calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir, CRT scanlines, deep blacks.
+> A white crane bird with trailing phosphor-white pinions perches atop a radio telescope dish on a high ridge. The dish's lattice frame catches starlight like a web. Beyond, a sky of deep blue-black grading to amber at the horizon where city light bleeds upward. The crane bird calls — radiating lines of signal interference ripple outward. Below, antenna arrays blink amber and green. The bird is luminous, the dish ancient, the signal eternal. Phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic.
 
 ## Anti-Patterns (produce bad results)
 
