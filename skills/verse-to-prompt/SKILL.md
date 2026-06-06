@@ -2,7 +2,7 @@
 name: verse-to-prompt
 description: Convert classical Chinese verses into image generation prompts — ink painting (default) or tech-noir variant. Use when visualizing Yilin, I Ching, Tang poetry, or classical Chinese text.
 user-invocable: true
-argument-hint: [paste your verse here] or [--stipple ...] or [--tech-noir ...]
+argument-hint: "[paste your verse here] or [--stipple ...] or [--tech-noir ...]"
 metadata:
   version: "1.0.0"
 ---
