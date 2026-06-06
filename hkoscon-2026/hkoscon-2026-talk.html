@@ -755,28 +755,6 @@ body.edit-active [contenteditable] {
   <div class="slide-number"></div>
 </section>
 
-<section class="slide podcast-slide">
-  <div class="slide-content">
-    <div class="podcast-card">
-      <div class="reveal-scale">
-        <img src="podcast-art.webp" alt="Hong Kong AI Podcast artwork" class="podcast-art">
-      </div>
-      <div class="podcast-info">
-        <div class="reveal" style="transition-delay: 0.15s;">
-          <p class="podcast-title">Hong Kong<br>AI Podcast</p>
-          <p class="podcast-tagline">Real conversations with Hong Kong's AI practitioners — research, fintech, robotics, culture.</p>
-          <p class="podcast-url">hongkongaipodcast.com</p>
-        </div>
-      </div>
-      <div class="reveal" style="transition-delay: 0.3s; text-align: center; flex-shrink: 0;">
-        <img src="qr-podcast.png" alt="Podcast QR" style="width: clamp(160px, 20vw, 260px); border-radius: clamp(6px, 0.8vw, 12px); background: #fff; padding: clamp(6px, 0.8vw, 12px);">
-        <p style="font-size: var(--body-size); color: #8a7a5c; margin-top: 0.5em; font-weight: 500;">Listen now</p>
-      </div>
-    </div>
-  </div>
-  <div class="slide-number"></div>
-</section>
-
 <section class="slide">
   <div class="paper-texture"></div>
   <div class="ink-wash-tr"></div>
@@ -1380,6 +1358,7 @@ walled courtyard...</div>
       <p style="font-size: var(--small-size);"><strong>Claude Code:</strong> <span class="font-mono">/plugin marketplace add augchan42/inkstone</span></p>
       <p style="font-size: var(--small-size);"><strong>GitHub:</strong> <span class="text-clay">github.com/augchan42/inkstone</span></p>
       <p class="text-muted" style="font-size: var(--small-size);"><strong>Cursor:</strong> Same skills in Agent chat &mdash; ask naturally (e.g. <span class="font-mono">&quot;use verse-to-prompt on &hellip;&quot;</span>) or copy to <span class="font-mono">.cursor/skills/</span>. No <span class="font-mono">/plugin</span> commands.</p>
+      <p class="text-muted" style="font-size: var(--small-size);"><strong>opencode:</strong> spec-packaged &mdash; worth trying <span class="font-mono">npx skills add augchan42/inkstone</span> (opencode ran this on its own to pull the skills).</p>
     </div>
   </div>
   <div class="slide-number"></div>
@@ -1433,7 +1412,7 @@ walled courtyard...</div>
       </div>
       <div class="reveal" style="background: var(--tone); border-radius: clamp(6px, 0.8vw, 12px); padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 1.5vw, 1.5rem); border-top: 3px solid var(--gold);">
         <h3 style="font-size: var(--h3-size); margin-bottom: 0.4em;">OpenCode</h3>
-        <p style="font-size: var(--body-size); line-height: 1.5;">Reads CLAUDE.md for project context, supports skill-style instructions</p>
+        <p style="font-size: var(--body-size); line-height: 1.5;">Auto-discovers skills by scanning the <span class="font-mono">skills/</span> folder against the Agent Skills spec; reads <span class="font-mono">AGENTS.md</span> for project context</p>
         <p class="text-muted" style="font-size: var(--small-size); margin-top: 0.6em;">Open source &middot; see Jules' talk today!</p>
       </div>
       <div class="reveal" style="background: var(--tone); border-radius: clamp(6px, 0.8vw, 12px); padding: clamp(1rem, 2vh, 1.5rem) clamp(1rem, 1.5vw, 1.5rem); border-top: 3px solid var(--border);">
@@ -1443,6 +1422,50 @@ walled courtyard...</div>
       </div>
     </div>
     <p class="reveal" style="font-size: var(--body-size); margin-top: clamp(1rem, 2.5vh, 2rem); color: var(--clay); font-weight: 600;">Encode domain expertise into structured documents that agents consume at runtime.</p>
+  </div>
+  <div class="slide-number"></div>
+</section>
+
+<section class="slide">
+  <div class="paper-texture"></div>
+  <div class="ink-wash-tr"></div>
+  <div class="accent-bar"></div>
+  <div class="slide-content centered">
+    <h2 class="reveal">Support HKOSCON</h2>
+    <p class="reveal text-muted" style="max-width: 820px; margin-bottom: clamp(1rem, 2.5vh, 2rem);">This conference runs on the open-source community. If today's talks brought you value, become a patron — every contribution keeps HKOSCON free, independent, and volunteer-run.</p>
+    <div class="reveal" style="display: flex; align-items: center; justify-content: center; gap: clamp(2rem, 5vw, 4rem); flex-wrap: wrap;">
+      <div style="text-align: left; max-width: 460px;">
+        <p style="font-size: var(--h3-size); color: var(--clay); font-weight: 600; margin-bottom: 0.4em;">Become a Patron</p>
+        <p style="font-size: var(--body-size); line-height: 1.6;">Sponsor speakers, venues, and travel grants. Keep the open-source movement in Hong Kong thriving.</p>
+        <p style="font-size: var(--h3-size); margin-top: clamp(0.6rem, 1.5vh, 1rem); font-weight: 600;"><span class="text-clay">hkoscon.org/2026/patron</span></p>
+      </div>
+      <div style="text-align: center; flex-shrink: 0;">
+        <img src="qr-patron.png" alt="HKOSCON Patron QR" style="width: clamp(160px, 20vw, 260px); border-radius: clamp(6px, 0.8vw, 12px);">
+        <p style="font-size: var(--small-size); color: var(--muted); margin-top: 0.5em;">Donate &middot; hkoscon.org/2026/patron</p>
+      </div>
+    </div>
+  </div>
+  <div class="slide-number"></div>
+</section>
+
+<section class="slide podcast-slide">
+  <div class="slide-content">
+    <div class="podcast-card">
+      <div class="reveal-scale">
+        <img src="podcast-art.webp" alt="Hong Kong AI Podcast artwork" class="podcast-art">
+      </div>
+      <div class="podcast-info">
+        <div class="reveal" style="transition-delay: 0.15s;">
+          <p class="podcast-title">Hong Kong<br>AI Podcast</p>
+          <p class="podcast-tagline">Real conversations with Hong Kong's AI practitioners — research, fintech, robotics, culture.</p>
+          <p class="podcast-url">hongkongaipodcast.com</p>
+        </div>
+      </div>
+      <div class="reveal" style="transition-delay: 0.3s; text-align: center; flex-shrink: 0;">
+        <img src="qr-podcast.png" alt="Podcast QR" style="width: clamp(160px, 20vw, 260px); border-radius: clamp(6px, 0.8vw, 12px); background: #fff; padding: clamp(6px, 0.8vw, 12px);">
+        <p style="font-size: var(--body-size); color: #8a7a5c; margin-top: 0.5em; font-weight: 500;">Listen now</p>
+      </div>
+    </div>
   </div>
   <div class="slide-number"></div>
 </section>
