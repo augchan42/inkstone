@@ -3,6 +3,8 @@ name: arxiv-search
 description: Search arXiv for papers by topic, author, or ID. Find research, recent pubs, or look up a specific paper.
 user-invocable: true
 argument-hint: <search query or arXiv ID, e.g. "transformer attention" or "2301.07041">
+metadata:
+  version: "1.0.0"
 ---
 
 # arXiv Paper Search

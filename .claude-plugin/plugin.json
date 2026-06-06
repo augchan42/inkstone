@@ -1,7 +1,7 @@
 {
   "name": "inkstone",
   "description": "Custom Claude Code skills by Augustin Chan — ink painting, UI/UX audits, media kits, arXiv search, and more",
-  "version": "1.5.0",
+  "version": "1.6.0",
   "author": {
     "name": "Augustin Chan",
     "url": "https://github.com/augchan42"
@@ -10,16 +10,5 @@
   "repository": "https://github.com/augchan42/inkstone",
   "license": "MIT",
   "keywords": ["ink-painting", "chinese", "classical-verse", "image-generation", "ui-ux", "design-audit", "media-kit", "arxiv", "app-store", "market-analysis"],
-  "skills": [
-    "./skills/verse-to-prompt",
-    "./skills/create-explanation",
-    "./skills/blakean-scene",
-    "./skills/ui-ux-architect",
-    "./skills/nextjs-i18n-seo",
-    "./skills/media-kit",
-    "./skills/arxiv-search",
-    "./skills/image-to-scene",
-    "./skills/market-pulse",
-    "./skills/voice-calibration"
-  ]
+  "skills": "./skills"
 }

@@ -3,6 +3,8 @@ name: media-kit
 description: Build a speaker media kit — bio writing, photo prep, and page generation for event organizers
 user-invocable: true
 argument-hint: Optional path to existing headshot photo
+metadata:
+  version: "1.0.0"
 ---
 
 # Media Kit Builder

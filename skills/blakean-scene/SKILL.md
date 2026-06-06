@@ -3,6 +3,8 @@ name: blakean-scene
 description: Convert abstract concepts into Blakean embodied scenes. Blake's 8 patterns, body grammar, and figure types.
 user-invocable: true
 argument-hint: [tradition name] [concept name and brief description]
+metadata:
+  version: "1.0.0"
 ---
 
 # Blakean Scene — Concept → Embodied Scene

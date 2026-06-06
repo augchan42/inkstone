@@ -3,6 +3,8 @@ name: nextjs-i18n-seo
 description: Audit/fix Next.js i18n SEO — crawlability, 307 redirects, locale URLs, sitemap, hreflang.
 user-invocable: true
 argument-hint: [site URL or project path]
+metadata:
+  version: "1.0.0"
 ---
 
 # Next.js i18n SEO Fix

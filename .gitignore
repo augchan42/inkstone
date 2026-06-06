@@ -3,3 +3,11 @@
 slide*.png
 sample-*.jpeg
 *-check*.png
+
+# macOS
+.DS_Store
+**/.DS_Store
+
+# Skill install artifacts (npx skills add)
+.agents/
+skills-lock.json

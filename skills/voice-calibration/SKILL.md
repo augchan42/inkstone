@@ -3,6 +3,8 @@ name: voice-calibration
 description: Interactive voice profiling — asks writing prompts in terminal, collects live responses, and distills a reusable voice profile for content generation. Use when calibrating tone for social posts, newsletters, or any written output.
 user-invocable: true
 argument-hint: "[--domain topic] to focus prompts on a specific subject area"
+metadata:
+  version: "1.0.0"
 ---
 
 # Voice Calibration

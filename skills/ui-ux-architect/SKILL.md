@@ -3,6 +3,8 @@ name: ui-ux-architect
 description: Audit UI/UX design for visual hierarchy, spacing, typography, and accessibility. Jobs/Ive-style design critique.
 user-invocable: true
 argument-hint: [screen name, flow, or "full audit"]
+metadata:
+  version: "1.0.0"
 ---
 
 # UI/UX Architect
