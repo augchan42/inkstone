@@ -40,6 +40,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 |-------|-------------|
 | **media-kit** | Build a speaker media kit — bio writing, photo prep, and page generation for event organizers |
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
+| **analyze-variation** | Measure sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts |
 
 ### App Store
 
