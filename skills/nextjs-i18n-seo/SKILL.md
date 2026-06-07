@@ -1,6 +1,6 @@
 ---
 name: nextjs-i18n-seo
-description: Audit/fix Next.js i18n SEO — crawlability, 307 redirects, locale URLs, sitemap, hreflang.
+description: Audit/fix Next.js i18n SEO for the App Router — crawlability, 307→301 redirects, locale URLs, sitemap, hreflang. Use when diagnosing lost PageRank or i18n redirect bugs in middleware.
 user-invocable: true
 argument-hint: "[site URL or project path]"
 metadata:

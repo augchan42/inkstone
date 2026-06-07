@@ -1,6 +1,6 @@
 ---
 name: blakean-scene
-description: Convert abstract concepts into Blakean embodied scenes. Blake's 8 patterns, body grammar, and figure types.
+description: Convert abstract symbolic concepts into Blakean embodied scene prompts — Blake's 8 compositional patterns, body grammar, and figure types. Use when visualizing oracular or symbolic ideas as figures; for ink-painting scenes from verse, see verse-to-prompt instead.
 user-invocable: true
 argument-hint: "[tradition name] [concept name and brief description]"
 metadata:

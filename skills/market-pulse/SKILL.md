@@ -1,6 +1,6 @@
 ---
 name: market-pulse
-description: App Store market overview using web search only — competitor movements, trending keywords, Apple featuring, new releases, and category dynamics. No paid API subscriptions required. Use when the user mentions "market pulse", "market check", "what's happening in the App Store", "competitor check", or "category update".
+description: App Store market overview for a category using web search only — competitor movements, trending keywords, Apple featuring, new releases, and category dynamics. No paid API subscriptions required. Use when the user mentions "market pulse", "market check", "what's happening in the App Store", "competitor check", or "category update".
 user-invocable: true
 argument-hint: "[category or 'all']"
 metadata:

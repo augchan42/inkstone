@@ -27,6 +27,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **verse-to-prompt** | Generate Chinese ink painting prompts from classical verse — 7 composition rules, 5 style categories, content safety patterns |
 | **image-to-scene** | Convert ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference |
 | **create-explanation** | Produce bilingual scholarly explanations for Jiaoshi Yilin verses |
+| **blakean-scene** | Turn abstract symbolic concepts into Blakean embodied scene prompts — 8 compositional patterns, body grammar, figure types |
 
 ### Design / UX
 
@@ -41,6 +42,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **media-kit** | Build a speaker media kit — bio writing, photo prep, and page generation for event organizers |
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
 | **analyze-variation** | Measure sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts |
+| **voice-calibration** | Interactive voice profiling — asks live writing prompts, collects responses, and distills a reusable voice profile for tone-consistent content |
 
 ### App Store
 

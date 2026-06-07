@@ -1,6 +1,6 @@
 ---
 name: image-to-scene
-description: Convert an ink painting's original image prompt into a video generation motion prompt for image-to-video APIs. Requires the original verse-to-prompt output as input — never guess from a description alone.
+description: Convert an ink painting's original image prompt into a video generation motion prompt for image-to-video APIs. Use when animating a verse-to-prompt result — requires that original prompt as input; never guess from a description alone.
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
