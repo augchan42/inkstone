@@ -185,9 +185,13 @@ function main() {
   if (textIdx >= 0) {
     posts = [{ label: 'inline', metrics: analyzePost(argv[textIdx + 1] || '') }];
   } else {
-    const files = argv.filter(
-      (a, i) => !a.startsWith('--') && a !== argv[writeIdx + 1] && a !== argv[textIdx + 1],
-    );
+    // Exclude flags and the argument positions consumed by --write/--text.
+    // (Indexing by position, not value, so the first file isn't dropped when
+    // those flags are absent and writeIdx/textIdx are -1.)
+    const consumed = new Set();
+    if (writeIdx >= 0) consumed.add(writeIdx + 1);
+    if (textIdx >= 0) consumed.add(textIdx + 1);
+    const files = argv.filter((a, i) => !a.startsWith('--') && !consumed.has(i));
     if (files.length) {
       posts = files.map((f) => ({
         label: basename(f).replace(/\.(md|mdx)$/, ''),
