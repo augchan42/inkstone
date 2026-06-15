@@ -56,6 +56,12 @@ A collection of agent skills for creative and design workflows, built for [Claud
 |-------|-------------|
 | **nextjs-i18n-seo** | Audit/fix Next.js i18n SEO — crawlability, 307 redirects, locale URLs, sitemap, hreflang |
 
+### Video
+
+| Skill | Description |
+|-------|-------------|
+| **video-to-shorts** | Turn a long video into vertical shorts — transcribe, auto-suggest the best soundbites, cut, 9:16 crop, burn-in subtitles. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4 |
+
 ## Usage
 
 ### Generate an ink painting prompt
