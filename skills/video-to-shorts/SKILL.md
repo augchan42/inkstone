@@ -130,21 +130,38 @@ Read each frame: mid-blink? mouth frozen mid-word? slide changing? Shift the bou
 
 ### 5. Determine the vertical crop — never guess
 
-Decide the 9:16 crop **before** cutting:
+Decide the 9:16 crop **before** cutting. This is a **two-stage** decision: first *which side* the speaker is on, then *fine-tune the offset within that side*.
 
-1. Extract a frame from the middle of the segment and read it to see who's where:
+**a. Read the framing & pick the side.** Extract a frame from the middle of the segment and look at it:
    `ffmpeg -y -ss <MID> -i source.mp4 -frames:v 1 /tmp/mid.png`
-2. Compute the 9:16 crop width for the source height (e.g. **608×1080** from 1920×1080, **405×720** from 1280×720).
-3. **Present 3+ crop options** as screenshots at different x-offsets (left / center / right) and let the user pick — composition depends on gaze direction and background:
+   Decide which side of the frame the speaker occupies — **left, center, or right** — and confirm the camera is static (pull a second frame elsewhere in the segment; if it pans/cuts, a fixed crop may not work). This narrows the offset range you sample in step c — no point testing the empty half of the frame.
+
+**b. Compute the crop size from the source height** (`ffprobe` it first). Both crop dimensions **and the x offset** must be **even** — libx264 (yuv420p) rejects odd values:
+   - `crop_w` = `height × 9 ÷ 16`, rounded to the **nearest even** number.
+   - `crop_h = height` (full height, so `y = 0`).
+   - offset range: `x` runs from `0` (hard left) to `source_width − crop_w` (hard right); center is `(source_width − crop_w) ÷ 2`.
+
+   | Source | crop_w × crop_h | left x | center x | right (max) x |
+   |--------|-----------------|--------|----------|---------------|
+   | 1920×1080 | **608×1080** | 0 | 656 | 1312 |
+   | 1280×720  | **404×720**  | 0 | 438 | 876 |
+   | 3840×2160 (4K) | **1216×2160** | 0 | 1312 | 2624 |
+
+**c. Slice within the chosen side** — take **3–5 screenshots** at offsets spanning *only that side*, then present them and let the user pick. Composition depends on gaze direction (looking-room: leave space where they look), and what's in the background — an empty wall can be worse than a tighter, busier crop. The user decides.
    ```bash
-   for x in 200 656 1312; do
-     ffmpeg -y -ss <MID> -i source.mp4 -frames:v 1 \
-       -vf "crop=608:1080:$x:0" /tmp/crop_$x.png
+   # Speaker on the LEFT of a 1920×1080 frame → sample left-half offsets:
+   for x in 0 160 320 480 640; do
+     ffmpeg -y -ss <MID> -i source.mp4 -frames:v 1 -vf "crop=608:1080:$x:0" /tmp/crop_$x.png
    done
+   # Speaker on the RIGHT → sample right-half offsets up to max x (1312):
+   #   for x in 704 856 1008 1160 1312; do ... done
+   # Centered speaker → sample around center (e.g. 496 576 656 736 816).
    ```
-   Apply the looking-room principle (leave space where the speaker looks), but check the background too — an empty wall can be worse than a tighter, busier crop. The user decides.
+   Keep all offsets even. Substitute your computed `crop_w`/max-x if the source isn't 1080p.
 
 ### 6. Cut & crop
+
+Substitute your computed even `crop_w:crop_h` and `x` from step 2 (the `608:1080` below is the 1080p case):
 
 ```bash
 ffmpeg -y -ss <IN> -to <OUT> -i source.mp4 \
@@ -153,7 +170,9 @@ ffmpeg -y -ss <IN> -to <OUT> -i source.mp4 \
   -c:a aac -b:a 128k \
   /tmp/clip.mp4
 ```
-Verify: extract a frame, confirm framing, confirm duration ≤ 60s.
+Verify: extract a frame, confirm framing, confirm duration ≤ 60s, and **confirm the output is exactly your target dimensions** (`ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0 /tmp/clip.mp4`) — if ffmpeg silently shaved a pixel, your crop_w was odd.
+
+*Optional — upscale to full 1080×1920 for max resolution:* append `,scale=1080:1920:flags=lanczos` to the `-vf` chain (a 608×1080 crop is true 9:16 but lower-res; platforms upscale it anyway, so this is optional).
 
 ### 7. Re-transcribe the CUT clip — don't offset the source SRT
 
@@ -214,7 +233,9 @@ For each short, keep:
 |---------|------------|
 | Offsetting the source SRT to start at 0 | Re-transcribe the cut clip (step 7) — offsets drift |
 | Using chapter timestamps as cut points | Anchor to the actual SRT block where the line starts |
-| Guessing the crop position | Present 3+ crop screenshots; let the user pick |
+| Guessing the crop position | First pick the speaker's side, then slice 3–5 offsets within that side; let the user pick |
+| Odd crop width/height (e.g. 405) | Round to **even** — libx264 errors or silently shifts a pixel otherwise |
+| Copy-pasting `608:1080` on a non-1080p source | Recompute crop_w from the source height (step 2 table) |
 | Long sentences on one subtitle cue | Short phrases, ~14–16 chars/line, 2–4 lines |
 | Burning subs with default macOS Homebrew ffmpeg | Use the libass static build (`~/.local/bin/ffmpeg`) |
 | Clip over 60s | Trim to ≤ 60s (Shorts limit); 15–30s is ideal |
