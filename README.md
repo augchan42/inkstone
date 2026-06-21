@@ -28,6 +28,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **image-to-scene** | Convert ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference |
 | **create-explanation** | Produce bilingual scholarly explanations for Jiaoshi Yilin verses |
 | **blakean-scene** | Turn abstract symbolic concepts into Blakean embodied scene prompts — 8 compositional patterns, body grammar, figure types |
+| **shaughnessy-iching** | Interpret a Zhouyi (I Ching) hexagram/line in Edward Shaughnessy's de-mythologized late–Western Zhou register — divination-manual reading, not wisdom classic; provenance-flagged, interpret-only (no casting) |
 
 ### Design / UX
 
