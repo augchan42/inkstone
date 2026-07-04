@@ -56,6 +56,9 @@ resolved target and chosen mode before doing anything else.
 
 1. **Snapshot** key pages (home + 2–4 representative templates) × viewports
    390×844 and 1440×900 → `.artifacts/site-upgrade/<run-id>/baseline/`.
+   If the target's HEAD materially differs from the deployed site, snapshot
+   a local build; otherwise the production site is an acceptable baseline.
+   Record which was used.
 2. **References** — invoke `design-dna` (research mode unless URLs given).
 3. **Synthesize** → `<target_repo>/design-dna/synthesis.md` covering: shared
    patterns; meaningful disagreements; which reference leads each dimension;
@@ -71,11 +74,16 @@ resolved target and chosen mode before doing anything else.
    ```
 
    **Accessibility and performance are gates, not tradable dimensions** — no
-   visual ambition may lower either below the current baseline.
+   visual ambition may lower either below the current baseline. Record the
+   scores and each "what would make it a 10" in the plan document (or the
+   audit report in audit mode).
 5. **Plan** → `<target_repo>/docs/plans/` following the target's existing
    naming conventions. Order: quick wins → signature moments. Include the
    project-policy seed for `docs/MOTION.md`: excluded high-volume templates,
-   animation-eligible surfaces, locale list.
+   animation-eligible surfaces, locale list. Write the seed as a PLAIN
+   section at the top of `docs/MOTION.md`, above any motion-craft managed
+   sections; once written it belongs to the project (motion-craft never
+   edits content outside its managed markers).
 6. **Dispatch** (implement mode only) — motion items → `motion-craft`
    (inherits implement authority); static design items → the project's build
    skills (e.g. editorial-designer / frontend-design) following the plan.

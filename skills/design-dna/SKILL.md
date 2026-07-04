@@ -65,7 +65,10 @@ selections. Pick the top 2–3.
   blueprint's `Identity` section. Never block waiting for a choice.
 - Keyword search against discovery sources is often noisy and won't reliably
   turn up a site-restricted match — prefer fetching their curated
-  collection/tag pages directly over trusting generic search ranking. If no
+  collection/tag pages directly over trusting generic search ranking.
+  Discovery sources also move or shut down (e.g. godly.website now
+  redirects to recent.design); when one is gone, fall back to web search
+  plus scoring a slate of known candidate sites rather than stalling. If no
   candidate is a strong fit for the requested vibe, pick the closest
   available and say so plainly in the rationale (which axes it scores on,
   which it doesn't) rather than overstating the match.
@@ -114,9 +117,14 @@ dominates the motion table (`high` = mostly extracted/runtime-observed,
 
 ## Blocked or partially inspectable references
 
-Continue with source-only extraction; mark dynamic evidence `unknown`; lower
-blueprint `confidence`; accept user-provided screenshots if offered. Never
-halt the pipeline waiting for the user.
+Interstitial bot checks (e.g. Cloudflare "Just a moment…") often auto-clear
+after a few seconds in a real browser context — poll the page title for up
+to ~30s and, once cleared, do all sampling in that same session (the
+clearance cookie does not survive a context change) before declaring the
+reference blocked. If truly blocked: continue with source-only extraction;
+mark dynamic evidence `unknown`; lower blueprint `confidence`; accept
+user-provided screenshots if offered. Never halt the pipeline waiting for
+the user.
 
 ## Hard rule
 
