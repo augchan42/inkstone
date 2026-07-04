@@ -42,6 +42,11 @@ Exercise and capture: hover on nav/buttons/cards; keyboard focus (Tab
 through the header and one card grid); navigation open; one
 accordion/modal if present; one route transition if the site is a SPA.
 
+Use a real UI click, not a synthetic `element.click()` dispatched from
+injected JS — portal-rendered menus/sheets/dialogs (common in component
+libraries like Radix/shadcn) frequently only open in response to a
+trusted pointer event and will silently no-op otherwise.
+
 ## 5. Scrubbed vs discrete
 
 An animation is *scrubbed* if reversing scroll direction reverses the

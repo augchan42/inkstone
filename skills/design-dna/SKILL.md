@@ -37,10 +37,17 @@ message of the run.
 Outputs:
 - `<target_repo>/design-dna/<ref-slug>.md` — one blueprint per reference
 - `<target_repo>/.artifacts/site-upgrade/<run-id>/` — screenshots, traces
-  (if `.artifacts/` is not gitignored, recommend the entry; do not edit
-  `.gitignore` yourself)
+  (if `.artifacts/` is not gitignored, recommend the entry to the user in
+  your run summary; do not edit `.gitignore` yourself)
 
 `<run-id>` = ISO timestamp of run start. `<ref-slug>` = kebab-case site name.
+
+Browser-tooling note: many Playwright-compatible tools (e.g. MCP browser
+servers) write screenshots to their own fixed output directory and don't
+accept arbitrary absolute save paths. If your tool can't save directly
+into `<target_repo>/.artifacts/...`, capture to wherever it writes, then
+move/copy the files into place immediately afterward — verify the final
+location is beneath the resolved target before treating the run as done.
 
 ## Mode 1: Research (no URLs given)
 
@@ -56,6 +63,12 @@ selections. Pick the top 2–3.
   let the user pick.
 - Non-interactive run: select automatically and record the rationale in each
   blueprint's `Identity` section. Never block waiting for a choice.
+- Keyword search against discovery sources is often noisy and won't reliably
+  turn up a site-restricted match — prefer fetching their curated
+  collection/tag pages directly over trusting generic search ranking. If no
+  candidate is a strong fit for the requested vibe, pick the closest
+  available and say so plainly in the rationale (which axes it scores on,
+  which it doesn't) rather than overstating the match.
 
 ## Mode 2: Extraction (per reference)
 
