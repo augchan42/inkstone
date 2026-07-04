@@ -183,6 +183,28 @@ The skills were validated with `fal-ai/z-image/turbo` but the composition princi
 
 A design audit skill that evaluates screens against 13 dimensions (visual hierarchy, spacing, typography, color, alignment, components, iconography, motion, states, dark mode, density, responsiveness, accessibility). Uses mobile-mcp for live device inspection.
 
+### design-dna
+
+Extracts an abstract visual + motion blueprint from reference websites (or
+researches award-winning references from a vibe description). Layout and
+motion are sampled separately; every observation carries an evidence label.
+Blueprints land in `<target>/design-dna/`. Observes only — never implements.
+
+### motion-craft
+
+Implements web animations against a design-dna blueprint (or a target-native
+brief) with hard guardrails: reduced-motion behavior, compositor-friendly
+properties by default, smallest client boundaries, i18n-safe choreography,
+and a 12-gate verification checklist. Plans by default; implements only on
+explicit authority.
+
+### upgrade-site
+
+Orchestrates a full site design upgrade: snapshot → reference research →
+synthesis → 0–10 gap scoring (accessibility and performance are gates) →
+prioritized plan → dispatched implementation → verification. Modes: audit /
+plan / implement; vague requests never mutate code.
+
 ## License
 
 MIT
