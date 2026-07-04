@@ -1,6 +1,6 @@
 ---
 name: motion-craft
-description: Implement professional web animations in a target repo against an approved design blueprint or an explicit motion direction. Use when asked to "add animations", "improve the motion", "make it feel alive", "implement the motion plan", or when dispatched by the upgrade-site skill. Plans by default; modifies code only on explicit implement authority.
+description: Implement professional web animations in a target repo against an approved design blueprint or an explicit motion direction. Use when asked to "add animations", "improve the motion", "make it feel alive", "implement the motion plan", or when dispatched by the upgrade-site skill. Plans by default; modifies code only on explicit implement authority. For broad visual/reference research, see design-dna instead.
 user-invocable: true
 argument-hint: "[target repo path and/or blueprint path, plus scope]"
 compatibility: Designed for Claude Code. Requires git and a browser-verification tool (Playwright-compatible or gstack browse) for implement mode; plan mode works without a browser.
@@ -46,7 +46,9 @@ target's `AGENTS.md`, `CLAUDE.md`, `docs/DESIGN.md`, `docs/MOTION.md`, route
 conventions, and package metadata. Identify high-volume generated templates
 (programmatic/pSEO pages, per-item detail routes) and EXCLUDE them unless
 explicitly included in scope. Record discovered policy at the top of your
-plan output.
+plan output — i.e. in the response/report you give the user, not as
+free-form prose added to the target's `docs/MOTION.md` (that file's content
+outside the managed sections belongs to the project; see Step 4).
 
 ## Step 2 — Stack detection
 
@@ -77,6 +79,15 @@ sections — replace a matching section on re-run, never append a duplicate:
 |---|---|---|---|---|---|---|---|---|---|---|---|---|
 <!-- inkstone:motion-craft:end section-id=homepage-hero -->
 ```
+
+If `docs/MOTION.md` does not exist yet, create it: a minimal top-level
+heading (e.g. `# Motion`) followed by the managed section above — do not
+invent additional unmanaged content.
+
+Every data row must have exactly 13 cells matching the header. Never put a
+literal `|` inside a cell (it silently shifts every later column); wrap
+inline code or punctuation instead, and count cells before writing when a
+row's content is long or generated programmatically.
 
 Content outside managed sections belongs to the project — never touch it.
 
