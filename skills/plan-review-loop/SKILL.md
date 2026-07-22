@@ -21,7 +21,7 @@ setup → locate-or-author → independent review → address with judgment → 
 
 State lives in `.claude/plan-review-loop.local.md`. Reviews are written to `reviews/plan-review-<id>.md`. On any tooling error, fail open: report the problem and continue without the loop rather than trapping the user.
 
-**Enforcement:** the inkstone stop hook (`hooks/stop-hook.sh`) will not let the session stop while this loop's state file says the review is incomplete or findings are undispositioned. Keep the state file's `phase:` accurate as you progress — it is the contract with the hook.
+**Enforcement:** the inkstone stop hook (`hooks/stop-hook.sh`) will not let the session stop while this loop's state file says the review is incomplete, findings are undispositioned, or a required confirmation round is pending. Keep the state file's `phase:` accurate as you progress — it is the contract with the hook.
 
 **Coexistence with the original review-loop plugin:** the setup block below refuses to start while a code review loop (`.claude/review-loop.local.md`) is active, and the stop hook defers entirely to that plugin whenever its state file exists. Run doc loops and code loops sequentially, never concurrently.
 
@@ -77,7 +77,25 @@ Pick a reviewer backend, in order of preference:
    CODEX_CONFIG="${HOME}/.codex/config.toml" && if [ ! -f "$CODEX_CONFIG" ]; then mkdir -p "${HOME}/.codex" && printf '[features]\nmulti_agent = true\n' > "$CODEX_CONFIG" && echo "Created ~/.codex/config.toml with multi_agent enabled"; elif ! grep -qE '^\s*multi_agent\s*=\s*true' "$CODEX_CONFIG"; then if grep -qE '^\[features\]' "$CODEX_CONFIG"; then if [ "$(uname)" = "Darwin" ]; then sed -i '' '/^\[features\]/a\'$'\n''multi_agent = true' "$CODEX_CONFIG"; else sed -i '/^\[features\]/a multi_agent = true' "$CODEX_CONFIG"; fi; else printf '\n[features]\nmulti_agent = true\n' >> "$CODEX_CONFIG"; fi && echo "Enabled multi_agent in ~/.codex/config.toml"; else echo "Codex multi-agent: already enabled"; fi
    ```
 
-   Then run `codex exec` non-interactively with the review prompt (one agent per lane, run in parallel, then consolidate), instructing it to write the consolidated review to `reviews/plan-review-<id>.md`. Cross-model independence, matching the original review-loop. If Codex exits without producing the review file, log the failure and fall back to backend 2.
+   Then run `codex exec` non-interactively with the review prompt (one agent per lane, run in parallel, then consolidate), instructing it to write the consolidated review to `reviews/plan-review-<id>.md`. Cross-model independence, matching the original review-loop.
+
+   **A hung Codex never exits — never wait on exit alone.** Codex can block on startup (auth refresh, dead network call) and burn an hour producing nothing. Three mandatory rules:
+
+   - **Redirect, never pipe.** Launch in the background with output to a file — pipes (`| tail`, `| head`) buffer until exit and make a dead process indistinguishable from a working one:
+
+     ```bash
+     touch .claude/plan-review-codex-launch && codex exec <flags> "<prompt>" > .claude/plan-review-codex-run.log 2>&1 &
+     ```
+
+   - **Liveness probe at ~90s.** A healthy Codex writes a rollout file within seconds of starting a session. About 90 seconds after launch, check:
+
+     ```bash
+     find "$HOME/.codex/sessions/$(date +%Y/%m/%d)" -name 'rollout-*.jsonl' -newer .claude/plan-review-codex-launch 2>/dev/null | head -1
+     ```
+
+     No rollout file → the run is dead on arrival. Kill the process, log `backend=codex DEAD (no rollout within 90s)`, and fall back to backend 2 immediately.
+
+   - **Watchdog.** Hard cap ~15 minutes total; also treat "run log unchanged for 5 consecutive minutes" as a hang (poll while waiting — do not idle to a stop). On either trigger, or if Codex exits without producing the review file: kill the process, log the failure, fall back to backend 2.
 2. **Context-blind subagents** (fallback, always available): dispatch **three parallel subagents**, one per review lane. Each subagent's prompt must contain ONLY: the plan path, the source spec path (Lane 2), the repo root, its lane's criteria from `plan-review-dimensions.md`, and the finding format. Never include your planning reasoning or conversation history. Consolidate their findings yourself: deduplicate (keep the most detailed duplicate), sort by severity, write `reviews/plan-review-<id>.md`.
 
 **The three review lanes** (full criteria in `plan-review-dimensions.md` — read it before dispatching):
@@ -106,7 +124,7 @@ Read the review file carefully. For each finding, **independently decide if you 
 - **Disagree** → do not change the plan; record why.
 - Findings that change scope or contradict the spec's intent → surface to the user rather than deciding unilaterally.
 
-Work critical and high severity first. Append a disposition log to the bottom of the review file:
+Work critical and high severity first. **Before appending the disposition log**, decide whether a confirmation round is owed: if any critical finding is being FIXED, set `phase: confirm` in the state file first, so the stop hook knows the loop is not done at disposition time. If no critical finding was fixed, leave the phase at `addressing` (the hook treats disposition-in-addressing as completion). Then append the disposition log to the bottom of the review file:
 
 ```
 ## Disposition (<UTC timestamp>)
@@ -117,7 +135,7 @@ Work critical and high severity first. Append a disposition log to the bottom of
 
 ## Phase 4 — Confirm (conditional)
 
-If any **critical** finding was fixed, run exactly one confirmation round: re-dispatch **one** fresh context-blind reviewer with the revised plan and the prior review file, asking only "are the critical findings resolved, and did the revisions introduce new problems?" Append its verdict to the review file. Do not loop beyond this single round.
+If any **critical** finding was fixed (i.e., the state file now says `phase: confirm`), run exactly one confirmation round: re-dispatch **one** fresh context-blind reviewer with the revised plan and the prior review file, asking only "are the critical findings resolved, and did the revisions introduce new problems?" The same backend rules apply, including the Codex liveness probe and watchdog — on backend failure, fall back to a subagent rather than skipping confirmation. Append its verdict to the review file as a `## Confirmation` section (the stop hook looks for this exact heading before allowing exit from the confirm phase). Do not loop beyond this single round.
 
 ## Phase 5 — Cleanup
 
@@ -125,8 +143,9 @@ Delete `.claude/plan-review-loop.local.md`. Report to the user: plan path, revie
 
 ## Rules
 
-- Keep the state file's `phase:` truthful at every transition — the stop hook enforces the loop through it and fails open (abandons the loop) if it sees no progress
-- Log notable events (backend chosen, fallbacks, phase transitions) to `.claude/plan-review-loop.log` as timestamped lines, matching the hook's format
+- Keep the state file's `phase:` truthful at every transition — the stop hook enforces the loop through it (`locate`/`review` → review file required; `addressing` → disposition required; `confirm` → `## Confirmation` required) and fails open (abandons the loop) after repeated blocks with no progress
+- Never pipe a reviewer process's output; redirect to a file and poll for growth — a pipe hides the difference between working and dead
+- Log notable events (backend chosen, fallbacks, phase transitions, watchdog kills) to `.claude/plan-review-loop.log` as timestamped lines, matching the hook's format
 - Complete the plan fully before entering review — no stopping mid-draft to "let the review catch it"
 - Reviewers never see planning context; dispatch prompts are built from the documents and the dimensions file only
 - Never fabricate findings or a review file — if the backend fails, say so and fall back

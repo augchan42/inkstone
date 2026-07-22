@@ -90,9 +90,10 @@ Content safety substitutions exist because 52 of 4,096 images failed generation 
 
 - **Fast no-op:** the first check is for `.claude/plan-review-loop.local.md`; absent → immediate `{"decision":"approve"}`. The hook must stay cheap because it fires on every stop.
 - **Coexistence:** if `.claude/review-loop.local.md` (the hamel-review/review-loop plugin's state) exists, approve immediately — that plugin's own stop hook drives the stop cycle. Never double-block. The plan-review-loop setup script also refuses to start while that loop is active.
-- **Fail-open:** on any error, malformed state, invalid `review_id` (validated against `^[0-9]{8}-[0-9]{6}-[0-9a-f]{6}$` to prevent path traversal), or lack of progress under `stop_hook_active`, clean up state and approve — never trap the user.
+- **Phase contract:** `locate`/`review` → block until the review file exists; `addressing` → block until `## Disposition` is in the review file, then approve + clean up (the skill sets `phase: confirm` *before* dispositioning when a critical finding was fixed, so this completion rule only fires when no confirmation is owed); `confirm` → block until `## Confirmation` is in the review file, then approve + clean up.
+- **Fail-open:** on any error, malformed state, invalid `review_id` (validated against `^[0-9]{8}-[0-9]{6}-[0-9a-f]{6}$` to prevent path traversal), or exhausted block budget (at most 2 blocks per phase without a phase transition, tracked via `hook_blocks`/`hook_block_phase` in the state file, enforced only under `stop_hook_active`), clean up state and approve — never trap the user.
 - **JSON-only stdout**, cross-platform shell (macOS + Linux), timestamped telemetry to `.claude/plan-review-loop.log`.
-- After modifying `stop-hook.sh`, re-test every path with piped hook-input JSON: no-state, defer-to-original, review-phase block, `stop_hook_active` fail-open, addressing block (no disposition), addressing approve (with disposition), invalid review_id, `active: false`, unknown phase. Verify each output with `jq .`.
+- After modifying `stop-hook.sh`, re-test every path with piped hook-input JSON: no-state, defer-to-original, review-phase block, block-budget fail-open, addressing block (no disposition), addressing approve (with disposition), confirm block (no verdict), confirm approve (with `## Confirmation`), invalid review_id, `active: false`, unknown phase. Verify each output with `jq .`.
 
 ## Conventions
 

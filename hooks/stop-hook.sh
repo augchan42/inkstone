@@ -6,9 +6,18 @@
 # (Codex CLI or context-blind subagents); this hook only guarantees the
 # loop cannot be silently abandoned:
 #
-#   phase locate/review + no review file  → block: finish the review
-#   phase addressing + no disposition log → block once: address findings
-#   phase addressing + disposition logged → approve, clean up state
+#   phase locate/review + no review file   → block: finish the review
+#   phase addressing + no disposition log  → block: address findings
+#   phase addressing + disposition logged  → approve, clean up state
+#     (the skill sets phase: confirm BEFORE dispositioning when a critical
+#      finding was fixed, so this completion rule only fires when no
+#      confirmation round is owed)
+#   phase confirm + no '## Confirmation'   → block: run confirmation round
+#   phase confirm + '## Confirmation'      → approve, clean up state
+#
+# Anti-trap: at most 2 blocks per phase without a phase transition
+# (tracked via hook_blocks / hook_block_phase in the state file);
+# beyond that, fail open and abandon the loop.
 #
 # Coexistence with hamel-review/review-loop: if its state file
 # (.claude/review-loop.local.md) exists, approve immediately so its own
@@ -69,6 +78,36 @@ REVIEW_FILE="reviews/plan-review-${REVIEW_ID}.md"
 
 STOP_HOOK_ACTIVE=$(echo "$HOOK_INPUT" | jq -r '.stop_hook_active // false' 2>/dev/null || echo "false")
 
+set_field() {
+  if grep -q "^${1}:" "$STATE_FILE"; then
+    if [ "$(uname)" = "Darwin" ]; then
+      sed -i '' "s/^${1}: .*/${1}: ${2}/" "$STATE_FILE"
+    else
+      sed -i "s/^${1}: .*/${1}: ${2}/" "$STATE_FILE"
+    fi
+  else
+    printf '%s: %s\n' "$1" "$2" >> "$STATE_FILE"
+  fi
+}
+
+# Bounded blocking: allow up to 2 blocks per phase; if we're in a stop-hook
+# continuation chain and the phase still hasn't advanced, fail open rather
+# than trapping the user. Call before block() on every block path.
+check_block_budget() {
+  local BLOCKS BLOCK_PHASE
+  BLOCK_PHASE=$(parse_field "hook_block_phase")
+  BLOCKS=$(parse_field "hook_blocks")
+  BLOCKS=${BLOCKS:-0}
+  [ "$BLOCK_PHASE" != "$PHASE" ] && BLOCKS=0
+  if [ "$STOP_HOOK_ACTIVE" = "true" ] && [ "$BLOCKS" -ge 2 ]; then
+    log "WARN: ${BLOCKS} blocks in phase '$PHASE' without progress; aborting loop (fail-open)"
+    rm -f "$STATE_FILE"
+    approve
+  fi
+  set_field "hook_blocks" "$((BLOCKS + 1))"
+  set_field "hook_block_phase" "$PHASE"
+}
+
 block() {
   local REASON="$1"
   local SYS_MSG="$2"
@@ -84,13 +123,7 @@ block() {
 
 case "$PHASE" in
   locate|review)
-    # Safety: if we already blocked this cycle and phase never advanced,
-    # fail open rather than trapping the user in a loop.
-    if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
-      log "WARN: stop_hook_active=true but phase still '$PHASE'; aborting loop (fail-open)"
-      rm -f "$STATE_FILE"
-      approve
-    fi
+    check_block_budget
     log "BLOCK: loop ${REVIEW_ID} stopped in phase '$PHASE'"
     block "A plan review loop is active (id: ${REVIEW_ID}) but has not completed its review phase.
 
@@ -112,11 +145,7 @@ To abandon the loop instead, run the plan-review-loop skill with argument 'cance
       approve
     fi
     if ! grep -q '^## Disposition' "$REVIEW_FILE" 2>/dev/null; then
-      if [ "$STOP_HOOK_ACTIVE" = "true" ]; then
-        log "WARN: stop_hook_active=true, no disposition; aborting loop (fail-open)"
-        rm -f "$STATE_FILE"
-        approve
-      fi
+      check_block_budget
       log "BLOCK: loop ${REVIEW_ID} in addressing phase, no disposition log"
       block "The independent review at ${REVIEW_FILE} has not been dispositioned.
 
@@ -129,9 +158,34 @@ Please:
 6. Then stop" \
         "Plan Review Loop [${REVIEW_ID}] — address review findings"
     fi
-    log "COMPLETE: loop ${REVIEW_ID} dispositioned; cleaning up"
+    log "COMPLETE: loop ${REVIEW_ID} dispositioned, no confirmation owed; cleaning up"
     rm -f "$STATE_FILE"
     approve
+    ;;
+
+  confirm)
+    if [ ! -f "$REVIEW_FILE" ]; then
+      log "WARN: phase=confirm but ${REVIEW_FILE} missing; failing open"
+      rm -f "$STATE_FILE"
+      approve
+    fi
+    if grep -q '^## Confirmation' "$REVIEW_FILE" 2>/dev/null; then
+      log "COMPLETE: loop ${REVIEW_ID} confirmed; cleaning up"
+      rm -f "$STATE_FILE"
+      approve
+    fi
+    check_block_budget
+    log "BLOCK: loop ${REVIEW_ID} in confirm phase, no confirmation verdict"
+    block "Critical findings were fixed, so this loop owes one confirmation round before it can end (review: ${REVIEW_FILE}).
+
+Per the plan-review-loop skill's Phase 4:
+1. Dispatch ONE fresh context-blind reviewer with the revised plan and the prior review file, asking only: are the critical findings resolved, and did the revisions introduce new problems?
+2. Same backend rules apply — if using Codex, apply the liveness probe and watchdog; on failure fall back to a subagent rather than skipping
+3. Append its verdict to ${REVIEW_FILE} as a '## Confirmation' section
+4. Then stop (do not run further rounds)
+
+To abandon the loop instead, run the plan-review-loop skill with argument 'cancel' (or delete ${STATE_FILE})." \
+      "Plan Review Loop [${REVIEW_ID}] — confirmation round pending"
     ;;
 
   *)
