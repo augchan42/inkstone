@@ -1,0 +1,17 @@
+{
+  "description": "Plan review loop stop hook: enforces completion of plan-review-loop before allowing exit. No-op unless the loop state file exists; defers to the original review-loop plugin when its loop is active.",
+  "hooks": {
+    "Stop": [
+      {
+        "hooks": [
+          {
+            "type": "command",
+            "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh",
+            "timeout": 120,
+            "statusMessage": "Plan review loop: checking phase..."
+          }
+        ]
+      }
+    ]
+  }
+}

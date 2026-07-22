@@ -35,6 +35,9 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | Skill | Description |
 |-------|-------------|
 | **ui-ux-architect** | Premium UI/UX audit with Jobs/Ive philosophy — visual hierarchy, spacing, typography, color, motion, accessibility, dark mode |
+| **design-dna** | Extract an abstract visual/motion blueprint from reference websites, or research award-winning references from a vibe description — observes and abstracts only, never implements |
+| **motion-craft** | Implement professional web animations against an approved design blueprint or explicit motion direction — plans by default, modifies code only on implement authority |
+| **upgrade-site** | Orchestrate a full site design upgrade — snapshot, reference research via design-dna, direction synthesis, gap scoring, prioritized plan, implementation via motion-craft, verification |
 
 ### Productivity
 
@@ -44,6 +47,12 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
 | **analyze-variation** | Measure sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts |
 | **voice-calibration** | Interactive voice profiling — asks live writing prompts, collects responses, and distills a reusable voice profile for tone-consistent content |
+
+### Engineering Process
+
+| Skill | Description |
+|-------|-------------|
+| **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI or context-blind subagents as reviewer; completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
 
 ### App Store
 
