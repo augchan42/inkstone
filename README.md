@@ -65,6 +65,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | Skill | Description |
 |-------|-------------|
 | **nextjs-i18n-seo** | Audit/fix Next.js i18n SEO — crawlability, 307 redirects, locale URLs, sitemap, hreflang |
+| **vercel-build-speed** | Cut Vercel build times for Next.js App Router — measure per-phase, then attack page count, duplicated type checks, dead Turbopack config |
 
 ### Video
 

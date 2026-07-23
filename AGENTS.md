@@ -40,7 +40,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 4. Bump the version in `plugin.json` if publishing
 5. Validate with `./validate-skills.sh` (checks frontmatter against the Agent Skills spec)
 
-## The 17 Skills
+## The 18 Skills
 
 ### Creative
 
@@ -71,6 +71,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 ### Web / App Store / Video
 
 - **nextjs-i18n-seo** — Diagnoses and fixes the 307→301 redirect bug in Next.js App Router i18n middleware that kills PageRank transfer.
+- **vercel-build-speed** — Cuts Vercel build times for Next.js App Router projects. Measure per-phase from the build log first, then attack prerendered page count, duplicated type checking, per-page `console.log`, and Turbopack-era dead config (`webpack()`, `@next/bundle-analyzer`, unrecognized keys). Encodes the counter-intuitive findings: asset bytes are a near-worthless build-time lever, clone time is not proportional to tree size, and an invalid `vercel.json` key silently produces no deployment at all.
 - **market-pulse** — App Store market overview via web search — competitor movements, trending keywords, Apple featuring, new releases. No paid API subscriptions needed.
 - **video-to-shorts** — Turns a long video into vertical shorts: transcribe, auto-suggest the best soundbites, cut, 9:16 crop, burn-in subtitles. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4.
 
