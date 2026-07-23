@@ -4,7 +4,7 @@ description: Cut Vercel build times for Next.js App Router projects — measure 
 user-invocable: true
 argument-hint: "[project path or Vercel deployment URL]"
 metadata:
-  version: "1.0.0"
+  version: "1.0.1"
 ---
 
 # Vercel Build Speed (Next.js App Router)
@@ -13,6 +13,31 @@ Derived from taking a real production Next.js 16 / Turbopack app from **7m21s to
 3m46s**, measured per-phase on Vercel at every step. The single most useful
 lesson was epistemic: **the obvious lever was the wrong one.** Removing ~560MB
 of assets bought about 5 seconds. Cutting prerendered page count bought ~50.
+
+## Calibration — this is one case study, not a benchmark
+
+Every number here comes from **one app, one Vercel plan, one 4-core / 8GB build
+machine**, in mid-2026 on Next 16.2. The app was a localized content site:
+four locales, ~2500 prerendered pages, a large `public/`, a 1.5GB git history.
+Weight the findings accordingly:
+
+**Likely to generalize** — the method (read the phase table, change one class of
+thing per deploy, re-attribute after each), the `vercel.json` failure mode, the
+Turbopack dead-config audit, and the *shape* of the ranking: compute and page
+count beat bytes.
+
+**Re-measure for your project** — every specific duration, and especially the
+three "myths". "Clone time is not proportional to tree size" and "Deploying
+outputs has a fixed floor" each rest on **two observations on one project**.
+They may be artifacts of this repo's history size or this plan's build
+infrastructure. If your `public/` dominates a small output, or your history is
+shallow, you may see the opposite. Do not skip a change because this document
+says the lever is weak — measure it.
+
+**Has a shelf life** — Turbopack and the Next config surface move fast. The
+`experimental.bundleAnalyzer` note in particular is a snapshot of 16.2 behavior
+and will likely stop being true. Verify config keys against your own build
+output, never against this file.
 
 ## Rule 0: Measure the phases before changing anything
 
