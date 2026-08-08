@@ -44,6 +44,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | Skill | Description |
 |-------|-------------|
 | **media-kit** | Build a speaker media kit — bio writing, photo prep, and page generation for event organizers |
+| **swapping-pptx-templates** | Re-render an existing .pptx deck's content into a different template/theme — OOXML rebuild with a silent-CJK-corruption guard, baked-in-background hazard detection, and adversarial visual QA |
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
 | **analyze-variation** | Measure sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts |
 | **voice-calibration** | Interactive voice profiling — asks live writing prompts, collects responses, and distills a reusable voice profile for tone-consistent content |

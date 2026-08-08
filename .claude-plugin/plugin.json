@@ -36,7 +36,12 @@
     "review-loop",
     "vercel",
     "build-performance",
-    "turbopack"
+    "turbopack",
+    "pptx",
+    "powerpoint",
+    "slides",
+    "template",
+    "ooxml"
   ],
   "skills": "./skills"
 }
