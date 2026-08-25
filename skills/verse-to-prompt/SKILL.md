@@ -4,7 +4,7 @@ description: Convert classical Chinese verses into image generation prompts — 
 user-invocable: true
 argument-hint: "[paste your verse here] or [--stipple ...] or [--tech-noir ...]"
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Verse → Image Prompt
@@ -58,6 +58,8 @@ Every prompt MUST follow all 7:
 5. **Favor diagonals and verticals** — avoid flat horizontal compositions.
 6. **Pack in discoverable detail** — the best images reward a second look with secondary subjects and textures.
 7. **Use painterly scene language** — end with "Chinese ink painting." but embed painterly metaphors throughout ("like ink drops", "pale threads", "like shattered porcelain"). NEVER use photographic language ("shallow depth of field", "film grain", "desaturated").
+
+The **Content Safety Rules** and **Disambiguation Rules** in the SHARED RULES section below apply to every ink-painting prompt — use the *Ink painting / stipple* column of the substitution table.
 
 ## Ink Painting Reference Prompts
 
@@ -181,31 +183,9 @@ Embed these metaphors throughout the prompt — they are the style engine:
 | Warm glow | "amber terminal cursor", "sodium hallway light", "orange diagnostic readout" |
 | Ancient/weathered | "legacy hardware", "corroded circuit traces", "dust-filmed monitors" |
 
-## Content Safety Rules (MANDATORY — same as ink painting mode)
+## Content Safety Rules (MANDATORY)
 
-Content filters on image generation APIs reject explicit bodily harm. All prompts MUST follow these rules:
-
-### Never depict directly:
-- **Blood** — no "blood pools", "blood stains", "blood streaks", "bleeding"
-- **Weapons contacting bodies** — no "piercing breast", "fangs deep in flesh", "blade cuts"
-- **Self-harm** — no "turns sword upon himself", "wounds himself"
-- **Restraint/torture** — no "ropes binding wrists", "needles piercing"
-- **Dismemberment** — no "legs severed", "limbs scattered"
-- **Corpses** — no "bodies fallen", "the dead lie stiff"
-
-### Instead, use these substitutions:
-
-| Blocked concept | Safe alternative |
-|----------------|-----------------|
-| Blood on surfaces | "dark stains like leaked coolant", "amber streaks across the terminal" |
-| Wounds / piercing | Show aftermath — "a blade embedded in a console panel", "a cracked monitor spider-webbing from impact" |
-| Self-harm | Environmental metaphor — "a server powering down in a sealed room", "a signal flatline on a dying monitor" |
-| Fallen bodies | Emptiness — "abandoned gear on bare concrete", "an empty chair before a still-glowing screen" |
-| Restraint | Environmental — "a corridor narrowing to a slit of phosphor light", "walls of server racks closing in" |
-| Animal predation | Show the chase or aftermath — "scattered circuitry on the floor", "a predator's shadow crossing the sensor grid" |
-| Dismemberment | Broken objects — "a shattered monitor", "a split cable trunk sparking", "a cracked chassis" |
-
-**The principle:** Show the weight of violence through atmosphere, aftermath, and metaphor — never through the act itself.
+See **Content Safety Rules** in the SHARED RULES section below — the substitution table gives a tech-noir phrasing for every blocked concept.
 
 ## Tech-Noir Reference Prompts
 
@@ -238,13 +218,13 @@ These illustrate the *content register* (what to depict). Their wording skews ci
 
 ---
 
-# SHARED RULES (both modes)
+# SHARED RULES (all modes)
 
 ## Output Format
 
 Present the result conversationally:
 
-**Mode:** `ink-painting` or `tech-noir`
+**Mode:** `ink-painting`, `stipple`, or `tech-noir`
 
 **Style:** `datascape` — the verse's imagery of water and travel maps to depth corridors
 
@@ -253,6 +233,34 @@ Present the result conversationally:
 
 **Translation:**
 > [faithful English translation of the verse]
+
+## Content Safety Rules (MANDATORY — all modes)
+
+Content filters on image generation APIs reject explicit bodily harm. 52 of the 4,096 SixLines images failed generation on this. All prompts MUST follow these rules.
+
+### Never depict directly:
+- **Blood** — no "blood pools", "blood stains", "blood streaks", "bleeding"
+- **Weapons contacting bodies** — no "piercing breast", "fangs deep in flesh", "blade cuts"
+- **Self-harm** — no "turns sword upon himself", "wounds himself"
+- **Restraint/torture** — no "ropes binding wrists", "needles piercing"
+- **Dismemberment** — no "legs severed", "limbs scattered"
+- **Corpses** — no "bodies fallen", "the dead lie stiff"
+
+### Instead, use these substitutions:
+
+Pick the column matching your mode. The ink phrasings also serve **Stipple Mode**, which keeps the ink scene verbatim.
+
+| Blocked concept | Ink painting / stipple | Tech-noir |
+|----------------|------------------------|-----------|
+| Blood on surfaces | "dark stains spreading like spilled ink", "vermillion streaks across pale stone" | "dark stains like leaked coolant", "amber streaks across the terminal" |
+| Wounds / piercing | Show aftermath — "a spear embedded in a lacquered door", "a roof tile cracked from impact" | Show aftermath — "a blade embedded in a console panel", "a cracked monitor spider-webbing from impact" |
+| Self-harm | Environmental metaphor — "a lamp guttering out in a shuttered room", "a single reed snapped at the waterline" | Environmental metaphor — "a server powering down in a sealed room", "a signal flatline on a dying monitor" |
+| Fallen bodies | Emptiness — "abandoned armor on frozen ground", "an empty seat before a still-warm brazier" | Emptiness — "abandoned gear on bare concrete", "an empty chair before a still-glowing screen" |
+| Restraint | Environmental — "a gorge narrowing to a thread of sky", "walls of bamboo closing in" | Environmental — "a corridor narrowing to a slit of phosphor light", "walls of server racks closing in" |
+| Animal predation | Show the chase or aftermath — "scattered feathers on wet moss", "a tiger's shadow crossing the reed bed" | Show the chase or aftermath — "scattered circuitry on the floor", "a predator's shadow crossing the sensor grid" |
+| Dismemberment | Broken objects — "a shattered lacquer bowl", "a split pine trunk still smoking", "a cracked stone stele" | Broken objects — "a shattered monitor", "a split cable trunk sparking", "a cracked chassis" |
+
+**The principle:** Show the weight of violence through atmosphere, aftermath, and metaphor — never through the act itself.
 
 ## Disambiguation Rules (MANDATORY)
 
