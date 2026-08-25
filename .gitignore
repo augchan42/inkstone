@@ -9,8 +9,12 @@ sample-*.jpeg
 **/.DS_Store
 
 # Skill install artifacts (npx skills add)
+# Running the CLI inside this repo replaces skills/<name>/ with symlinks into
+# .agents/ — restore with: find skills -maxdepth 1 -type l -delete && git checkout -- skills/
 .agents/
 skills-lock.json
+agent/
+.claude/skills/
 
 # Personal voice profiles (voice-calibration output) — keep local, not published
 skills/voice-calibration/profiles/*
