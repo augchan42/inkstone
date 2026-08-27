@@ -1,7 +1,7 @@
 {
   "name": "inkstone",
   "description": "Custom Claude Code skills by Augustin Chan \u2014 ink painting, UI/UX audits, media kits, arXiv search, and more",
-  "version": "1.13.1",
+  "version": "1.14.0",
   "author": {
     "name": "Augustin Chan",
     "url": "https://github.com/augchan42"
@@ -34,6 +34,9 @@
     "site-upgrade",
     "plan-review",
     "review-loop",
+    "code-review",
+    "codex",
+    "diff-review",
     "vercel",
     "build-performance",
     "turbopack",

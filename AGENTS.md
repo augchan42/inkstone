@@ -40,7 +40,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 4. Bump the version in `plugin.json` if publishing
 5. Validate with `./validate-skills.sh` (checks frontmatter against the Agent Skills spec)
 
-## The 18 Skills
+## The 21 Skills
 
 ### Creative
 
@@ -48,6 +48,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 - **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference.
 - **create-explanation** — Generates bilingual (English + Traditional Chinese) scholarly explanations of classical Chinese oracular verses. English 100-150 words, Chinese 150-200 characters.
 - **blakean-scene** — Converts abstract symbolic concepts into 240-280 word Blakean embodied scene prompts using an 8-layer prompt architecture and 8 compositional patterns. Reads `blakean-reference.md` for pattern details.
+- **gloss-drift-audit** — Verifies translations and derived image prompts after a source text is corrected — separates hash staleness from meaning error and orders the fixes so only changed rows get re-rendered.
 - **shaughnessy-iching** — Interprets a Zhouyi (I Ching) hexagram or line in Edward Shaughnessy's de-mythologized late–Western Zhou register — divination-manual reading, not wisdom classic. Provenance-flagged, interpret-only (no casting).
 
 ### Design / UX
@@ -59,11 +60,13 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 ### Engineering Process
 
+- **codex-review** — Independent cross-model code review of any git scope. `scripts/resolve-scope.sh` turns any argument form — bare (auto-detect), `HEAD~3`, a range, a **merge commit** (auto-resolved to `<sha>^1 <sha>`), `--commit`, `--pr N`, `--staged`, trailing paths — into one concrete `git diff` invocation, so review scope is never a hardcoded constant. Lanes come from `review-lanes.md` plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Reviewer is Codex CLI (plain `codex exec`, never `codex exec review` — that subcommand rejects a custom prompt) or context-blind subagents. Every finding gets an explicit ACCEPTED / DECLINED / PRE-EXISTING disposition. **No hook, no state file, no loop** — one invocation, start to finish.
 - **plan-review-loop** — Adversarial review loop for implementation plans: locate or author the plan, then an independent multi-lane review (zero-context executability; grounding & traceability against the repo and the source spec; task structure & risk) via Codex CLI or context-blind subagents, then address findings with judgment. The source spec is reviewed transitively via the traceability lane. Supports superpowers plans (`docs/superpowers/plans/`), planning-with-files `task_plan.md`, Kiro `tasks.md`. Reviews land in `reviews/plan-review-<id>.md`; state in `.claude/plan-review-loop.local.md`; `cancel` argument clears an active loop. Completion is enforced by the Stop hook in `hooks/`.
 
 ### Productivity
 
 - **media-kit** — Interactive multi-phase workflow: interview → write bios (4 lengths) → crop/process photos → generate page → bundle zip.
+- **swapping-pptx-templates** — Re-renders an existing .pptx deck's content into a different template/theme — OOXML rebuild with a silent-CJK-corruption guard, baked-in-background hazard detection, and adversarial visual QA.
 - **arxiv-search** — Queries the arXiv API (Atom XML) by topic, author, or paper ID. No auth needed.
 - **analyze-variation** — Measures sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts.
 - **voice-calibration** — Interactive voice profiling via live terminal prompts. Asks 8 writing prompts (4 general, 4 domain-specific), collects raw typed responses, and distills a reusable voice profile capturing sentence rhythm, rhetorical habits, vocabulary, and tonal signature. Profiles saved to `skills/voice-calibration/profiles/`.
