@@ -4,7 +4,7 @@ description: Run an independent cross-model code review of any git scope — unc
 user-invocable: true
 argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>]"
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Codex Review
@@ -114,6 +114,43 @@ why it is wrong, and a concrete fix.
 Have Codex return findings as text and write the artifact yourself. Letting the
 reviewer write the file is how you end up with a review that ran and produced nothing.
 
+#### Watching the run — two ways to blind yourself
+
+A Codex pass takes tens of minutes. Both of these make a healthy run look identical to a
+wedged one, and both are easy to do by reflex.
+
+**Never pipe it through `tail -N` or `head -N`.** They buffer to EOF by definition, so the
+background task's output file stays at **0 bytes for the whole run** however much Codex has
+written. You then cannot tell progress from a stall without `pgrep`, and the pipe has
+silently removed the visibility that `run_in_background` existed to give you.
+
+```bash
+# WRONG — nothing readable until the process exits
+codex --sandbox read-only exec "$PROMPT" 2>&1 | tail -200
+# RIGHT — write it all; filter when you READ the output file
+codex --sandbox read-only exec "$PROMPT" 2>&1
+```
+
+**Write the guard loop for the OS you are on.** Watch the process itself, not a proxy:
+
+```bash
+while pgrep -f "codex --sandbox read-only exec" >/dev/null 2>&1; do sleep 20; done
+echo "codex exited; output bytes: $(wc -c < "$OUT")"
+```
+
+`until [ ! -d /proc ]` is a real example of getting this wrong: macOS has no `/proc`, so
+the condition is true on the first evaluation, the loop body never executes, and the
+watcher exits 0 having emitted nothing — which reads exactly like "hasn't finished yet".
+
+Before arming any watcher, ask: **if Codex died right now, what line would appear?** If the
+answer is "none", the watcher is decorative. A watcher that ends with no output is a result
+to investigate, never a result to report as "still running".
+
+**Don't wait idle.** The pass is long enough to run the diff's own cheap checks alongside
+it — the project's linters, its localization or script guards, a targeted test suite. On a
+2026-09-10 sixlines-ios run those found a real defect (Traditional orthography in a
+Simplified string) before Codex returned anything at all.
+
 ### 2. Fallback — context-blind subagents
 
 If `codex` is unavailable or fails: dispatch one subagent per lane, in parallel, each
@@ -196,6 +233,8 @@ rewrite or publish.
 - Never let the reviewer see your reasoning about the change.
 - Never fix pre-existing findings inside the change under review.
 - Every finding gets a disposition, including the ones you reject.
-- Run the reviewer backgrounded so it can be watched and killed.
+- Run the reviewer backgrounded so it can be watched and killed — and never through
+  `tail`/`head`, which buffer to EOF and leave the output file empty for the whole run.
+- A watcher that produced no output is a broken watcher until proven otherwise.
 - On any tooling failure, report it and continue degraded — never leave the user
   unsure whether a review ran.
