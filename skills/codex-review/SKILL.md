@@ -4,7 +4,7 @@ description: Run an independent cross-model code review of any git scope — unc
 user-invocable: true
 argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>]"
 metadata:
-  version: "1.1.0"
+  version: "1.2.0"
 ---
 
 # Codex Review
@@ -96,8 +96,17 @@ visible and it can be killed if it stalls. Use a read-only sandbox — the revie
 reports findings, it does not edit code:
 
 ```bash
-codex --sandbox read-only exec "<prompt>"
+codex --sandbox read-only exec "<prompt>" < /dev/null
 ```
+
+**The `< /dev/null` is not optional.** Without it `codex exec` prints
+`Reading additional input from stdin...` and blocks forever: backgrounded, its stdin is
+an open pipe that never reaches EOF, so it waits for input no one will send. The tell is
+a process that has burned **~0.05 s of CPU over half an hour** and has written no
+rollout under `~/.codex/sessions/<yyyy>/<mm>/<dd>/`. It looks exactly like a long review
+and is a deadlock before the first token. Verify with a five-second smoke test —
+`codex --sandbox read-only exec "Reply with exactly: SMOKE OK" < /dev/null` — before
+concluding a real pass is merely slow.
 
 The prompt must contain, in this order:
 
@@ -145,6 +154,18 @@ watcher exits 0 having emitted nothing — which reads exactly like "hasn't fini
 Before arming any watcher, ask: **if Codex died right now, what line would appear?** If the
 answer is "none", the watcher is decorative. A watcher that ends with no output is a result
 to investigate, never a result to report as "still running".
+
+**Check liveness, not just existence.** `pgrep` finding the process proves nothing — a
+deadlocked Codex is still a process. Two cheap signals separate working from wedged:
+
+```bash
+ps -o etime=,time= -p <pid>                      # elapsed vs CPU TIME consumed
+ls -t ~/.codex/sessions/$(date +%Y/%m/%d)/*.jsonl # a live run writes a rollout
+```
+
+Minutes of elapsed against ~0.05 s of CPU, and no rollout file, means it never started.
+Report elapsed time from a clock (`date`, `ps -o lstart=`), never from how many turns have
+gone by — that estimate drifts badly and turns into a confidently wrong status report.
 
 **Don't wait idle.** The pass is long enough to run the diff's own cheap checks alongside
 it — the project's linters, its localization or script guards, a targeted test suite. On a
@@ -236,5 +257,7 @@ rewrite or publish.
 - Run the reviewer backgrounded so it can be watched and killed — and never through
   `tail`/`head`, which buffer to EOF and leave the output file empty for the whole run.
 - A watcher that produced no output is a broken watcher until proven otherwise.
+- Always `< /dev/null` on `codex exec`; without it a backgrounded run blocks on stdin
+  forever, looking exactly like a slow review.
 - On any tooling failure, report it and continue degraded — never leave the user
   unsure whether a review ran.
