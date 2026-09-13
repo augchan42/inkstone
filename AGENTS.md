@@ -45,7 +45,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 ### Creative
 
 - **verse-to-prompt** — Converts classical Chinese verse into 50-60 word image generation prompts. Three modes: ink painting (default), stipple (`--stipple`, the production matrix skin — reuses the ink scene and only swaps the render suffix per ADR-173), and tech-noir (`--tech-noir`, an experimental CRT cyberpunk reinterpretation). Enforces 7 mandatory composition rules, 5 style categories, content safety substitution patterns, and disambiguation rules for ambiguous English words.
-- **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference.
+- **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference, and a QwenCloud Token Plan (HappyHorse 1.1) section — endpoint, the async-header 403, measured credit cost, and where the runner code lives (`8bitoracle-next`, not `sixlines-ios`).
 - **create-explanation** — Generates bilingual (English + Traditional Chinese) scholarly explanations of classical Chinese oracular verses. English 100-150 words, Chinese 150-200 characters.
 - **blakean-scene** — Converts abstract symbolic concepts into 240-280 word Blakean embodied scene prompts using an 8-layer prompt architecture and 8 compositional patterns. Reads `blakean-reference.md` for pattern details.
 - **gloss-drift-audit** — Verifies translations and derived image prompts after a source text is corrected — separates hash staleness from meaning error and orders the fixes so only changed rows get re-rendered.

@@ -1,10 +1,10 @@
 ---
 name: image-to-scene
-description: Convert an ink painting's original image prompt into a video generation motion prompt for image-to-video APIs. Use when animating a verse-to-prompt result — requires that original prompt as input; never guess from a description alone.
+description: Convert a generated image's original prompt (Yilin ink paintings, Records card plates) into a motion prompt for image-to-video APIs, and run it on Replicate or the QwenCloud Token Plan (HappyHorse 1.1). Use when animating a generated image — requires that original prompt as input; never guess from a description alone.
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Image → Scene Prompt
@@ -19,8 +19,11 @@ Acceptable inputs:
 - The full verse-to-prompt output (preferred — has style, prompt, and translation)
 - The image prompt string alone (e.g., "A river god rises from churning rapids...")
 - A hexagram key (e.g., `44-44`) — you look up the prompt from `data/yilin/prompts/`
+- A Records card number — in `8bitoracle-brand`, find the card's `plate` in `records/vol1/cardlist.json`, then the row in `records/art/prompts-manifest.json` whose `output` basename matches it
 
 **Never generate a motion prompt from a verbal description, screenshot, or memory of a painting.** If you don't have the original image prompt, stop and ask for it.
+
+**Retouched plates log the wrong prompt.** An inpaint composite (`…-fix.png`, model `…/fill`) logs only its fill prompt — "bare plaster wall", "plain hazy sky" — not the scene. Use the prompt of the base render it was composited onto (the same name without `-fix`). Then look at the final plate once: retouching can remove elements the base prompt names.
 
 ## The Correspondence Rule
 
@@ -146,6 +149,56 @@ output = replicate.run(
 - `generate_audio` — native audio sync
 - `reference_images` — up to 9 style/character references (cannot use with `image`)
 - `duration` supports `-1` for intelligent duration
+
+### QwenCloud Token Plan (HappyHorse 1.1)
+
+Use this path when the account has a QwenCloud Token Plan (keys start with `sk-sp-`) instead of Replicate. The plan spends credits from a monthly allowance, not dollars per clip.
+
+**The runner code is in `8bitoracle-next`, not `sixlines-ios`.** Run labels say `sixlines-ios-…` because that app shows the videos. Nothing in `sixlines-ios` calls Qwen.
+
+| File in `8bitoracle-next` | Job |
+|---|---|
+| `src/services/qwenCloudVideoService.ts` | Submit, poll, download to R2, log to `ai_provider_requests` |
+| `scripts/run-qwen-yilin-video-smoke.ts INPUT.json` | Batch runner. Writes `INPUT.run-manifest.json` after each item, so a stopped run shows what finished |
+| `scripts/build-qwen-records-video-manifest.mjs OUT_DIR 1-6\|7-12` | Builds Records card inputs from `8bitoracle-brand` (set `RECORDS_BRAND_ROOT` off the Mac) |
+| `docs/evidence/2026-09-1*`, `artifacts/qwen-records-*` | Past runs: inputs, manifests, balance readings, audits |
+
+**Credentials.** The key and host are in `~/.claude/settings.json.qwen`. Export them for the runner:
+
+```bash
+export QWEN_TOKEN_PLAN_API_KEY=$(jq -r .env.ANTHROPIC_AUTH_TOKEN ~/.claude/settings.json.qwen)
+export QWEN_TOKEN_PLAN_BASE_URL=$(jq -r .env.ANTHROPIC_BASE_URL ~/.claude/settings.json.qwen)
+pnpm exec tsx scripts/run-qwen-yilin-video-smoke.ts path/to/input.json
+```
+
+**Request.** `{origin}` is the origin of that base URL, `https://token-plan.ap-southeast-1.maas.aliyuncs.com`.
+
+```
+POST {origin}/api/v1/services/aigc/video-generation/video-synthesis
+Authorization: Bearer sk-sp-…
+X-DashScope-Async: enable
+{ "model": "happyhorse-1.1-i2v",
+  "input": { "prompt": "<motion prompt>",
+             "media": [{ "type": "first_frame", "url": "<image url>" }] },
+  "parameters": { "duration": 5, "resolution": "720P", "watermark": false, "seed": 2252 } }
+
+GET {origin}/api/v1/tasks/{task_id}    ← no async header; repeat every 5 s until SUCCEEDED or FAILED
+```
+
+Resolution is uppercase (`720P`); Replicate uses lowercase. For text-to-video, use `happyhorse-1.1-t2v` and omit `media`. The result URL is in `output.video_url`. Download it at once to durable storage; do not store the provider URL as the link.
+
+**Gotchas**
+
+| Symptom | Cause | Fix |
+|---|---|---|
+| 403 `current user api does not support asynchronous calls` | `X-DashScope-Async: enable` sent on the poll GET | Send it on the submit POST only |
+| 403 `current user api does not support synchronous calls` | Header missing on the submit POST | Put it back on the POST |
+| Qwen's own video skill says `sk-sp-` keys are unsupported | That script targets the pay-as-you-go host | The token-plan host above accepts them |
+| Clip comes back 3 s at 480P | The runner defaults to 3 s / 480P when `parameters` is missing | Always set `parameters` in the input JSON |
+| No cost in the response | Usage reports resolution, seconds and count, but no credits | Read the plan dashboard before and after the run; keep the raw readings |
+| Motion animates the wrong scene | Plate is an inpaint composite; see Required Input | Use the base render's prompt |
+
+**Cost** (measured 2026-09-12, Personal Pro, 40,000 credits): one 5 s 720P i2v clip costs about **900 credits** (2.25% of the allowance), so a full allowance buys about 44 clips. The dashboard shows one decimal place, so one clip reads as 2.2 or 2.3 points; measure across several clips. A clip takes about 100 s. The runner does not check the balance: before a batch, divide the remaining credits by 900.
 
 ## Output Format
 
