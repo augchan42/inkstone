@@ -4,7 +4,7 @@ description: Convert a generated image's original prompt (Yilin ink paintings, R
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
-  version: "1.1.0"
+  version: "1.1.1"
 ---
 
 # Image → Scene Prompt
@@ -197,6 +197,8 @@ Resolution is uppercase (`720P`); Replicate uses lowercase. For text-to-video, u
 | Clip comes back 3 s at 480P | The runner defaults to 3 s / 480P when `parameters` is missing | Always set `parameters` in the input JSON |
 | No cost in the response | Usage reports resolution, seconds and count, but no credits | Read the plan dashboard before and after the run; keep the raw readings |
 | Motion animates the wrong scene | Plate is an inpaint composite; see Required Input | Use the base render's prompt |
+| 429 `Throttling.AllocationQuota` — "token-plan 1-week quota has been exhausted" | The plan has a rolling one-week quota as well as the allowance the dashboard shows as a percentage. Hit on 2026-09-14 with the dashboard at 100% | Stop the batch; the error gives the reset time. Do not retry, and do not treat a 100% dashboard as room to run |
+| "Ghost blur" in a motion prompt adds a floating shape | The model draws the blur as an object (a flying cloth in Records card 37) | Name the motion plainly: "marches slowly away", not "moves as a ghost blur" |
 
 **Cost** (measured 2026-09-12, Personal Pro, 40,000 credits): one 5 s 720P i2v clip costs about **900 credits** (2.25% of the allowance), so a full allowance buys about 44 clips. The dashboard shows one decimal place, so one clip reads as 2.2 or 2.3 points; measure across several clips. A clip takes about 100 s. The runner does not check the balance: before a batch, divide the remaining credits by 900.
 
