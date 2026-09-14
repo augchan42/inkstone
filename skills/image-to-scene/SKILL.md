@@ -4,7 +4,7 @@ description: Convert a generated image's original prompt (Yilin ink paintings, R
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
-  version: "1.2.2"
+  version: "1.2.3"
 ---
 
 # Image → Scene Prompt
@@ -104,14 +104,19 @@ Keep it this tight. The model performs best with literal, specific instructions.
 
 ## Duration & Cost Guidance
 
-### Recommended Platform: Replicate
+### Platforms
+
+With a QwenCloud Token Plan, use it: about **$0.38 a clip** if the weekly credits are used (see [QwenCloud Token Plan](#qwencloud-token-plan-happyhorse-11)). Without one, or when the plan's weekly quota runs out, pay per clip:
 
 | Model | 720p/sec | 1080p/sec | 5s clip (720p) | Max duration | Audio |
 |-------|----------|-----------|----------------|-------------|-------|
-| **alibaba/happyhorse-1.0** | **$0.14** | **$0.28** | **$0.70** | 15s | Yes (native, always on — see [Audio](#audio-happyhorse-11)) |
-| bytedance/seedance-2.0 | $0.18 | $0.45 | $0.90 | 15s | Yes (native) |
+| **fal `alibaba/happy-horse/v1.1/image-to-video`** | **$0.14** | **$0.18** | **$0.70** | 15s | Yes (native, included) |
+| Replicate `alibaba/happyhorse-1.0` | $0.14 | $0.28 | $0.70 | 15s | Yes (native, always on — see [Audio](#audio-happyhorse-11)) |
+| Replicate `bytedance/seedance-2.0` | $0.18 | $0.45 | $0.90 | 15s | Yes (native) |
 
-Default to **Happy Horse, 720p, 5s** ($0.70/clip).
+fal prices checked 2026-09-14. At 720p fal and Replicate cost the same; fal runs HappyHorse 1.1, and its 1080p costs less.
+
+Default to **Happy Horse, 720p, 5s** ($0.70/clip pay-per-clip).
 
 **Budget planning (720p, 5s):**
 
@@ -152,7 +157,7 @@ output = replicate.run(
 
 ### QwenCloud Token Plan (HappyHorse 1.1)
 
-Use this path when the account has a QwenCloud Token Plan (keys start with `sk-sp-`) instead of Replicate. The plan spends credits from a monthly allowance, not dollars per clip.
+Use this path when the account has a QwenCloud Token Plan (keys start with `sk-sp-`) instead of Replicate. The plan costs $68 a month and gives 40,000 credits a week for four weeks. It spends credits, not dollars per clip.
 
 **The runner code is in `8bitoracle-next`, not `sixlines-ios`.** Run labels say `sixlines-ios-…` because that app shows the videos. Nothing in `sixlines-ios` calls Qwen.
 
@@ -238,11 +243,11 @@ Read the picture. Singing and pitched instruments show as stacked horizontal ban
 | No cost in the response | Usage reports resolution, seconds and count, but no credits | Read the plan dashboard before and after the run; keep the raw readings |
 | Motion animates the wrong scene | Plate is an inpaint composite; see Required Input | Use the base render's prompt |
 | Clip has speech nobody asked for, or speech that goes against the story | Audio is always on; with no sound in the prompt the model invents it | Write the sound: `No dialogue.`, a quoted line with its language, or an `Audio:` list. See [Audio](#audio-happyhorse-11) |
-| 429 `Throttling.AllocationQuota` — "token-plan 1-week quota has been exhausted" | The plan has a rolling one-week quota as well as the allowance the dashboard shows as a percentage. Hit on 2026-09-14 with the dashboard at 100% | Stop the batch; the error gives the reset time. Do not retry, and do not treat a 100% dashboard as room to run |
+| 429 `Throttling.AllocationQuota` — "token-plan 1-week quota has been exhausted" | The week's 40,000 credits are spent; the dashboard percentage is that week's use. Hit on 2026-09-14 with the dashboard at 100% | Stop the batch; the error gives the reset time. Do not retry, and do not treat a 100% dashboard as room to run. If the batch cannot wait, run the rest on fal ($0.70 a clip) |
 | Run killed mid-poll (low memory, closed terminal); manifest stuck at `running` | Qwen already accepted and charged the task, but the runner saves the task id only at the end | Do not rerun — that pays again. List tasks with `GET {origin}/api/v1/tasks/?start_time=YYYYMMDDHHMMSS&end_time=…&page_size=5` (no async header) and match `gmt_create` to the manifest's `startedAt`. Add `"resumeTaskId": "<task id>"` to the input item and run the runner again: it skips the submit and polls, stores and logs the task. Used for Records cards 57 and 63 |
 | "Ghost blur" in a motion prompt adds a floating shape | The model draws the blur as an object (a flying cloth in Records card 37) | Name the motion plainly: "marches slowly away", not "moves as a ghost blur" |
 
-**Cost** (measured 2026-09-12, Personal Pro, 40,000 credits): one 5 s 720P i2v clip costs about **900 credits** (2.25% of the allowance), so a full allowance buys about 44 clips. The dashboard shows one decimal place, so one clip reads as 2.2 or 2.3 points; measure across several clips. A clip takes about 100 s. The runner does not check the balance: before a batch, divide the remaining credits by 900.
+**Cost** (Personal Pro: $68 a month for 40,000 credits a week over four weeks, 160,000 in all; clip cost measured 2026-09-12): one 5 s 720P i2v clip costs about **900 credits** (2.25% of a week), so a week buys about 44 clips and a month about 177 — about **$0.38 a clip**, against $0.70 on fal. That price holds only if the credits are used: $68 buys about 97 clips on fal, so the plan is cheaper only above about 24 clips a week. The dashboard shows one decimal place, so one clip reads as 2.2 or 2.3 points; measure across several clips. A clip takes about 100 s. The runner does not check the balance: before a batch, divide the remaining credits by 900.
 
 ## Output Format
 
