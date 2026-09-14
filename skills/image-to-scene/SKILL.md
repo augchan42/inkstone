@@ -4,7 +4,7 @@ description: Convert a generated image's original prompt (Yilin ink paintings, R
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
-  version: "1.1.2"
+  version: "1.2.0"
 ---
 
 # Image → Scene Prompt
@@ -108,7 +108,7 @@ Keep it this tight. The model performs best with literal, specific instructions.
 
 | Model | 720p/sec | 1080p/sec | 5s clip (720p) | Max duration | Audio |
 |-------|----------|-----------|----------------|-------------|-------|
-| **alibaba/happyhorse-1.0** | **$0.14** | **$0.28** | **$0.70** | 15s | No |
+| **alibaba/happyhorse-1.0** | **$0.14** | **$0.28** | **$0.70** | 15s | Yes (native, always on — see [Audio](#audio-happyhorse-11)) |
 | bytedance/seedance-2.0 | $0.18 | $0.45 | $0.90 | 15s | Yes (native) |
 
 Default to **Happy Horse, 720p, 5s** ($0.70/clip).
@@ -187,6 +187,27 @@ GET {origin}/api/v1/tasks/{task_id}    ← no async header; repeat every 5 s unt
 
 Resolution is uppercase (`720P`); Replicate uses lowercase. For text-to-video, use `happyhorse-1.1-t2v` and omit `media`. The result URL is in `output.video_url`. Download it at once to durable storage; do not store the provider URL as the link.
 
+#### Audio (HappyHorse 1.1)
+
+Every clip comes with sound. HappyHorse makes the audio and the video in one pass, and no parameter turns the audio off. Records Vol I clips carry a stereo AAC track at 24 kHz.
+
+If the prompt names no sound, the model invents it from the picture and the motion. Records card 23 asked only for "the chancellor pleads… the innkeeper shakes his head", and the clip came back with Mandarin dialogue on that subject. That can be good. It can also put words in a character's mouth that the story does not support. So decide the sound, and write it.
+
+| To get | Write | Status |
+|---|---|---|
+| Silence from the characters | `No dialogue.` | Vendor guides |
+| A spoken line | The line in quotes, with its language named: `The innkeeper says in Mandarin, "商君之法，舍人無驗者坐之。"` | Vendor guides |
+| Lines at set times | `0-2s: the chancellor pleads in Mandarin, "…"; 2-5s: the innkeeper replies, "…"` | Vendor guides |
+| Ambience and effects | `Audio: river lapping, a net splashing, gulls.` Name the near sound, the action sound and the background | Vendor guides |
+| Speech invented from the scene | Nothing: leave the audio unwritten | Seen in Records Vol I |
+
+- **Lip-sync languages:** English, Mandarin, Cantonese, Japanese, Korean, German and French. Classical Chinese is Mandarin read aloud; say "in Mandarin".
+- **Keep each line short.** A 5 s clip holds about one short sentence. A face turned to the camera with the mouth visible gives the cleanest lip-sync. Most Records plates show figures small or from the side, so on those cards prefer ambience or `No dialogue.`
+- **The 15–25 word rule is for the motion.** The audio clause is extra. Put it after the motion as its own sentence, starting `Audio:`, so it does not compete with the motion instructions.
+- **Viewers hear it only when unmuted.** Browsers autoplay only muted video. Review the sound on purpose; a muted review misses it.
+
+"Vendor guides" means reseller guides for HappyHorse 1.1 (Morphic, PixVerse, SeaArt). It has not yet been tested on the Token Plan. After the first tested clip, change that row to what it showed.
+
 **Gotchas**
 
 | Symptom | Cause | Fix |
@@ -197,6 +218,7 @@ Resolution is uppercase (`720P`); Replicate uses lowercase. For text-to-video, u
 | Clip comes back 3 s at 480P | The runner defaults to 3 s / 480P when `parameters` is missing | Always set `parameters` in the input JSON |
 | No cost in the response | Usage reports resolution, seconds and count, but no credits | Read the plan dashboard before and after the run; keep the raw readings |
 | Motion animates the wrong scene | Plate is an inpaint composite; see Required Input | Use the base render's prompt |
+| Clip has speech nobody asked for, or speech that goes against the story | Audio is always on; with no sound in the prompt the model invents it | Write the sound: `No dialogue.`, a quoted line with its language, or an `Audio:` list. See [Audio](#audio-happyhorse-11) |
 | 429 `Throttling.AllocationQuota` — "token-plan 1-week quota has been exhausted" | The plan has a rolling one-week quota as well as the allowance the dashboard shows as a percentage. Hit on 2026-09-14 with the dashboard at 100% | Stop the batch; the error gives the reset time. Do not retry, and do not treat a 100% dashboard as room to run |
 | Run killed mid-poll (low memory, closed terminal); manifest stuck at `running` | Qwen already accepted and charged the task, but the runner saves the task id only at the end | Do not rerun — that pays again. List tasks with `GET {origin}/api/v1/tasks/?start_time=YYYYMMDDHHMMSS&end_time=…&page_size=5` (no async header) and match `gmt_create` to the manifest's `startedAt`. Add `"resumeTaskId": "<task id>"` to the input item and run the runner again: it skips the submit and polls, stores and logs the task. Used for Records cards 57 and 63 |
 | "Ghost blur" in a motion prompt adds a floating shape | The model draws the blur as an object (a flying cloth in Records card 37) | Name the motion plainly: "marches slowly away", not "moves as a ghost blur" |
