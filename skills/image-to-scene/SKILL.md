@@ -4,7 +4,7 @@ description: Convert a generated image's original prompt (Yilin ink paintings, R
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
-  version: "1.2.1"
+  version: "1.2.2"
 ---
 
 # Image → Scene Prompt
@@ -216,6 +216,16 @@ python3 -c 'from faster_whisper import WhisperModel as W; s,_=W("small",device="
 
 - Whisper writes homophones for classical Chinese: 丞相誤邪 came back as 成像物協. Compare the sound, not the characters.
 - On a clip with no words, Whisper makes up a subtitle credit, such as 「字幕by索兰娅」. That means no speech, not a bad take.
+
+**Check song, music and effects with a spectrogram.** Whisper misses sound that has no words: the Chu song on Records card 47 came back as a made-up credit.
+
+```bash
+ffmpeg -i clip.mp4 -lavfi "showspectrumpic=s=900x300:legend=0:fscale=lin:stop=4000" spec.png
+```
+
+Read the picture. Singing and pitched instruments show as stacked horizontal bands that step in pitch. Drums and crackle show as vertical or broadband streaks. Ambience with nothing else is one low band. Compare the new take with the old one.
+
+**A sound with no words can be the whole story** (a song, a rooster, a drum). Write it in the `Audio:` clause after `No dialogue.` Card 47's `Many distant voices sing a slow, mournful Chu folk song from every side` produced the song. The first take, with no audio clause, had none.
 
 **Gotchas**
 
