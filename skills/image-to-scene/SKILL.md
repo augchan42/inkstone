@@ -4,7 +4,7 @@ description: Convert a generated image's original prompt (Yilin ink paintings, R
 user-invocable: true
 argument-hint: "[paste the original image prompt from verse-to-prompt]"
 metadata:
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # Image → Scene Prompt
@@ -196,8 +196,8 @@ If the prompt names no sound, the model invents it from the picture and the moti
 | To get | Write | Status |
 |---|---|---|
 | Silence from the characters | `No dialogue.` | Vendor guides |
-| A spoken line | The line in quotes, with its language named: `The innkeeper says in Mandarin, "商君之法，舍人無驗者坐之。"` | Vendor guides |
-| Lines at set times | `0-2s: the chancellor pleads in Mandarin, "…"; 2-5s: the innkeeper replies, "…"` | Vendor guides |
+| A spoken line | The line in quotes, with its language named: `The innkeeper says in Mandarin, "商君之法，舍人無驗者坐之。"` | **Tested**: Records card 43 |
+| Lines at set times | `Audio: 0-2s: the chancellor says in Mandarin, "馬也。" 2-5s: the emperor laughs and says in Mandarin, "丞相誤邪？謂鹿為馬。"` | **Tested**: Records card 43. Both lines came out in order, with the laugh between them |
 | Ambience and effects | `Audio: river lapping, a net splashing, gulls.` Name the near sound, the action sound and the background | Vendor guides |
 | Speech invented from the scene | Nothing: leave the audio unwritten | Seen in Records Vol I |
 
@@ -206,7 +206,16 @@ If the prompt names no sound, the model invents it from the picture and the moti
 - **The 15–25 word rule is for the motion.** The audio clause is extra. Put it after the motion as its own sentence, starting `Audio:`, so it does not compete with the motion instructions.
 - **Viewers hear it only when unmuted.** Browsers autoplay only muted video. Review the sound on purpose; a muted review misses it.
 
-"Vendor guides" means reseller guides for HappyHorse 1.1 (Morphic, PixVerse, SeaArt). It has not yet been tested on the Token Plan. After the first tested clip, change that row to what it showed.
+"Vendor guides" means reseller guides for HappyHorse 1.1 (Morphic, PixVerse, SeaArt), not yet tested on the Token Plan. After the first tested clip, change that row to what it showed.
+
+**Check the speech with Whisper.** You cannot hear a clip, but Whisper can transcribe it:
+
+```bash
+python3 -c 'from faster_whisper import WhisperModel as W; s,_=W("small",device="cpu",compute_type="int8").transcribe("clip.mp4",language="zh"); [print(f"{x.start:.1f}-{x.end:.1f} {x.text}") for x in s]'
+```
+
+- Whisper writes homophones for classical Chinese: 丞相誤邪 came back as 成像物協. Compare the sound, not the characters.
+- On a clip with no words, Whisper makes up a subtitle credit, such as 「字幕by索兰娅」. That means no speech, not a bad take.
 
 **Gotchas**
 
