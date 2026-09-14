@@ -40,7 +40,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 4. Bump the version in `plugin.json` if publishing
 5. Validate with `./validate-skills.sh` (checks frontmatter against the Agent Skills spec)
 
-## The 21 Skills
+## The 22 Skills
 
 ### Creative
 
@@ -62,6 +62,10 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 - **codex-review** — Independent cross-model code review of any git scope. `scripts/resolve-scope.sh` turns any argument form — bare (auto-detect), `HEAD~3`, a range, a **merge commit** (auto-resolved to `<sha>^1 <sha>`), `--commit`, `--pr N`, `--staged`, trailing paths — into one concrete `git diff` invocation, so review scope is never a hardcoded constant. Lanes come from `review-lanes.md` plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Reviewer is Codex CLI (plain `codex exec`, never `codex exec review` — that subcommand rejects a custom prompt) or context-blind subagents. Every finding gets an explicit ACCEPTED / DECLINED / PRE-EXISTING disposition. **No hook, no state file, no loop** — one invocation, start to finish.
 - **plan-review-loop** — Adversarial review loop for implementation plans: locate or author the plan, then an independent multi-lane review (zero-context executability; grounding & traceability against the repo and the source spec; task structure & risk) via Codex CLI or context-blind subagents, then address findings with judgment. The source spec is reviewed transitively via the traceability lane. Supports superpowers plans (`docs/superpowers/plans/`), planning-with-files `task_plan.md`, Kiro `tasks.md`. Reviews land in `reviews/plan-review-<id>.md`; state in `.claude/plan-review-loop.local.md`; `cancel` argument clears an active loop. Completion is enforced by the Stop hook in `hooks/`.
+
+### Advisory
+
+- **oss-licence-audit** — Manifest-based open-source licence inventory (SBOM-style) with copyleft triage. Deterministic Node script reads package.json, lockfile presence, and node_modules (pnpm + flat layouts), classifies each licence (permissive / weak / strong / network copyleft), and prints flags plus a lawyer handoff. Inventory, never a legal opinion; gaps stated out loud. npm-only in v1.
 
 ### Productivity
 
