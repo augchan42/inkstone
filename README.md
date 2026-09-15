@@ -80,7 +80,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 | Skill | Description |
 |-------|-------------|
-| **video-to-shorts** | Turn a long video into vertical shorts — transcribe, auto-suggest the best soundbites, cut, 9:16 crop, burn-in subtitles. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4 |
+| **video-to-shorts** | Turn a long video into vertical shorts. Transcribe with word timings, score the moments, then render from an edit list: hook first, a cut to each speaker, punch-ins, word-timed captions, name lower third, fade and end card, speed variants. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4 |
 
 ## Usage
 

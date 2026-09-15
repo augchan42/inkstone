@@ -1,40 +1,53 @@
 ---
 name: video-to-shorts
-description: Use when turning a long video (interview, podcast, talk, lecture, webinar) into short vertical clips for YouTube Shorts / Reels / TikTok. Transcribes the source, auto-suggests the most engaging self-contained soundbites, then cuts, crops to 9:16, and burns in subtitles. Cross-platform (macOS / Linux / Windows-WSL). Stops at a finished, upload-ready vertical mp4 — no account or upload CLI required.
+description: Use when turning a long video (interview, podcast, talk, lecture, webinar) into short vertical clips for YouTube Shorts / Reels / TikTok. Transcribes with word timings, scores the most engaging self-contained moments, then renders each short from a JSON edit list - hook first, a cut to whoever speaks or reacts, punch-ins, tightened pauses, word-timed captions with the active word highlighted, a name lower third, a held ending that fades to a logo end card with a ding, speed variants at -14 LUFS. Handles two speakers on one wide shot (mic-channel attribution). Cross-platform (macOS / Linux / Windows-WSL). Stops at a finished, upload-ready vertical mp4 - no account or upload CLI required.
 user-invocable: true
 argument-hint: "[path or URL to the long video, optional: a topic/quote to clip]"
 metadata:
-  version: "1.0.0"
+  version: "2.0.0"
 ---
 
 # Video → Shorts
 
-Turn a long talking-head video into one or more polished vertical shorts (≤ 60s, 9:16, burned-in subtitles). The skill transcribes the source, **auto-suggests the best moments**, then cuts, crops, and subtitles a clip you approve.
+Turn a long talking-head video into vertical shorts (9:16, 25-45 s, captions in the
+picture). The skill transcribes the source, **scores the best moments**, plans an edit for
+the moment you pick, and renders it with `scripts/build-short.py`.
 
-The deliverable is a finished `*-en.mp4` ready to upload by hand. No YouTube account, API key, or upload CLI needed.
+The deliverable is a finished mp4, ready to upload by hand, in a few variants (speed and
+caption style) so the owner can choose. No YouTube account, API key or upload CLI needed.
+
+**v2 changed the approach.** v1 made a trimmed, cropped copy of the source with an SRT
+burned in. A professional reviewer called that flat. v2 edits for retention: hook first,
+cuts to each speaker and to reactions, captions from word timings, a held ending and an
+end card. Read `references/retention-edit.md` before you plan a cut. For two people on
+one wide shot, also read `references/two-speaker.md`.
 
 ## When to use
 
 - "Make shorts/reels/clips out of this podcast / interview / talk"
 - "Find the best moments in this video and cut vertical clips"
-- "Transcribe this and pull out quotable soundbites"
+- "Make this short more lively / add captions / add an end card"
 - Any long-form talking footage that needs to become short vertical content
 
-Best for **static, single- or two-person talking footage**. Fast-cut montages, music videos, or heavy on-screen graphics need a human editor — flag that and stop.
+Best for **static one- or two-person talking footage**. Fast-cut montages, music videos
+or footage with a lot of on-screen graphics need a human editor. Say so and stop.
 
 ## One-time setup (cross-platform)
 
-You need three tools: **ffmpeg with libass** (cut/crop/burn-in), **Whisper** (transcription), and optionally **yt-dlp** (only if the source is a URL).
+You need **ffmpeg with libass** (captions and text), **Whisper with word timestamps**
+(`faster-whisper` or `stable-ts`), **Python 3**, and optionally **yt-dlp** (only if the
+source is a URL). The renderer also needs a display font and a mono font as files
+(defaults: Anton and IBM Plex Mono Medium, both OFL, from Google Fonts).
 
-### ffmpeg — must include libass (for subtitle burn-in)
+### ffmpeg — must include libass
 
 Check first: `ffmpeg -version | grep -o libass`. If it prints `libass`, you're done.
 
 | OS | Install |
 |----|---------|
-| **Linux** | `sudo apt install ffmpeg` (Debian/Ubuntu builds include libass) — or `brew install ffmpeg` on Linuxbrew. |
+| **Linux** | `sudo apt install ffmpeg` (Debian/Ubuntu builds include libass), or `brew install ffmpeg` on Linuxbrew. |
 | **Windows (WSL2)** | Inside Ubuntu-on-WSL: `sudo apt install ffmpeg`. Do everything from the WSL shell, not PowerShell. |
-| **macOS** | ⚠️ Default Homebrew `ffmpeg` **omits libass** — the `subtitles` filter fails with a cryptic *"No option name near …"*. Install a libass static build to `~/.local/bin`: |
+| **macOS** | ⚠️ Default Homebrew `ffmpeg` **omits libass**. Text filters fail with *"No option name near …"*. Install a static build to `~/.local/bin`: |
 
 ```bash
 # macOS only — libass-enabled static ffmpeg
@@ -45,198 +58,202 @@ chmod +x ~/.local/bin/ffmpeg
 ~/.local/bin/ffmpeg -version | grep -E "libass|libfreetype"   # both must appear
 ```
 
-On macOS, use `~/.local/bin/ffmpeg` for the **burn-in step only**; the system ffmpeg is fine for cut/crop.
+`build-short.py` uses `$FFMPEG` if set, then `~/.local/bin/ffmpeg`, then `ffmpeg` on the
+PATH. It draws all text with libass (`ass=` filter), not `drawtext`, so a build without
+drawtext works.
 
-### Whisper — transcription
+### Whisper — transcription with word timestamps
 
 | OS / hardware | Recommended | Install |
 |---------------|-------------|---------|
-| **macOS (Apple Silicon)** | `mlx-whisper` (GPU via MLX, fastest) | `pip install mlx-whisper` |
+| **macOS (Apple Silicon)** | `mlx-whisper` (GPU via MLX) | `pip install mlx-whisper` |
 | **Linux + NVIDIA** | `faster-whisper` (CUDA) | `pip install faster-whisper` |
-| **Any (CPU fallback)** | `openai-whisper` | `pip install -U openai-whisper` |
+| **Any (CPU)** | `faster-whisper` with `device="cpu", compute_type="int8"` | `pip install faster-whisper` |
+| **Best word timings** | `stable-ts` (realigns words to the waveform) | `pip install stable-ts` |
 
-Models download lazily on first run (English `base` ≈ 140 MB; multilingual `large-v3` ≈ 3 GB). Use a venv to keep it clean.
+Models download on first run (English `base` ≈ 140 MB, `medium.en` ≈ 1.5 GB, `large-v3`
+≈ 3 GB). Use a venv. If faster-whisper on CUDA fails with `libcublas.so.12 not found`,
+use the CPU settings above; they are fast enough for a clip.
 
 ### yt-dlp (only if source is a URL)
 
-`pip install -U yt-dlp`. For unlisted/age-gated videos add `--cookies-from-browser chrome`.
+`pip install -U yt-dlp`. For unlisted or age-gated videos add `--cookies-from-browser chrome`.
 
 ## Workflow
 
 ### 1. Get the source video
 
-- Local file → use directly.
+- Local file → use it directly. Use the highest-resolution original you have (a 4K source
+  gives room for punch-ins). If the footage is log (D-Log, S-Log, V-Log), find its LUT;
+  the renderer applies it after the crop.
 - URL → download:
   ```bash
-  yt-dlp -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]" \
-    "<URL>" -o "/tmp/source.mp4"
+  yt-dlp -f "bestvideo[ext=mp4]+bestaudio[ext=m4a]/best[ext=mp4]" "<URL>" -o "/tmp/source.mp4"
   ```
-- Note the source resolution (`ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0 source.mp4`) — you need it for the crop math.
+- Note the resolution and frame rate (`ffprobe -v error -select_streams v -show_entries
+  stream=width,height,r_frame_rate -of csv=p=0 source.mp4`). You need both for the crops
+  and the spec.
 
-### 2. Transcribe → SRT
+### 2. Transcribe the whole source, with word timings
 
-Transcribe the **whole** source to an SRT with real timestamps. Pick the command for the platform:
+The captions, the cut points and the speaker labels all come from word timings, so get
+them once for the whole source:
 
-```bash
-# macOS (Apple Silicon)
-mlx_whisper source.mp4 --model mlx-community/whisper-base-mlx \
-  --language en --output-format srt --output-dir /tmp/transcript \
-  --condition-on-previous-text False
-
-# Linux + NVIDIA (faster-whisper via the CLI wrapper, or use the python API)
-whisper-ctranslate2 source.mp4 --model base --language en \
-  --output_format srt --output_dir /tmp/transcript --vad_filter True
-
-# Any CPU (openai-whisper)
-whisper source.mp4 --model base --language en \
-  --output_format srt --output_dir /tmp/transcript
+```python
+from faster_whisper import WhisperModel
+import json
+m = WhisperModel("medium.en", device="cuda", compute_type="float16")   # or cpu/int8
+segs, _ = m.transcribe("source.mp4", word_timestamps=True, vad_filter=True,
+                       condition_on_previous_text=False)
+json.dump({"segments": [{"start": s.start, "end": s.end, "text": s.text,
+           "words": [{"start": w.start, "end": w.end, "word": w.word} for w in s.words]}
+           for s in segs]}, open("words.json", "w"))
 ```
 
-For non-English source, set `--language` accordingly (e.g. `zh`, `ja`, `es`). `--condition-on-previous-text False` (or `--condition_on_previous_text False`) reduces hallucination loops.
+`stable-ts` writes the same shape with `result.save_as_json("words.json")`. Also write an
+SRT for reading (`mlx_whisper … --output-format srt`, or build it from the segments).
 
-**Quick clean-up:** Whisper mangles proper nouns and often hallucinates text over intro music. Skim the SRT and fix names/products in any segment you plan to clip, and delete gibberish in the first block. A full proofread isn't needed yet — just enough to read the content.
+**Quick clean-up:** Whisper mangles proper nouns and invents text over intro music. Do not
+edit `words.json`. Record fixes in the edit list (`replace` for a misheard word, `patch`
+for missing words), so the timings stay true.
 
-### 3. Auto-suggest the best moments  ← the core value
+### 3. Score the moments  ← the core value
 
-Read the full SRT and propose the strongest short-worthy segments. A good short moment is:
+Read the full transcript and score each candidate with the rubric in
+`references/retention-edit.md` §1: hook 0.30, standalone 0.25, emotion 0.20, value 0.15,
+payoff 0.10. Skip anything under 60. Present the top 5-8 as a table:
 
-- **Self-contained** — makes sense with zero setup; doesn't reference "what I just said."
-- **A complete thought** — starts at a sentence start, ends at a sentence end.
-- **Hooky** — a surprising claim, a strong opinion, a vivid story, a counterintuitive insight, a crisp how-to, or a quotable one-liner.
-- **15–30s ideal, ≤ 60s hard max** (Shorts limit).
+| # | In–Out | Dur | Score | Hook (first line) | Payoff (last line) |
+|---|--------|-----|-------|-------------------|--------------------|
+| 1 | 20:05–20:54 | 41s | 78 | "I think I might have a past life in China." | the Jesuit joke |
 
-Present the top 5–8 candidates as a table the user can choose from:
+**Never use chapter markers as cut points.** A chapter marks where a topic starts,
+preamble included. Anchor in and out to the words where the line begins and ends.
 
-| # | In–Out | Dur | Speaker | The hook (why it works) |
-|---|--------|-----|---------|--------------------------|
-| 1 | 12:04–12:31 | 27s | … | "…" — counterintuitive take on X |
+If the user gave a topic or a quote, find that moment instead (or as well).
 
-**Never use chapter markers as cut points** — chapters mark a topic's start (with preamble), not the soundbite. Always anchor in/out to the actual SRT blocks where the line begins and ends.
+### 4. Frame each person — never guess the crop
 
-If the user gave a topic/quote up front, find that segment instead (or in addition).
+Crop width = source height × 9 ÷ 16, rounded to an **even** number. Every crop number
+must be even (libx264 with yuv420p rejects odd values).
 
-### 4. Confirm the segment & refine boundaries
+| Source | Base crop | Punch-in (about 1.2x) |
+|--------|-----------|-----------------------|
+| 1920×1080 | 608×1080 | 506×900, y = 180 |
+| 3840×2160 (4K) | 1216×2160 | 1012×1800, y = 360 |
 
-Once the user picks a moment, confirm exact in/out from the SRT. For **static single-camera** footage, transcript timestamps are enough — skip ahead.
+1. Pull a frame from the middle of the moment and find each person's side of the frame.
+2. For each person, render 3-5 candidate offsets within their side as one strip, at 4-6
+   times across the moment (people lean). Show the strip and let the user pick.
+3. Give each person a name in the spec: `C` and `C+` (punch-in) for the guest, `A` and `A+`
+   for the host. Anchor the punch-in to the bottom of the base crop so the face grows
+   without moving up.
 
-For footage with **camera cuts / slides / multi-cam**, keyframe-validate:
+Details and the strip command: `references/two-speaker.md` § Framing.
 
-```bash
-for t in START-2 START START+1 END-1 END END+2; do
-  ffmpeg -y -ss <t> -i source.mp4 -frames:v 1 /tmp/kf_<t>.png
-done
-```
-Read each frame: mid-blink? mouth frozen mid-word? slide changing? Shift the boundary ±0.5–2s for a clean in/out. Output the refined timestamps.
+### 5. Find who speaks when (two or more people)
 
-### 5. Determine the vertical crop — never guess
+A frame shows who is on screen, not who is talking. Take attribution from the audio: with
+two lavalier mics on L and R, each speaker is 2-7 dB louder on their own channel. Label
+every word. Then transcribe each channel on its own around any overlap, to recover short
+replies that the mixed transcript dropped. Method and code: `references/two-speaker.md`.
 
-Decide the 9:16 crop **before** cutting. This is a **two-stage** decision: first *which side* the speaker is on, then *fine-tune the offset within that side*.
+### 6. Plan the edit
 
-**a. Read the framing & pick the side.** Extract a frame from the middle of the segment and look at it:
-   `ffmpeg -y -ss <MID> -i source.mp4 -frames:v 1 /tmp/mid.png`
-   Decide which side of the frame the speaker occupies — **left, center, or right** — and confirm the camera is static (pull a second frame elsewhere in the segment; if it pans/cuts, a fixed crop may not work). This narrows the offset range you sample in step c — no point testing the empty half of the frame.
+Write the plan as `<slug>.edl.json` (schema in the header of `scripts/build-short.py`).
+Follow `references/retention-edit.md`:
 
-**b. Compute the crop size from the source height** (`ffprobe` it first). Both crop dimensions **and the x offset** must be **even** — libx264 (yuv420p) rejects odd values:
-   - `crop_w` = `height × 9 ÷ 16`, rounded to the **nearest even** number.
-   - `crop_h = height` (full height, so `y = 0`).
-   - offset range: `x` runs from `0` (hard left) to `source_width − crop_w` (hard right); center is `(source_width − crop_w) ÷ 2`.
+1. **Hook first.** If the best line comes later, move it to the front as a cold open and
+   cut it from its original place.
+2. **A cut to every speaker**, one-word interjections included.
+3. **Reaction shots** of 1.5-2 s on the listener, only where the frames show a real smile
+   or laugh. The audio stays with the speaker.
+4. **Punch-ins** at sentence boundaries, and over any jump where you trimmed a pause.
+5. **Tighten:** trim pauses over 0.7 s to 0.3-0.5 s; cut repeats and false starts at word
+   gaps.
+6. **Hold the end** 0.7-1.0 s after the payoff before the fade. Check the last frames for
+   a blink or an open mouth.
+7. **Cut in quiet.** Each in and out point goes in a gap between words, at the quietest
+   point, not at the transcript's word boundary. Measure the RMS level on a 16 kHz mono
+   copy and move each point to the minimum inside the gap.
 
-   | Source | crop_w × crop_h | left x | center x | right (max) x |
-   |--------|-----------------|--------|----------|---------------|
-   | 1920×1080 | **608×1080** | 0 | 656 | 1312 |
-   | 1280×720  | **404×720**  | 0 | 438 | 876 |
-   | 3840×2160 (4K) | **1216×2160** | 0 | 1312 | 2624 |
+A minimal spec:
 
-**c. Slice within the chosen side** — take **3–5 screenshots** at offsets spanning *only that side*, then present them and let the user pick. Composition depends on gaze direction (looking-room: leave space where they look), and what's in the background — an empty wall can be worse than a tighter, busier crop. The user decides.
-   ```bash
-   # Speaker on the LEFT of a 1920×1080 frame → sample left-half offsets:
-   for x in 0 160 320 480 640; do
-     ffmpeg -y -ss <MID> -i source.mp4 -frames:v 1 -vf "crop=608:1080:$x:0" /tmp/crop_$x.png
-   done
-   # Speaker on the RIGHT → sample right-half offsets up to max x (1312):
-   #   for x in 704 856 1008 1160 1312; do ... done
-   # Centered speaker → sample around center (e.g. 496 576 656 736 816).
-   ```
-   Keep all offsets even. Substitute your computed `crop_w`/max-x if the source isn't 1080p.
-
-### 6. Cut & crop
-
-Substitute your computed even `crop_w:crop_h` and `x` from step 2 (the `608:1080` below is the 1080p case):
-
-```bash
-ffmpeg -y -ss <IN> -to <OUT> -i source.mp4 \
-  -vf "crop=608:1080:<X_OFFSET>:0" \
-  -c:v libx264 -preset medium -crf 20 \
-  -c:a aac -b:a 128k \
-  /tmp/clip.mp4
-```
-Verify: extract a frame, confirm framing, confirm duration ≤ 60s, and **confirm the output is exactly your target dimensions** (`ffprobe -v error -select_streams v -show_entries stream=width,height -of csv=p=0 /tmp/clip.mp4`) — if ffmpeg silently shaved a pixel, your crop_w was odd.
-
-*Optional — upscale to full 1080×1920 for max resolution:* append `,scale=1080:1920:flags=lanczos` to the `-vf` chain (a 608×1080 crop is true 9:16 but lower-res; platforms upscale it anyway, so this is optional).
-
-### 7. Re-transcribe the CUT clip — don't offset the source SRT
-
-⚠️ **Do not zero/offset the source SRT timestamps** — they drift and go out of sync by the end of the clip. Instead, run Whisper on the **cut clip itself** for accurate timings:
-
-```bash
-mlx_whisper /tmp/clip.mp4 --model mlx-community/whisper-base-mlx \
-  --language en --output-format srt --output-dir /tmp/clip_srt \
-  --condition-on-previous-text False
-# (or the whisper / whisper-ctranslate2 equivalent for your platform)
+```json
+{
+  "slug": "past-life-in-china",
+  "raw": "source.mp4", "words": "words.json", "fonts": "fonts/",
+  "crops": {"C": [200, 0, 1216, 2160], "C+": [240, 360, 1012, 1800],
+            "A": [2200, 0, 1216, 2160]},
+  "shots": [[1240.45, 1244.95, "C+"], [1205.25, 1209.95, "C"],
+            [1220.70, 1222.45, "A"], [1250.90, 1253.80, "C"]],
+  "replace": {"infinity": "affinity"},
+  "lower_third": {"name": "GUEST NAME", "sub": "Job title · Company", "at": 4.7, "dur": 3.6},
+  "endcard": {"logo": "logo.png", "cta": "SUBSCRIBE", "url": "example.com", "dur": 2.8},
+  "variants": {"hl-100": {"speed": 1.0, "captions": "highlight"},
+               "hl-115": {"speed": 1.15, "captions": "highlight"},
+               "hl-125": {"speed": 1.25, "captions": "highlight"},
+               "phrase-115": {"speed": 1.15, "captions": "phrase"},
+               "word-115": {"speed": 1.15, "captions": "word"}}
+}
 ```
 
-Then write `clip.srt` using **Whisper's timestamps** but the **clean text** from the source SRT:
+Add `"audio"` when the sound comes from a separate master on the same timeline, and
+`"lut"` for log footage. Put the lower third where it does not cover the face in that
+shot (it sits at the bottom left). Keep it off the hook.
 
-1. Read each Whisper block to identify *what* is said at that timestamp (its text may be garbled — use it as a phonetic guide, e.g. "a genetic engineering" = "agentic engineering").
-2. Pull the matching clean wording from your reviewed source SRT.
-3. Write clean text onto Whisper's timestamp boundaries; split/merge cues to read naturally.
-4. **Keep cues short** — at the burn-in font size each line fits ~14–16 chars, so 2–4 short lines per cue, not long sentences.
-
-### 8. Burn in subtitles
-
-Shorts/Reels display caption tracks unreliably on mobile, so bake subs into the pixels. Keep the un-subtitled `clip.mp4` so you can burn other languages later.
+### 7. Render
 
 ```bash
-# macOS: use ~/.local/bin/ffmpeg   |   Linux/WSL: use ffmpeg
-ffmpeg -y -i /tmp/clip.mp4 \
-  -vf "subtitles=/tmp/clip_srt/clip.srt:force_style='FontName=Arial,FontSize=16,Bold=1,PrimaryColour=&H00FFFFFF,OutlineColour=&H00000000,BorderStyle=1,Outline=2,Shadow=0,Alignment=2,MarginV=60'" \
-  -c:v libx264 -preset medium -crf 20 -c:a copy \
-  /tmp/clip-en.mp4
+python3 skills/video-to-shorts/scripts/build-short.py past-life-in-china.edl.json          # all variants
+python3 skills/video-to-shorts/scripts/build-short.py past-life-in-china.edl.json hl-115   # one
 ```
 
-Style choices (don't change without reason):
-- `FontSize=16` — mobile-legible (~44–48px on 1080; libass scales to its internal PlayResY of 288). Each line fits ~14–16 chars.
-- `Bold=1`, `Outline=2`, `Shadow=0` — readable on any backdrop, no shadow noise.
-- `Alignment=2`, `MarginV=60` — bottom-center, in the lower third, above the platform UI band. Bump `MarginV` to 80–100 if the bottom line gets clipped.
-- `-c:a copy` — preserve speech audio, no re-encode.
+The script cuts each shot from the source (crop, scale to 1080×1920, LUT), joins them,
+measures the loudness, and makes the end card. For each variant it then does one pass:
+speed-up with `atempo`, captions and lower third through libass, gain to -14 LUFS with a
+limiter, and a fade to black. Then it appends the end card. It writes an SRT per variant
+beside the `.ass` in the work folder.
 
-### 9. Verify & deliver
+Shots are cached by frame range and crop. After you change captions, the lower third or
+the variants, a re-run costs one pass per variant. Delete `endcard.mov` to rebuild the
+end card.
 
-- Extract frames at 3–5 timestamps and check subs are on-screen, in sync, not clipped:
-  `ffmpeg -ss <N> -i /tmp/clip-en.mp4 -frames:v 1 /tmp/check_<N>.png`
-- On macOS, `open /tmp/clip-en.mp4` for a real-time preview.
-- Final output is `<slug>-en.mp4`. Report the path. Done — ready to upload by hand.
+### 8. Verify, then let the owner pick
+
+- Pull frames at the hook, at the lower third, at a caption with a highlight, and on the
+  end card (`ffmpeg -ss N -i out.mp4 -frames:v 1 check_N.png`). Look for text on a face,
+  text that overflows, and a cut in the middle of a word.
+- Check the loudness: `ffmpeg -i out.mp4 -af ebur128=peak=true -f null -` should report
+  about -14 LUFS and a true peak under -1 dBFS.
+- Watch the whole short once, as a stranger would (`references/retention-edit.md` § Final
+  check).
+- Send the variants. Ask someone who has **not** heard the speaker before to choose the
+  speed.
 
 ## Output conventions
 
 For each short, keep:
-- `<slug>.mp4` — cropped clip, no subs (reuse for other languages)
-- `<slug>-en.mp4` — burned-in final ← the deliverable
-- `<slug>.srt` — the clip's subtitle file
-- `<slug>.md` — cut metadata (source, in/out, duration, crop offset)
+- `<slug>.edl.json` — the edit list; the short can be rebuilt from it and the source
+- `<slug>-<variant>.mp4` — the renders; the chosen one is the deliverable
+- `<workdir>/<variant>.srt` — the captions as a separate track, if the platform wants one
+- `<slug>.md` — notes: source, score, what each shot is and why
 
-`slug` = kebab-case summary of the moment, e.g. `capability-not-functionality`.
+`slug` = kebab-case summary of the moment, e.g. `past-life-in-china`.
 
 ## Common mistakes
 
 | Mistake | Do instead |
 |---------|------------|
-| Offsetting the source SRT to start at 0 | Re-transcribe the cut clip (step 7) — offsets drift |
-| Using chapter timestamps as cut points | Anchor to the actual SRT block where the line starts |
-| Guessing the crop position | First pick the speaker's side, then slice 3–5 offsets within that side; let the user pick |
-| Odd crop width/height (e.g. 405) | Round to **even** — libx264 errors or silently shifts a pixel otherwise |
-| Copy-pasting `608:1080` on a non-1080p source | Recompute crop_w from the source height (step 2 table) |
-| Long sentences on one subtitle cue | Short phrases, ~14–16 chars/line, 2–4 lines |
-| Burning subs with default macOS Homebrew ffmpeg | Use the libass static build (`~/.local/bin/ffmpeg`) |
-| Clip over 60s | Trim to ≤ 60s (Shorts limit); 15–30s is ideal |
-| Mapping source SRT blocks 1:1 onto Whisper timestamps | Read Whisper text to find what's actually said, then place clean text |
+| One locked crop on the guest while the host talks | Cut to each speaker, even for one word (step 6) |
+| Deciding who speaks from a video frame | Use the mic channels (step 5) |
+| Captions from cleaned-up sentences | Captions from word timings; fix only misheard words |
+| Cutting on the last syllable | Hold 0.7-1.0 s, then fade; end card after |
+| Starting on the setup | Move the hook to the front as a cold open |
+| Using chapter timestamps as cut points | Anchor to the words where the line starts |
+| Guessing the crop position | Show a strip of 3-5 offsets at several times; let the user pick |
+| Odd crop numbers (e.g. 405) | Round to **even**; libx264 errors or shifts a pixel otherwise |
+| Trusting `Fontsize` for the text height | Measure a frame; Anton at 170 gives about 80 px capitals |
+| Burning text with default macOS Homebrew ffmpeg | Use the libass static build (`~/.local/bin/ffmpeg`) |
+| Choosing the speed yourself | Render 1.0 / 1.15 / 1.25x; a stranger to the voice picks |
+| Short over 60 s | Trim to 60 s at most; 25-45 s is best |

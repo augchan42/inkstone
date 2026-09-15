@@ -80,7 +80,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 - **nextjs-i18n-seo** — Diagnoses and fixes the 307→301 redirect bug in Next.js App Router i18n middleware that kills PageRank transfer.
 - **vercel-build-speed** — Cuts Vercel build times for Next.js App Router projects. Measure per-phase from the build log first, then attack prerendered page count, duplicated type checking, per-page `console.log`, and Turbopack-era dead config (`webpack()`, `@next/bundle-analyzer`, unrecognized keys). Encodes the counter-intuitive findings: asset bytes are a near-worthless build-time lever, clone time is not proportional to tree size, and an invalid `vercel.json` key silently produces no deployment at all.
 - **market-pulse** — App Store market overview via web search — competitor movements, trending keywords, Apple featuring, new releases. No paid API subscriptions needed.
-- **video-to-shorts** — Turns a long video into vertical shorts: transcribe, auto-suggest the best soundbites, cut, 9:16 crop, burn-in subtitles. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4.
+- **video-to-shorts** — Turns a long video into vertical shorts. Transcribes with word timings, scores candidate moments, then renders from a JSON edit list with `scripts/build-short.py`: hook first, a cut to each speaker (attributed from the mic channels, not the picture), punch-ins, tightened pauses, word-timed captions, a name lower third, a held ending with a fade and a logo end card, and speed variants at -14 LUFS. The editing rules are in `references/retention-edit.md` and `references/two-speaker.md`. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4.
 
 ## Conference Slides (hkoscon-2026/)
 
