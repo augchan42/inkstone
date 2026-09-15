@@ -73,8 +73,8 @@ ScaledBorderAndShadow: yes
 [V4+ Styles]
 Format: Name, Fontname, Fontsize, PrimaryColour, SecondaryColour, OutlineColour, BackColour, Bold, Italic, Underline, StrikeOut, ScaleX, ScaleY, Spacing, Angle, BorderStyle, Outline, Shadow, Alignment, MarginL, MarginR, MarginV, Encoding
 Style: Cap,{disp},{cap},&H00FFFFFF,&H00FFFFFF,&H00000000,&H80000000,0,0,0,0,100,100,1,0,1,9,0,8,40,40,0,1
-Style: Lower,{disp},130,{cream},{cream},&H00000000,&H90000000,0,0,0,0,100,100,1,0,3,16,0,1,0,0,0,1
-Style: LowerSub,{mono},54,{cream},{cream},&H00000000,&H90000000,0,0,0,0,100,100,0,0,3,12,0,1,0,0,0,1
+Style: Lower,{disp},100,{cream},{cream},&H00000000,&H90000000,0,0,0,0,100,100,1,0,3,16,0,1,0,0,0,1
+Style: LowerSub,{mono},44,{cream},{cream},&H00000000,&H90000000,0,0,0,0,100,100,0,0,3,12,0,1,0,0,0,1
 Style: Cta,{disp},190,{accent},{accent},&H00000000,&H00000000,0,0,0,0,100,100,3,0,1,0,0,5,0,0,0,1
 Style: Url,{mono},60,{cream},{cream},&H00000000,&H00000000,0,0,0,0,100,100,1,0,1,0,0,5,0,0,0,1
 
@@ -247,9 +247,11 @@ def main():
         ev = caption_events(spec, pg, style, sp)
         lt = spec.get("lower_third")
         if lt:
-            a, b = lt["at"] / sp, (lt["at"] + lt["dur"]) / sp
-            ev += [dia(a, b, "Lower", r"{\an1\pos(56,1370)\fad(250,250)}" + lt["name"], 1),
-                   dia(a + 0.15, b, "LowerSub", r"{\an1\pos(58,1470)\fad(250,250)}" + lt["sub"], 1)]
+            # y is the name's bottom edge. The default sits just above the bottom UI band
+            # (y 1574); when the face sits low, move the card above the head (e.g. y 520).
+            a, b = lt["at"] / sp, (lt["at"] + lt["dur"]) / sp; y = lt.get("y", 1488)
+            ev += [dia(a, b, "Lower", r"{\an1\pos(56,%d)\fad(250,250)}" % y + lt["name"], 1),
+                   dia(a + 0.15, b, "LowerSub", r"{\an1\pos(58,%d)\fad(250,250)}" % (y + 74) + lt["sub"], 1)]
         ass = f"{W}/{name}.ass"; open(ass, "w").write(head(spec) + "".join(ev))
         srt(pg, sp, f"{W}/{name}.srt")
         L = total / sp; fade = spec.get("fade", 0.6)

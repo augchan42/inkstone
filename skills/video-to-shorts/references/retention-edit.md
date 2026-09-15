@@ -97,6 +97,12 @@ Show name and job title in a lower third for about 3.5 s the first time the gues
 appears. Do not add a second text element that competes with the captions at the same
 moment.
 
+Check frames across the **whole** time the card is on screen, not one frame. A seated
+guest in a 9:16 crop often has the mouth and chin at the height of a normal lower third.
+If the card covers the face, move it into the empty space above the head (`"y": 520`
+in the spec, under top captions), not further down: the bottom 18% is under the
+platform UI. Take the title from the guest's own words or material, never invent it.
+
 ## 7. Let the end breathe, then brand it
 
 - Do not cut on the last syllable. Hold 0.7-1.0 s after the payoff line, and end on a
