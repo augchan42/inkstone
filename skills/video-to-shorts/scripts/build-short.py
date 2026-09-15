@@ -127,9 +127,10 @@ def pages(shots, W, style):
     """Caption pages in output time. A page breaks at punctuation, at a pause over 0.3 s, at
     4 words or 18 characters, and always at a cut."""
     maxw, maxch = {"word": (1, 99), "phrase": (4, 18), "highlight": (4, 18)}[style]
-    P = []
+    P, E = [], []                          # pages, and the end of the shot each page is in
     for s in shots:
-        ws = [(s["T"] + max(w[0], s["a"]) - s["a"], s["T"] + min(w[1], s["b"]) - s["a"], w[2])
+        n0 = len(P)
+        ws =[(s["T"] + max(w[0], s["a"]) - s["a"], s["T"] + min(w[1], s["b"]) - s["a"], w[2])
               for w in W if s["a"] <= (w[0] + w[1]) / 2 < s["b"]]
         cur = []
         for w in ws:
@@ -139,10 +140,13 @@ def pages(shots, W, style):
             cur.append(w)
             if re.search(r"[.,?!;:…]$", w[2]) and style != "word": P.append(cur); cur = []
         if cur: P.append(cur)
+        E += [s["T"] + s["b"] - s["a"]] * (len(P) - n0)
     out = []
     for i, p in enumerate(P):
         nxt = P[i + 1][0][0] if i + 1 < len(P) else 1e9
-        a = p[0][0]; b = min(max(p[-1][1] + 0.25, a + 0.45), nxt)
+        # a page never outlives its shot: a caption left over after a cut reads as the
+        # new speaker's words
+        a = p[0][0]; b = min(max(p[-1][1] + 0.25, a + 0.45), nxt, E[i])
         out.append((a, b, p))
     return out
 
