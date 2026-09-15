@@ -54,8 +54,8 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 | Skill | Description |
 |-------|-------------|
-| **codex-review** | Independent cross-model code review of any git scope — bare (auto-detect), `HEAD~3`, a range, a merge commit (auto-resolved to its first-parent diff), `--commit`, `--pr N`, `--staged`, or path-limited. Lanes from the skill plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Codex CLI or context-blind subagents; every finding gets an ACCEPTED / DECLINED / PRE-EXISTING disposition. No hook, no loop |
-| **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI or context-blind subagents as reviewer; completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
+| **independent-review** | Independent code review of any git scope by a reviewer that has not seen your conversation — bare (auto-detect), `HEAD~3`, a range, a merge commit (auto-resolved to its first-parent diff), `--commit`, `--pr N`, `--staged`, or path-limited. Lanes from the skill plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Backends in order: Codex CLI, opencode (`--agent plan`), context-blind subagents; the artifact records tool and model. Every finding gets an ACCEPTED / DECLINED / PRE-EXISTING disposition. No hook, no loop. `codex-review` remains as an alias |
+| **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI, opencode, or context-blind subagents as reviewer (shared `reviewer-backends.md`); completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
 
 ### App Store
 

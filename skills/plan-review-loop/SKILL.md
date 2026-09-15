@@ -69,34 +69,30 @@ Set `phase: review`.
 
 ## Phase 2 — Independent Review
 
-Pick a reviewer backend, in order of preference:
+Pick a reviewer backend as described in `../independent-review/reviewer-backends.md`
+(read it before dispatching — it carries the `< /dev/null` rule, read-only agents,
+liveness probes and the watcher rules, and they are not optional):
 
-1. **Codex CLI** (if `command -v codex` succeeds): first ensure multi-agent is enabled by running this bootstrap verbatim (idempotent; identical to the original review-loop's):
+1. **Codex CLI** (`codex exec`, read-only sandbox): one agent per lane, run in
+   parallel, then consolidate. Cross-model independence, matching the original
+   review-loop. Launch in the background with output redirected to
+   `.claude/plan-review-codex-run.log`; probe the rollout directory at ~90 s; hard cap
+   ~15 minutes; on death or hang, kill it, log
+   `backend=codex DEAD (...)`, and fall through.
+2. **opencode** (`opencode run --pure --agent plan -m <provider/model> ... < /dev/null`):
+   same prompt, same lanes. Cross-model, but record the model — a free model is a
+   legitimate reviewer, and the reader needs to know it was one. Log to
+   `.claude/plan-review-opencode-run.log`; unchanged for 5 minutes is a hang.
+3. **Context-blind subagents** (always available): dispatch **three parallel
+   subagents**, one per review lane. Each subagent's prompt must contain ONLY: the plan
+   path, the source spec path (Lane 2), the repo root, its lane's criteria from
+   `plan-review-dimensions.md`, and the finding format. Never include your planning
+   reasoning or conversation history. Consolidate their findings yourself: deduplicate
+   (keep the most detailed duplicate), sort by severity, write
+   `reviews/plan-review-<id>.md`. Same-model — say so in the review file.
 
-   ```bash
-   CODEX_CONFIG="${HOME}/.codex/config.toml" && if [ ! -f "$CODEX_CONFIG" ]; then mkdir -p "${HOME}/.codex" && printf '[features]\nmulti_agent = true\n' > "$CODEX_CONFIG" && echo "Created ~/.codex/config.toml with multi_agent enabled"; elif ! grep -qE '^\s*multi_agent\s*=\s*true' "$CODEX_CONFIG"; then if grep -qE '^\[features\]' "$CODEX_CONFIG"; then if [ "$(uname)" = "Darwin" ]; then sed -i '' '/^\[features\]/a\'$'\n''multi_agent = true' "$CODEX_CONFIG"; else sed -i '/^\[features\]/a multi_agent = true' "$CODEX_CONFIG"; fi; else printf '\n[features]\nmulti_agent = true\n' >> "$CODEX_CONFIG"; fi && echo "Enabled multi_agent in ~/.codex/config.toml"; else echo "Codex multi-agent: already enabled"; fi
-   ```
-
-   Then run `codex exec` non-interactively with the review prompt (one agent per lane, run in parallel, then consolidate), instructing it to write the consolidated review to `reviews/plan-review-<id>.md`. Cross-model independence, matching the original review-loop.
-
-   **A hung Codex never exits — never wait on exit alone.** Codex can block on startup (auth refresh, dead network call) and burn an hour producing nothing. Three mandatory rules:
-
-   - **Redirect, never pipe.** Launch in the background with output to a file — pipes (`| tail`, `| head`) buffer until exit and make a dead process indistinguishable from a working one:
-
-     ```bash
-     touch .claude/plan-review-codex-launch && codex exec <flags> "<prompt>" > .claude/plan-review-codex-run.log 2>&1 &
-     ```
-
-   - **Liveness probe at ~90s.** A healthy Codex writes a rollout file within seconds of starting a session. About 90 seconds after launch, check:
-
-     ```bash
-     find "$HOME/.codex/sessions/$(date +%Y/%m/%d)" -name 'rollout-*.jsonl' -newer .claude/plan-review-codex-launch 2>/dev/null | head -1
-     ```
-
-     No rollout file → the run is dead on arrival. Kill the process, log `backend=codex DEAD (no rollout within 90s)`, and fall back to backend 2 immediately.
-
-   - **Watchdog.** Hard cap ~15 minutes total; also treat "run log unchanged for 5 consecutive minutes" as a hang (poll while waiting — do not idle to a stop). On either trigger, or if Codex exits without producing the review file: kill the process, log the failure, fall back to backend 2.
-2. **Context-blind subagents** (fallback, always available): dispatch **three parallel subagents**, one per review lane. Each subagent's prompt must contain ONLY: the plan path, the source spec path (Lane 2), the repo root, its lane's criteria from `plan-review-dimensions.md`, and the finding format. Never include your planning reasoning or conversation history. Consolidate their findings yourself: deduplicate (keep the most detailed duplicate), sort by severity, write `reviews/plan-review-<id>.md`.
+Whichever backend ran, the review file records tool **and** model, and which backends
+were skipped and why.
 
 **The three review lanes** (full criteria in `plan-review-dimensions.md` — read it before dispatching):
 

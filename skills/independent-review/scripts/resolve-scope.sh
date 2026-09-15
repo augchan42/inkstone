@@ -1,5 +1,5 @@
 #!/usr/bin/env bash
-# codex-review — scope resolver
+# independent-review — scope resolver
 #
 # Turns any argument form into ONE concrete git diff invocation.
 # Emits KEY=value lines on stdout; diagnostics go to stderr.
