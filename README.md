@@ -49,7 +49,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
 | **analyze-variation** | Measure sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts |
 | **voice-calibration** | Interactive voice profiling — asks live writing prompts, collects responses, and distills a reusable voice profile for tone-consistent content |
-| **marketing-clarity** | Clarify marketing messages, website copy and company introductions when the offer or its value is hard to understand |
+| **marketing-clarity** | Clarify marketing messages, website copy and company introductions when the offer or its value is hard to understand. Credit to [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). |
 
 ### Engineering Process
 
@@ -228,7 +228,7 @@ plan / implement; vague requests never mutate code.
 ## Credits
 
 The [marketing-clarity](skills/marketing-clarity/SKILL.md) skill credits
-Alexander Payne and his brother Eliot Payne. It is adapted from Eliot's
+Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). It is adapted from Eliot's
 Marketing Clarity Workshop at The Marketing Common Room; the editing
 workflow and worked examples extend the workshop's principles.
 

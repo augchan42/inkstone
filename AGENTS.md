@@ -69,7 +69,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 ### Productivity
 
-- **marketing-clarity** — Clarifies marketing messages, website copy and company introductions when readers cannot readily understand the offer or its value. Includes sentence-completion exercises and worked examples. Credits Alexander Payne and his brother Eliot Payne; adapted from Eliot's Marketing Clarity Workshop at The Marketing Common Room.
+- **marketing-clarity** — Clarifies marketing messages, website copy and company introductions when readers cannot readily understand the offer or its value. Includes sentence-completion exercises and worked examples. Credits Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/); adapted from Eliot's Marketing Clarity Workshop at The Marketing Common Room.
 - **media-kit** — Interactive multi-phase workflow: interview → write bios (4 lengths) → crop/process photos → generate page → bundle zip.
 - **swapping-pptx-templates** — Re-renders an existing .pptx deck's content into a different template/theme — OOXML rebuild with a silent-CJK-corruption guard, baked-in-background hazard detection, and adversarial visual QA.
 - **arxiv-search** — Queries the arXiv API (Atom XML) by topic, author, or paper ID. No auth needed.

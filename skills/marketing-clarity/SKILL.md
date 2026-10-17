@@ -170,7 +170,7 @@ chat-only draft does not authorise file edits or publication.
 
 ## Basis and credits
 
-Credit to Alexander Payne and his brother Eliot Payne.
+Credit to Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/).
 
 Adapted from Marketing Clarity Workshop by Eliot Payne, The Marketing
 Common Room: the 20-second test, the curse of knowledge, sentence
