@@ -40,7 +40,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 4. Bump the version in `plugin.json` if publishing
 5. Validate with `./validate-skills.sh` (checks frontmatter against the Agent Skills spec)
 
-## The 23 Skills
+## The 24 Skills
 
 ### Creative
 
@@ -62,6 +62,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 - **codex-review** — Independent cross-model code review of any git scope. `scripts/resolve-scope.sh` turns any argument form — bare (auto-detect), `HEAD~3`, a range, a **merge commit** (auto-resolved to `<sha>^1 <sha>`), `--commit`, `--pr N`, `--staged`, trailing paths — into one concrete `git diff` invocation, so review scope is never a hardcoded constant. Lanes come from `review-lanes.md` plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Reviewer is Codex CLI (plain `codex exec`, never `codex exec review` — that subcommand rejects a custom prompt) or context-blind subagents. Every finding gets an explicit ACCEPTED / DECLINED / PRE-EXISTING disposition. **No hook, no state file, no loop** — one invocation, start to finish.
 - **plan-review-loop** — Adversarial review loop for implementation plans: locate or author the plan, then an independent multi-lane review (zero-context executability; grounding & traceability against the repo and the source spec; task structure & risk) via Codex CLI or context-blind subagents, then address findings with judgment. The source spec is reviewed transitively via the traceability lane. Supports superpowers plans (`docs/superpowers/plans/`), planning-with-files `task_plan.md`, Kiro `tasks.md`. Reviews land in `reviews/plan-review-<id>.md`; state in `.claude/plan-review-loop.local.md`; `cancel` argument clears an active loop. Completion is enforced by the Stop hook in `hooks/`.
+- **evidence-gated-review** — Coordinates evidence and readiness around independent-review when available, otherwise codex-review. Records exact snapshots, observed checks and finding dispositions; routes human gates by repository policy, limits re-review to three rounds, and assesses recovery constraints. No merge authority or policy changes.
 
 ### Advisory
 
