@@ -42,6 +42,13 @@ for adversarial review. Keep the human-facing evidence record distinct
 from the independent reviewer's input so the handoff does not compromise
 the review's isolation. Neither skill automatically invokes the other.
 
+[`deliver-change`](../../skills/deliver-change/SKILL.md) is the optional
+orchestrator for task framing, implementation, and verification. Codex
+review is off unless the user opts in; the wrapper then coordinates the
+separate reviewer without passing it the author's implementation narrative.
+The wrapper preserves existing authority for repairs and delivery actions
+and adds no merge or deployment permission of its own.
+
 ### Make claims traceable to observable evidence
 
 Choose checks from requirements and established contracts, with effort
@@ -124,6 +131,8 @@ this documentation decision.
 ## Implementation and validation
 
 PR #7 adds `verify-change`, worked verification patterns, and this ADR.
-The existing `codex-review` implementation is unchanged. Skill validation
+The original separation left `codex-review` unchanged. The later
+`deliver-change` integration makes its resolver lookup work from a
+standalone installation as well as a plugin checkout. Skill validation
 checks structure and references; it does not establish that future code
 verified using the skill will be correct.
