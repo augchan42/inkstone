@@ -92,10 +92,12 @@ After a change to tested code or a dependency it relies on, invalidate the
 affected evidence and refresh it. Do not apply results from an earlier
 commit to a later one without checking what changed.
 
-Keep retries bounded. If three repair-and-check attempts fail on the same
-behavior, summarize the evidence and reconsider the approach or report the
-blocker. Do not create a reviewer/fixer loop under this skill or silently
-relax assertions to finish.
+Use the task's time, cost, and risk limits to bound retries. When attempts
+repeat the same failure without new evidence, diagnose the limiting
+assumption and change the approach instead of rerunning it. Continue useful
+authorized work within those limits; report a blocker when progress needs
+missing input or access. Do not import a code-review round cap into repair
+work, create a reviewer/fixer loop here, or relax assertions to finish.
 
 ## Hand off evidence and residual risk
 

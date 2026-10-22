@@ -21,6 +21,8 @@ skills/
     *.md               # Optional reference files loaded by the skill
 examples/
   prompt-examples.md   # Validated reference prompts for ink painting & tech-noir modes
+docs/adr/
+  0001-*.md            # Decisions about Inkstone's skill architecture and boundaries
 hkoscon-2026/
   hkoscon-2026-talk.html  # Self-contained static talk deck + image assets
   DEPLOY.md               # How to (re)deploy the deck to Vercel
@@ -31,6 +33,9 @@ hkoscon-2026/
 Each skill is a `SKILL.md` with YAML frontmatter (`name`, `description`, `user-invocable`, `argument-hint`) followed by the full instruction set that Claude Code receives when the skill is invoked. Skills have no runtime code — they are prompt engineering documents that define behavior through instructions, examples, and rules.
 
 When a skill has companion reference files (e.g., `blakean-scene/blakean-reference.md`, `ui-ux-architect/audit-dimensions.md`), the SKILL.md instructs the agent to read them at execution time.
+
+The rationale for keeping implementation verification separate from
+adversarial review is in [ADR-0001](docs/adr/0001-separate-verification-from-adversarial-review.md).
 
 ## Adding a New Skill
 
@@ -70,6 +75,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 ### Productivity
 
+- **deepen-task** — Reframes a task or prompt around missing expert work, primary evidence, concrete methods, and independent validation. Depth is the default; altitude and range are applied when useful. Rewrites a prompt when requested, or applies the method to the requested work; preserves constraints. Adapted from Felix Rieseberg's ambition framework.
 - **marketing-clarity** — Clarifies marketing messages, website copy and company introductions when readers cannot readily understand the offer or its value. Includes sentence-completion exercises and worked examples. Credits Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/); adapted from Eliot's Marketing Clarity Workshop at The Marketing Common Room.
 - **media-kit** — Interactive multi-phase workflow: interview → write bios (4 lengths) → crop/process photos → generate page → bundle zip.
 - **swapping-pptx-templates** — Re-renders an existing .pptx deck's content into a different template/theme — OOXML rebuild with a silent-CJK-corruption guard, baked-in-background hazard detection, and adversarial visual QA.

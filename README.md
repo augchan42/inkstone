@@ -49,6 +49,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **arxiv-search** | Search arXiv for papers by topic, author, or ID — no auth required |
 | **analyze-variation** | Measure sentence- and post-length variation across a batch of social copy/drafts — deterministic Node script flags metronomic rhythm and same-size posts |
 | **voice-calibration** | Interactive voice profiling — asks live writing prompts, collects responses, and distills a reusable voice profile for tone-consistent content |
+| **deepen-task** | Reframe a task into a stronger brief — missing expert work, primary evidence, concrete methods, and independent checks; adapted from Felix Rieseberg's ambition framework |
 | **marketing-clarity** | Clarify marketing messages, website copy and company introductions when the offer or its value is hard to understand. Credit to [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). |
 
 ### Engineering Process
@@ -58,6 +59,9 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **verify-change** | Have the implementation agent verify intended behavior with executable checks and hand off evidence, gaps, and recovery notes — complements the separate adversarial codex-review |
 | **codex-review** | Independent cross-model code review of any git scope — bare (auto-detect), `HEAD~3`, a range, a merge commit (auto-resolved to its first-parent diff), `--commit`, `--pr N`, `--staged`, or path-limited. Lanes from the skill plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Codex CLI or context-blind subagents; every finding gets an ACCEPTED / DECLINED / PRE-EXISTING disposition. No hook, no loop |
 | **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI or context-blind subagents as reviewer; completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
+
+The separation between implementation verification and adversarial review
+is recorded in [ADR-0001](docs/adr/0001-separate-verification-from-adversarial-review.md).
 
 ### Advisory
 
@@ -232,6 +236,10 @@ The [verify-change](skills/verify-change/SKILL.md) skill is adapted from
 [Addy Osmani's X post](https://x.com/addyosmani/status/2111604705340326393)
 and [How the Claude Code team does code review](https://claude.dev/blog/solving-code-review-at-anthropic/)
 by Addy Osmani, Morgan Westlee Lunt, and Qing Wang.
+
+The [deepen-task](skills/deepen-task/SKILL.md) skill is adapted from
+Felix Rieseberg's [How to be more ambitious: A tutorial for humans with models](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/),
+surfaced by [CG's X post](https://x.com/cgtwts/status/2110571916973207906).
 
 The [marketing-clarity](skills/marketing-clarity/SKILL.md) skill credits
 Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). It is adapted from Eliot's
