@@ -15,6 +15,8 @@ Inkstone (硯台) is a Claude Code plugin — a collection of agent skills for c
 hooks/
   hooks.json           # Auto-discovered by Claude Code — registers the Stop hook
   stop-hook.sh         # Enforces plan-review-loop completion; no-op when no loop is active
+agents/
+  inkstone-lane-reviewer.md # Read/search-only lane reviewer; host captures findings
 skills/
   <skill-name>/
     SKILL.md           # Skill definition (frontmatter + instructions)

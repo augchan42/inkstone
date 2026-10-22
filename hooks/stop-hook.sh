@@ -179,7 +179,7 @@ Please:
     block "Critical findings were fixed, so this loop owes one confirmation round before it can end (review: ${REVIEW_FILE}).
 
 Per the plan-review-loop skill's Phase 4:
-1. Dispatch ONE fresh context-blind reviewer with the revised plan and the prior review file, asking only: are the critical findings resolved, and did the revisions introduce new problems?
+1. Dispatch ONE fresh context-blind reviewer with the revised plan and the prior review file, asking only: are the critical findings resolved, and did the revisions introduce new problems? Give it a fresh separate confirmation artifact path and validate that output before appending its verdict here.
 2. Same backend rules apply — if using Codex or opencode, apply the liveness probe and watchdog; on failure fall back to the next backend rather than skipping
 3. Append its verdict to ${REVIEW_FILE} as a '## Confirmation' section
 4. Then stop (do not run further rounds)

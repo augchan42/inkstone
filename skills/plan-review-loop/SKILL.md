@@ -71,8 +71,12 @@ Set `phase: review`.
 
 Pick a reviewer backend, in order of preference. The shared backend mechanics are in
 `reviewer-backends.md` in the installed `codex-review` skill directory (its sibling in an
-Inkstone installation); read it before dispatching. Log which backend ran and why the
-earlier ones were skipped.
+Inkstone installation); this is a required dependency. Locate it through skill
+discovery and read it before dispatching. Log which backend ran and why earlier
+ones were skipped. If the dependency is missing, or no backend qualifies, log the
+failure, delete this loop's `.claude/plan-review-loop.local.md`, preserve the plan and
+review artifacts, and report review incomplete. Do not enter addressing or leave an
+incomplete loop for the Stop hook to exhaust its block budget.
 
 Set the absolute `REVIEW_FILE` to `reviews/plan-review-<id>.md` before dispatch;
 apply the shared fresh-output and validation contract. The reviewer writes findings
@@ -93,8 +97,12 @@ only in Phase 3.
 
      ```bash
      touch .claude/plan-review-codex-launch
+     # Run this entire supervisor block as ONE backgrounded tool invocation.
      codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null > .claude/plan-review-codex-run.log 2>&1 &
      REVIEW_PID=$!
+     printf '%s\n' "$REVIEW_PID" > "$PID_FILE"
+     if wait "$REVIEW_PID"; then REVIEW_EXIT=0; else REVIEW_EXIT=$?; fi
+     printf '%s\n' "$REVIEW_EXIT" > "$EXIT_FILE"
      ```
 
    - **Liveness probe at ~90s.** A healthy Codex writes a rollout file within seconds of starting a session. About 90 seconds after launch, check:
@@ -103,10 +111,10 @@ only in Phase 3.
      find "$HOME/.codex/sessions/$(date +%Y/%m/%d)" -name 'rollout-*.jsonl' -newer .claude/plan-review-codex-launch 2>/dev/null | head -1
      ```
 
-     No rollout file → the run is dead on arrival. Kill the process, log `backend=codex DEAD (no rollout within 90s)`, and fall back to backend 2 immediately.
+     No rollout file → the run is dead on arrival. Read this attempt's PID from `PID_FILE`, terminate it, log `backend=codex DEAD (no rollout within 90s)`, and fall back to backend 2 immediately. The supervisor owns `wait` and writes `EXIT_FILE`; later tool calls read those files rather than relying on shell variables surviving.
 
    - **Watchdog.** Hard cap ~15 minutes total; also treat "run log unchanged for 5 consecutive minutes" as a hang (poll while waiting — do not idle to a stop). On either trigger, or if Codex exits without producing the review file: kill the process, log the failure, fall back to backend 2.
-2. **opencode** (if installed and a model has quota): prepare and inspect the report-scoped `inkstone-reviewer` agent from `reviewer-backends.md`. With that per-run config, run `OPENCODE_CONFIG_CONTENT="$(cat "$REVIEW_CONFIG")" opencode run --pure --agent inkstone-reviewer -m <provider/model> --title "plan review <id>" "<prompt>" < /dev/null > .claude/plan-review-opencode-run.log 2>&1 &`. It reads the plan/spec with file tools and writes the consolidated review directly to `REVIEW_FILE`; shell and delegation are disabled. Record the model and validate the artifact before advancing. Liveness: the log should grow within the first minute; unchanged for 5 minutes is a hang; hard cap ~15 minutes. On failure, log it and fall back to backend 3.
+2. **opencode** (if installed and a model has quota): prepare and inspect the report-scoped `inkstone-reviewer` agent from `reviewer-backends.md`. Run `OPENCODE_CONFIG_CONTENT="$(cat "$REVIEW_CONFIG")" opencode run --pure --agent inkstone-reviewer -m <provider/model> --title "plan review <id>" "<prompt>" < /dev/null` through the shared supervisor block, with its own fresh PID/exit files and `.claude/plan-review-opencode-run.log`. It reads the plan/spec with file tools and writes the consolidated review directly to `REVIEW_FILE`; shell and delegation are disabled. Record the model and validate the artifact before advancing. Liveness: the log should grow within the first minute; unchanged for 5 minutes is a hang; hard cap ~15 minutes. On failure, log it and fall back to backend 3.
 3. **Context-blind subagents**: dispatch **three parallel subagents**, one per lane, with the restricted tools and host output capture specified in `reviewer-backends.md`. Each prompt contains ONLY the plan path, source spec path (Lane 2), repo root, lane criteria from `plan-review-dimensions.md`, and finding format. Never include planning reasoning or conversation history. Capture their final findings verbatim as lane reports, then consolidate: deduplicate, sort by severity, write `reviews/plan-review-<id>.md`. Record actual model identity and label same-model when applicable. If the host cannot enforce the shared contract, report review incomplete.
 
 Whichever backend ran, the review file records the tool **and** model, and which backends were skipped and why.

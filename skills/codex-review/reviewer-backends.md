@@ -18,7 +18,7 @@ models, not the CLI name.
 |---|---|---|---|
 | 1 | Codex CLI (`codex exec`) | compare its model/vendor with the author's | `codex` missing, quota exhausted, or dead after the liveness probe |
 | 2 | opencode (`opencode run`) | depends on `-m` versus the author model | `opencode` missing, no model with quota, or required permissions unavailable |
-| 3 | Context-blind subagents | normally **same model** — weaker; record actual identity | host cannot restrict tools and capture reviewer output |
+| 3 | Context-blind subagents | normally **same model** — weaker; record actual identity | either tool restriction or final-message capture is unavailable |
 
 Record the result in the artifact frontmatter as tool **and** model, never the tool alone:
 
@@ -39,6 +39,10 @@ symlinks and an existing output file so a stale artifact cannot count as success
 Give the reviewer the output path, artifact format, exact scope and repo root.
 Reviewers write findings; they do not repair implementation files or the target plan.
 The caller reads the artifact and adds dispositions afterwards.
+
+Create a private per-attempt run directory with `mktemp -d`. Set fresh `PID_FILE`
+and `EXIT_FILE` paths inside it; do not reuse status files from an earlier backend
+or confirmation attempt. Keep these caller-owned files out of reviewer write access.
 
 Before dispatch, record a source baseline: `git rev-parse HEAD`,
 `git ls-files --stage -z`, `git status --porcelain=v1 -z --untracked-files=all`,
@@ -232,10 +236,14 @@ minutes. On failure, log it and fall through to backend 3.
 Dispatch one subagent per lane with **Read/Glob/Grep only**, no shell, write tools
 or delegation. Give it only the saved diff plus recorded command (or plan/spec),
 its lane, and its report format. The host captures each reviewer's final message
-verbatim into its designated lane report, like Codex's CLI output writer. If the
-host supports file-scoped permissions, direct writes to that report are also valid;
-never grant unrestricted Write/Edit merely to save findings. If neither restricted
-execution nor output capture is available, report this backend unavailable.
+verbatim into its designated lane report, like Codex's CLI output writer.
+On Claude Code, use the plugin's `inkstone:inkstone-lane-reviewer` agent, defined in
+`agents/inkstone-lane-reviewer.md` with `tools: Read, Glob, Grep`. Confirm that exact
+restricted agent is available; do not silently dispatch `general-purpose` instead.
+Other hosts must provide equivalent restricted execution **and** final-message
+capture. If either is unavailable, this backend is unavailable. A file-scoped writer
+is an alternative only when the host enforces the same source protection; never
+grant unrestricted Write/Edit merely to save findings.
 Do not include implementation reasoning or conversation history. Consolidate reports:
 deduplicate (keep the most detailed duplicate), sort by severity.
 
@@ -257,19 +265,35 @@ written.
 # WRONG — nothing readable until the process exits
 codex --sandbox read-only exec "$PROMPT" 2>&1 | tail -200
 # RIGHT — write it all; filter when you READ the output file
+# Run this whole supervisor block as ONE backgrounded tool invocation.
 codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "$PROMPT" > "$OUT" 2>&1 < /dev/null &
 REVIEW_PID=$!
-```
-
-**Watch the launched process.** Capture `$!` immediately after launching either
-backend, and keep its watcher in that same shell so `wait` can collect its status.
-Do not use a `pgrep -f` pattern that can match the watcher or an unrelated reviewer:
-
-```bash
-while kill -0 "$REVIEW_PID" 2>/dev/null; do sleep 20; done
+printf '%s\n' "$REVIEW_PID" > "$PID_FILE"
 if wait "$REVIEW_PID"; then REVIEW_EXIT=0; else REVIEW_EXIT=$?; fi
+printf '%s\n' "$REVIEW_EXIT" > "$EXIT_FILE"
 echo "reviewer exited (${REVIEW_EXIT}); output bytes: $(wc -c < "$OUT")"
 ```
+
+The supervisor's shell stays alive until its child exits and records its status.
+Use the same wrapper for OpenCode, replacing only the reviewer command. The host can
+poll logs and run the backend's liveness/watchdog checks in separate tool calls;
+those calls read saved PID/exit files, never inherit shell variables or try to
+`wait` for another shell's child. For example, in a later tool call:
+
+```bash
+if [ -f "$EXIT_FILE" ]; then
+  cat "$EXIT_FILE"
+elif [ -f "$PID_FILE" ]; then
+  REVIEW_PID=$(cat "$PID_FILE")
+  ps -o etime=,time= -p "$REVIEW_PID"
+fi
+```
+
+On timeout, read the current attempt's PID file and terminate that reviewer,
+allowing the supervisor to record the exit. A missing exit file after the task has
+ended is a supervisor failure, not success inferred from a report's existence.
+Never use `pgrep -f` to identify or kill reviewers; it can match unrelated runs.
+Apply the liveness and timeout checks while the supervisor runs.
 
 `until [ ! -d /proc ]` is a real example of getting this wrong: macOS has no `/proc`, so
 the loop body never executes and the watcher exits 0 having emitted nothing — which
