@@ -28,9 +28,9 @@ input requirement, not something the prompt can grant.
 > dataframe tool to make the calculations reproducible and compare the
 > onboarding hypothesis with changes in customer mix and plan mix where
 > the supplied fields permit. Treat associations as hypotheses about
-> causes. Reconcile customer counts to the billing totals, and test any
-> predictive signal on a later period excluded from model selection. If
-> there is insufficient history, report that limitation. Deliver six
+> causes. Reconcile customer counts to the billing totals and check the
+> explanation against another comparable period when the supplied history
+> permits; otherwise state that limitation. Deliver six
 > slides with source references and reproducible calculations in the
 > slide notes, and the next decision or experiment. Stop at the supported
 > explanation; do not invent a causal finding or build a monitoring system.
@@ -74,8 +74,10 @@ It does not replace that skill's established composition guidance.
   plan-review-loop for the review. Deepen-task addresses how to frame the
   task, not the lifecycle of reviewing a written plan.
 - **"Give me a deeper approach, then implement it in this repo."** Write
-  the brief and proceed with authorized implementation. Do not stop after
-  prompt rewriting merely because rewriting is this skill's default.
+  a brief diagnosis and proceed with authorized implementation.
+- **"Give me a deeper analysis of these results."** Perform the analysis
+  using the available evidence and appropriate methods; do not substitute
+  instructions for a future analysis.
 - **"Use only this PDF to rewrite my analysis prompt."** Work within that
   evidence boundary. Explain what the PDF cannot establish; do not fetch
   raw customer data or treat a desired finding as verified.

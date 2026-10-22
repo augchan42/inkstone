@@ -17,10 +17,12 @@ as success. Preserve explicit choices about format, tools, time, and budget.
 Ask only when an unresolved detail would materially change the brief;
 otherwise state a reasonable assumption.
 
-The default deliverable is a diagnosis and rewritten prompt. If the user
-also asks to perform the work, apply the brief and continue within that
-authorization. Reframing alone does not authorize implementation, data
-access, installations, purchases, ongoing monitoring, or external actions.
+Match the deliverable to the request. When the user asks to improve a
+prompt or reframe a task, return a diagnosis and rewritten prompt. When
+they ask for deeper analysis, a better artifact, or execution, apply the
+method and produce that work; do not stop at a prompt rewrite. Reframing
+alone does not authorize implementation, new data access, installations,
+purchases, ongoing monitoring, or external actions.
 
 ## Choose where ambition helps
 
@@ -75,7 +77,9 @@ checkable intermediate outputs.
 ## Write the executable prompt
 
 Return a short explanation of the material changes, then a self-contained
-prompt the user can paste into a fresh session. Include:
+prompt the user can paste into a fresh session when a rewrite is requested.
+For an execution request, use these elements to guide the work rather
+than adding an unsolicited prompt artifact. Include:
 
 - The outcome and requested deliverable, with the original constraints.
 - The evidence to inspect, identifying supplied inputs and missing inputs.
