@@ -32,7 +32,9 @@ requested but cannot run, keep it explicitly incomplete in the handoff.
 ## Establish the task and authority
 
 Work in the user's target repository. Read its guidance and inspect its
-initial state. Record the starting commit and existing local changes, then
+initial state. Read its review, ownership and approval policy where
+available; if it cannot be read, record the policy as unknown rather than
+assuming that none applies. Record the starting commit and existing local changes, then
 identify the task's paths, acceptance criteria, and relevant constraints.
 Preserve unrelated edits throughout implementation and review.
 
@@ -99,7 +101,9 @@ three-attempt checkpoint with a review-round policy.
 ## Final handoff
 
 Report the implemented outcome, tested code state, meaningful evidence,
-remaining gaps, and recovery notes for consequential changes. Add optional
+remaining gaps, and recovery notes for consequential changes. Name any
+change to CI workflows or owner-designated sensitive paths as needing a
+human decision. Add optional
 review status: not requested, incomplete, or completed, with reviewer
 backend, reviewed state, finding dispositions, and any later edits it
 does not cover. Keep the report proportionate to the change.
