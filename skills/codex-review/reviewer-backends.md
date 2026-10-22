@@ -266,6 +266,9 @@ written.
 codex --sandbox read-only exec "$PROMPT" 2>&1 | tail -200
 # RIGHT — write it all; filter when you READ the output file
 # Run this whole supervisor block as ONE backgrounded tool invocation.
+# Substitute the absolute paths recorded at setup in EACH invocation.
+PID_FILE="/absolute/per-attempt-run/reviewer.pid"
+EXIT_FILE="/absolute/per-attempt-run/reviewer.exit"
 codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "$PROMPT" > "$OUT" 2>&1 < /dev/null &
 REVIEW_PID=$!
 printf '%s\n' "$REVIEW_PID" > "$PID_FILE"
@@ -281,11 +284,16 @@ those calls read saved PID/exit files, never inherit shell variables or try to
 `wait` for another shell's child. For example, in a later tool call:
 
 ```bash
+# Rebind these recorded absolute paths in this later tool invocation too.
+PID_FILE="/absolute/per-attempt-run/reviewer.pid"
+EXIT_FILE="/absolute/per-attempt-run/reviewer.exit"
 if [ -f "$EXIT_FILE" ]; then
   cat "$EXIT_FILE"
 elif [ -f "$PID_FILE" ]; then
   REVIEW_PID=$(cat "$PID_FILE")
   ps -o etime=,time= -p "$REVIEW_PID"
+else
+  echo "reviewer status unavailable: no PID or exit file"
 fi
 ```
 

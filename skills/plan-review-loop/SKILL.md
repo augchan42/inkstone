@@ -98,6 +98,9 @@ only in Phase 3.
      ```bash
      touch .claude/plan-review-codex-launch
      # Run this entire supervisor block as ONE backgrounded tool invocation.
+     # Substitute the absolute paths recorded at setup in this invocation.
+     PID_FILE="/absolute/per-attempt-run/reviewer.pid"
+     EXIT_FILE="/absolute/per-attempt-run/reviewer.exit"
      codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null > .claude/plan-review-codex-run.log 2>&1 &
      REVIEW_PID=$!
      printf '%s\n' "$REVIEW_PID" > "$PID_FILE"
