@@ -9,6 +9,11 @@ has not seen the conversation that produced the change. Try them in this order a
 **log which one actually ran and why the earlier ones were skipped** — a silent fallback
 hides a fixable problem (on 2026-09-15 a Codex "quota failure" was a stdin deadlock).
 
+An explicitly requested backend or model overrides the default order. If it cannot
+run, report that requested review as incomplete; do not silently substitute another
+model. Cross-model or cross-vendor status depends on the actual reviewer and author
+models, not the CLI name.
+
 | # | Backend | Independence | When it is skipped |
 |---|---|---|---|
 | 1 | Codex CLI (`codex exec`) | cross-model, cross-vendor | `codex` missing, quota exhausted, or dead after the liveness probe |
@@ -19,12 +24,30 @@ Record the result in the artifact frontmatter as tool **and** model, never the t
 
 ```
 reviewer: codex-cli (gpt-5.x)
-reviewer: opencode (opencode/muse-spark-1.3-contributor-free, agent plan) — codex: quota exhausted
+reviewer: opencode (opencode/muse-spark-1.3-contributor-free, agent inkstone-reviewer) — codex: quota exhausted
 reviewer: subagents (claude-fable-5-1, same-model) — codex: not installed; opencode: not installed
 ```
 
 A free or small model is a legitimate backend, but a reader deciding how much to trust
 the review needs to see which one it was.
+
+## Output contract
+
+Before dispatch, choose a fresh absolute `REVIEW_FILE` under the target repo's
+`reviews/` directory and create its parent. Resolve the real parent path; reject
+symlinks and an existing output file so a stale artifact cannot count as success.
+Give the reviewer the output path, artifact format, exact scope and repo root.
+Reviewers write findings; they do not repair implementation files or the target plan.
+The caller reads the artifact and adds dispositions afterwards.
+
+Keep logs separate from the findings file. A backend succeeds only when it exits
+successfully and the assigned artifact is nonempty and contains the requested
+scope, findings (or an explicit no-findings verdict), and backend/model identity.
+Check that the reviewed source state is unchanged before accepting it. An empty,
+missing or malformed artifact is a backend failure; log it and try the next backend.
+If a failed attempt left an artifact, preserve it under a distinct failed-attempt
+filename before retrying so the next backend still receives a fresh output path.
+Never synthesize findings to satisfy a hook or treat a run log as a review.
 
 ---
 
@@ -39,12 +62,18 @@ Ensure multi-agent is enabled (idempotent):
 CODEX_CONFIG="${HOME}/.codex/config.toml" && if [ ! -f "$CODEX_CONFIG" ]; then mkdir -p "${HOME}/.codex" && printf '[features]\nmulti_agent = true\n' > "$CODEX_CONFIG" && echo "Created ~/.codex/config.toml with multi_agent enabled"; elif ! grep -qE '^\s*multi_agent\s*=\s*true' "$CODEX_CONFIG"; then if grep -qE '^\[features\]' "$CODEX_CONFIG"; then if [ "$(uname)" = "Darwin" ]; then sed -i '' '/^\[features\]/a\'$'\n''multi_agent = true' "$CODEX_CONFIG"; else sed -i '/^\[features\]/a multi_agent = true' "$CODEX_CONFIG"; fi; else printf '\n[features]\nmulti_agent = true\n' >> "$CODEX_CONFIG"; fi && echo "Enabled multi_agent in ~/.codex/config.toml"; else echo "Codex multi-agent: already enabled"; fi
 ```
 
-Run it **in the background** (`run_in_background: true`) with a read-only sandbox — the
-reviewer reports findings, it does not edit code:
+Run it **in the background** (`run_in_background: true`). Keep model-generated commands
+read-only and let the reviewer CLI save its final Markdown with `--output-last-message`:
 
 ```bash
-codex --sandbox read-only exec "<prompt>" < /dev/null
+codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null
 ```
+
+The prompt requests the complete review as the final message, including the artifact
+metadata; it must not ask the model to write the file through shell or edit tools.
+`--output-last-message` is a CLI output writer, outside the sandbox applied to model
+commands. This allows reviewer-written findings without source-write access. See the
+[official output documentation](https://learn.chatgpt.com/docs/non-interactive-mode).
 
 **The `< /dev/null` is not optional.** Without it `codex exec` prints
 `Reading additional input from stdin...` and blocks forever: backgrounded, its stdin is
@@ -81,20 +110,81 @@ log unchanged for 5 consecutive minutes is a hang.
 Works non-interactively. Pick a model with quota (`opencode models` lists them; the
 `opencode/*-free` entries cost nothing and are fine for a review, just record which one).
 
-```bash
-opencode run --pure --agent plan -m <provider/model> --title "review <SCOPE_LABEL>" "<prompt>" < /dev/null
+Use a dedicated **`inkstone-reviewer`** agent, not the built-in `plan` or `build`
+agent. Plan is not a filesystem sandbox: shell commands follow inherited permissions
+and configuration can override edit restrictions. This backend instead disables shell,
+delegation and unspecified tools, and allows edits only to the assigned report.
+
+Run from the target repository's Git worktree root. For OpenCode v1, generate a
+temporary JSON config with this shape, substituting the exact report path relative
+to that worktree using a JSON serializer, not shell string interpolation:
+
+```json
+{
+  "agent": {
+    "inkstone-reviewer": {
+      "description": "Review source and write only the assigned findings artifact",
+      "mode": "primary",
+      "permission": {
+        "*": "deny",
+        "read": "allow",
+        "glob": "allow",
+        "grep": "allow",
+        "list": "allow",
+        "external_directory": "allow",
+        "edit": {
+          "*": "deny",
+          "reviews/assigned-review.md": "allow"
+        },
+        "bash": "deny",
+        "shell": "deny",
+        "task": "deny",
+        "subagent": "deny"
+      }
+    }
+  }
+}
 ```
 
-- `--agent plan` is opencode's built-in read-only agent. **The default agent is `build`,
-  which can edit files** — a reviewer that edits is no longer a reviewer. If you ever run
-  without `--agent plan`, confirm `git status` is unchanged afterwards and say so in the
-  artifact.
-- `--pure` keeps external plugins out of the run, so the prompt is the whole context.
+Keep `REVIEW_FILE` absolute in the prompt. OpenCode v1.18.34's write tool checks
+`edit` permissions against a worktree-relative resource, so an absolute allow rule
+does not match it. Derive the relative rule from the canonical output path and the
+actual worktree root; do not add a wildcard prefix to make it match. See the
+[write-tool implementation](https://github.com/anomalyco/opencode/blob/v1.18.34/packages/opencode/src/tool/write.ts).
+
+Apply it per invocation through `OPENCODE_CONFIG_CONTENT`; do not change global or
+project settings. With the same inline config and `--pure`, inspect
+`opencode debug agent inkstone-reviewer` before running. Confirm the effective policy
+denies shell, delegation, other tools and every edit except the exact report path;
+inherited path-specific allows must not remain. Managed configuration can take
+precedence. If the installed version or merged policy cannot enforce this contract,
+log the reason and skip this backend. The JSON above is v1 syntax; do not apply it
+unchanged to v2. See [permissions](https://opencode.ai/docs/permissions/) and
+[config precedence](https://opencode.ai/docs/config/).
+
+Since shell execution is disabled, the caller materializes the exact resolved diff
+to a temporary file first, with the same refs and pathspec. Give the reviewer both
+the recorded command and that file's absolute path; tell it to read the saved diff
+first, then inspect source with read/search tools. For plan review, it reads the plan
+and source spec directly. Do not include implementation reasoning or prior findings.
+
+```bash
+OPENCODE_CONFIG_CONTENT="$(cat "$REVIEW_CONFIG")" opencode run --pure --agent inkstone-reviewer -m <provider/model> --title "review <SCOPE_LABEL>" "<prompt>" < /dev/null
+```
+
+- The prompt tells the reviewer to write the complete artifact to `REVIEW_FILE` using
+  its file-writing tool and return a short completion message. It may not write any
+  other path. A permission failure is a backend failure, not a reason to allow all edits.
+- `--pure` disables external plugins; it does not remove project instructions,
+  configuration or MCP servers. The dedicated policy limits tools; fresh context
+  provides independence from the implementation conversation.
 - `< /dev/null` for the same reason as Codex: never let a backgrounded reviewer wait on
   a stdin that no one will close.
 - Redirect stdout to a file and watch that file; the same `tail`/`head` buffering trap
   applies (below).
-- Smoke test: `opencode run --pure --agent plan -m <model> "Reply with exactly: SMOKE OK" < /dev/null`.
+- Smoke test the same agent and policy with a separate fresh report path: ask it to
+  write `SMOKE OK` there, then check that file. A text-only smoke test does not verify
+  the artifact permission. Generate the real run's config with its own report path.
 
 Liveness: opencode has no rollout directory to probe. Use the run log — bytes written
 should grow within the first minute; unchanged for 5 minutes is a hang; hard cap ~15
@@ -105,8 +195,9 @@ minutes. On failure, log it and fall through to backend 3.
 ## Backend 3 — context-blind subagents
 
 Dispatch one subagent per lane, in parallel, each given **only** the diff (or plan)
-command and its own lane. Do not tell them anything about the change's intent or your
-reasoning — context-blindness is the entire point. Consolidate their findings yourself:
+command, its own lane and a designated lane report path. Have each reviewer write
+its findings there under the same source-protection contract. Do not tell them
+anything about the change's intent or your reasoning. Consolidate their reports:
 deduplicate (keep the most detailed duplicate), sort by severity.
 
 Say plainly in the output and the artifact that the review was **same-model**, so its

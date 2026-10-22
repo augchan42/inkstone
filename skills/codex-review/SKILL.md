@@ -90,33 +90,38 @@ reviewer and obvious to a primed one.
 
 Read `reviewer-backends.md`, beside this file in the installed skill directory, and
 pick the first backend that is installed, has quota, and passes its five-second smoke
-test: **Codex CLI**, then **opencode**, then **context-blind subagents**. Log which one
+test: **Codex CLI**, then **opencode**, then **context-blind subagents**, unless the user
+explicitly selected a backend or model. Log which one
 ran and why the earlier ones were skipped. The mechanics — the `< /dev/null` rule,
-read-only agents, liveness probes, the `tail`/`head` buffering trap, the guard loop —
+artifact write permissions, liveness probes, the `tail`/`head` buffering trap, the guard loop —
 all live in that file; do not improvise them here.
 
 Run the reviewer **in the background** so its output stays visible and it can be
 killed if it stalls. The prompt must contain, in this order:
 
 1. The exact diff command: `git diff <DIFF_ARGS> [-- <PATHSPEC>]`, and an instruction
-   to run it first and review **only** what it prints.
+   to review **only** its output first. Codex runs it; for the shell-disabled OpenCode
+   agent, materialize that exact diff beforehand and supply the saved file to read.
 2. `SCOPE_LABEL`, so the reviewer knows what it is looking at.
 3. One block per selected lane, each ending with the finding format.
-4. A consolidation instruction: dedupe overlapping findings, order by severity, return
-   the result **as text**.
+4. A consolidation instruction: dedupe overlapping findings, order by severity, and
+   produce the complete Markdown artifact at the designated path using the backend's
+   output contract. Include the Phase 4 format and backend/model metadata in the prompt.
 
 Per finding: `file:line`, severity (critical/high/medium/low), lane, what is wrong,
 why it is wrong, and a concrete fix.
 
-Have the reviewer return findings as text and write the artifact yourself. Letting the
-reviewer write the file is how you end up with a review that ran and produced nothing.
+Choose the Phase 4 artifact path before dispatch. Codex saves its final Markdown
+through `--output-last-message`; OpenCode writes through its report-scoped file tool.
+Confirm the artifact exists, is nonempty and matches the reviewed scope before triage.
+The caller adds dispositions after reading the review; it does not invent findings.
 
 **Don't wait idle.** The pass is long enough to run the diff's own cheap checks
 alongside it — linters, localization or script guards, a targeted test suite.
 
-## Phase 4 — Write the artifact
+## Phase 4 — Validate the reviewer-written artifact
 
-Write to `reviews/review-<YYYYMMDD-HHMMSS>-<REF_SHA>.md`:
+Require the reviewer to write `reviews/review-<YYYYMMDD-HHMMSS>-<REF_SHA>.md`:
 
 ```markdown
 ---
@@ -193,8 +198,8 @@ rewrite or publish.
 - A watcher that produced no output is a broken watcher until proven otherwise.
 - Always `< /dev/null` on `codex exec` and `opencode run`; without it a backgrounded run
   blocks on stdin forever, looking exactly like a slow review.
-- Run opencode only with `--agent plan`, its read-only agent; the default `build` agent
-  can edit files, and a reviewer that edits is no longer a reviewer.
+- Run OpenCode with the dedicated report-scoped agent and effective policy defined in
+  `reviewer-backends.md`; reviewers may write findings but may not edit reviewed source.
 - Record the reviewer as tool **and** model, and say when it was same-model.
 - On any tooling failure, report it and continue degraded — never leave the user
   unsure whether a review ran.
