@@ -92,12 +92,19 @@ After a change to tested code or a dependency it relies on, invalidate the
 affected evidence and refresh it. Do not apply results from an earlier
 commit to a later one without checking what changed.
 
-Use the task's time, cost, and risk limits to bound retries. When attempts
-repeat the same failure without new evidence, diagnose the limiting
-assumption and change the approach instead of rerunning it. Continue useful
-authorized work within those limits; report a blocker when progress needs
-missing input or access. Do not import a code-review round cap into repair
-work, create a reviewer/fixer loop here, or relax assertions to finish.
+Track failed repair-and-check attempts for each behavior. After three
+failed attempts on the same behavior, complete a checkpoint before trying
+again: summarize what changed and what the checks showed, then either
+diagnose the failing assumption from that evidence or choose a materially
+different repair strategy. State what the next check will establish;
+cosmetic edits or an unchanged rerun do not satisfy the checkpoint.
+
+Resume authorized repair after the checkpoint and start a new attempt
+count. Three attempts trigger diagnosis or a strategy change, not a stop
+or a request for renewed permission. Diagnose earlier when retries are
+already uninformative. The task's time, cost, and risk limits still apply;
+report a blocker when progress actually needs missing input or access.
+Do not create a reviewer/fixer loop here or relax assertions to finish.
 
 ## Hand off evidence and residual risk
 
