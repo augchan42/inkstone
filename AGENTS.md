@@ -21,6 +21,8 @@ skills/
     *.md               # Optional reference files loaded by the skill
 examples/
   prompt-examples.md   # Validated reference prompts for ink painting & tech-noir modes
+docs/adr/
+  0001-*.md            # Decisions about Inkstone's skill architecture and boundaries
 hkoscon-2026/
   hkoscon-2026-talk.html  # Self-contained static talk deck + image assets
   DEPLOY.md               # How to (re)deploy the deck to Vercel
@@ -31,6 +33,9 @@ hkoscon-2026/
 Each skill is a `SKILL.md` with YAML frontmatter (`name`, `description`, `user-invocable`, `argument-hint`) followed by the full instruction set that Claude Code receives when the skill is invoked. Skills have no runtime code — they are prompt engineering documents that define behavior through instructions, examples, and rules.
 
 When a skill has companion reference files (e.g., `blakean-scene/blakean-reference.md`, `ui-ux-architect/audit-dimensions.md`), the SKILL.md instructs the agent to read them at execution time.
+
+The rationale for keeping implementation verification separate from
+adversarial review is in [ADR-0001](docs/adr/0001-separate-verification-from-adversarial-review.md).
 
 ## Adding a New Skill
 
@@ -60,6 +65,7 @@ When a skill has companion reference files (e.g., `blakean-scene/blakean-referen
 
 ### Engineering Process
 
+- **verify-change** — Guides the implementation agent through behavior-to-check mapping, executable verification, and an evidence handoff for a specific code state. Reports gaps and recovery notes. Does not call Codex or perform adversarial review; codex-review remains separate. Adapted from Addy Osmani's verification-first guidance.
 - **codex-review** — Independent cross-model code review of any git scope. `scripts/resolve-scope.sh` turns any argument form — bare (auto-detect), `HEAD~3`, a range, a **merge commit** (auto-resolved to `<sha>^1 <sha>`), `--commit`, `--pr N`, `--staged`, trailing paths — into one concrete `git diff` invocation, so review scope is never a hardcoded constant. Lanes come from `review-lanes.md` plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Reviewer is Codex CLI (plain `codex exec`, never `codex exec review` — that subcommand rejects a custom prompt) or context-blind subagents. Every finding gets an explicit ACCEPTED / DECLINED / PRE-EXISTING disposition. **No hook, no state file, no loop** — one invocation, start to finish.
 - **plan-review-loop** — Adversarial review loop for implementation plans: locate or author the plan, then an independent multi-lane review (zero-context executability; grounding & traceability against the repo and the source spec; task structure & risk) via Codex CLI or context-blind subagents, then address findings with judgment. The source spec is reviewed transitively via the traceability lane. Supports superpowers plans (`docs/superpowers/plans/`), planning-with-files `task_plan.md`, Kiro `tasks.md`. Reviews land in `reviews/plan-review-<id>.md`; state in `.claude/plan-review-loop.local.md`; `cancel` argument clears an active loop. Completion is enforced by the Stop hook in `hooks/`.
 
