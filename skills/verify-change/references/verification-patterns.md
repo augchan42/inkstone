@@ -73,6 +73,16 @@ may remain useful if its relevant inputs did not change. Record the reason
 for carrying evidence forward rather than silently relabeling it as a run
 against B. If the relationship is unclear, mark the check not run for B.
 
+## Three failed repairs: checkpoint and continue
+
+If three repair-and-check attempts still leave Save failing to persist a
+name, summarize the attempted repairs and observed failures before attempt
+four. Diagnose a concrete assumption, such as a component test bypassing
+the real route, or change strategy, such as tracing the isolated request
+through the persistence adapter. State which next check will distinguish
+the suspected cause. Continue the authorized repair and begin a new count.
+Reaching three alone does not end the task or require new permission.
+
 ## Relationship to other Inkstone skills
 
 - **verify-change:** The implementation agent demonstrates intended

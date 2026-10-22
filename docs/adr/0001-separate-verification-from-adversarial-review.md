@@ -72,10 +72,22 @@ paths as a default for repositories using Inkstone.
 ### Bound loops by their purpose
 
 The article's three-round review cap addresses repeated reviewer/fixer
-cycles; it is not a universal cap on implementation repair attempts.
-Verification uses the task's time, cost, and risk limits. Repeated failures
-without new evidence call for diagnosis or a different approach, not an
-unbounded loop or weaker assertions.
+cycles. For implementation verification, we adopt a three-attempt
+checkpoint rather than a termination cap: after three failed
+repair-and-check attempts on the same behavior, the agent must summarize
+the evidence and diagnose the failing assumption or choose a materially
+different strategy before another attempt. It must identify what the next
+check will establish; repeating the same approach without that decision
+does not satisfy the checkpoint.
+
+The agent then continues authorized repair with a new attempt count,
+within the task's time, cost, and risk limits. The checkpoint itself is
+neither a reason to stop nor a requirement for renewed permission. Actual
+missing input or access can still block progress. Earlier diagnosis is
+appropriate when retries are already uninformative; assertions must not
+be weakened to make a check pass. This checkpoint is Inkstone's adaptation
+of the convergence principle, not a claim that the article prescribes the
+same rule for implementation repairs.
 
 When a recurring failure exposes a stable invariant, propose a focused
 regression check or project instruction. Repository-wide review services,
