@@ -56,6 +56,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 | Skill | Description |
 |-------|-------------|
+| **deliver-change** | Coordinate deepen-task, implementation, and verify-change; add separate adversarial codex-review only when requested with `--review` |
 | **verify-change** | Have the implementation agent verify intended behavior with executable checks and hand off evidence, gaps, and recovery notes — complements the separate adversarial codex-review |
 | **codex-review** | Independent cross-model code review of any git scope — bare (auto-detect), `HEAD~3`, a range, a merge commit (auto-resolved to its first-parent diff), `--commit`, `--pr N`, `--staged`, or path-limited. Lanes from the skill plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Codex CLI or context-blind subagents; every finding gets an ACCEPTED / DECLINED / PRE-EXISTING disposition. No hook, no loop |
 | **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI or context-blind subagents as reviewer; completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
@@ -89,6 +90,21 @@ is recorded in [ADR-0001](docs/adr/0001-separate-verification-from-adversarial-r
 | **video-to-shorts** | Turn a long video into vertical shorts. Transcribe with word timings, score the moments, then render from an edit list: hook first, a cut to each speaker, punch-ins, word-timed captions, name lower third, fade and end card, speed variants. Cross-platform (macOS/Linux/WSL); stops at an upload-ready mp4 |
 
 ## Usage
+
+### Deliver a development change
+
+```text
+/deliver-change Fix the profile Save button so changes persist after reload
+/deliver-change --review Add CSV export for the filtered results
+```
+
+Codex review is off by default. The wrapper preserves the repair checkpoint
+and verification evidence; PR creation, merging, and deployment follow the
+authority in the request. In Codex, invoke the installed skill as
+`$deliver-change` with the same task and optional `--review` instruction.
+Standalone installation needs `deepen-task` and `verify-change`; install
+`codex-review` too for the optional review stage. The Inkstone plugin bundles
+all four skills.
 
 ### Generate an ink painting prompt
 

@@ -4,7 +4,7 @@ description: Run an independent cross-model code review of any git scope — unc
 user-invocable: true
 argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>]"
 metadata:
-  version: "1.2.0"
+  version: "1.2.1"
 ---
 
 # Codex Review
@@ -30,9 +30,20 @@ resolve scope → assemble lanes → run reviewer → triage findings → act
 
 Run the resolver and use its output. Do not construct a `git diff` by hand.
 
+Locate the directory containing this `SKILL.md` using skill discovery.
+The resolver is `scripts/resolve-scope.sh` inside that directory, and
+`review-lanes.md` is beside this file. Use those installed paths while
+keeping the working directory in the repository being reviewed. Do not
+assume that repository contains an Inkstone checkout or a `skills/` folder.
+
 ```bash
-"${CLAUDE_PLUGIN_ROOT:-.}/skills/codex-review/scripts/resolve-scope.sh" <args>
+bash "<absolute installed codex-review directory>/scripts/resolve-scope.sh" <args>
 ```
+
+Substitute the discovered skill directory before running the command.
+For a plugin install it is normally under `${CLAUDE_PLUGIN_ROOT}/skills/`;
+for a standalone install use the skill's actual location. On Windows use
+an available Bash runtime such as Git Bash or WSL, with a path it can read.
 
 Pass the user's scope arguments through unchanged, minus `--focus` and `--holistic`
 (those are yours, not the resolver's). It emits `SCOPE_LABEL`, `DIFF_ARGS`,
