@@ -81,8 +81,9 @@ Preserve the reviewer's isolation: provide the resolved diff commands and
 the selected review guidance, not the implementation conversation, author
 rationale, verification narrative, or expected findings. Keep the evidence
 handoff for the user separate. Report the actual reviewer backend and
-model: an opencode run is cross-model but not Codex, and a same-model
-fresh-context fallback is not a cross-model review.
+model. Compare the actual reviewer and author models/vendors before calling the
+review cross-model or cross-vendor; the CLI name does not establish independence.
+A same-model fresh-context fallback is not a cross-model review.
 
 Triage every finding using codex-review's dispositions. Fix accepted,
 in-scope defects when that falls within the user's existing implementation

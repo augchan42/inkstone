@@ -16,16 +16,16 @@ models, not the CLI name.
 
 | # | Backend | Independence | When it is skipped |
 |---|---|---|---|
-| 1 | Codex CLI (`codex exec`) | cross-model, cross-vendor | `codex` missing, quota exhausted, or dead after the liveness probe |
-| 2 | opencode (`opencode run`) | cross-model; vendor depends on `-m` | `opencode` missing, or no model with quota |
-| 3 | Context-blind subagents | **same model** — weaker; say so in the artifact | never — always available |
+| 1 | Codex CLI (`codex exec`) | compare its model/vendor with the author's | `codex` missing, quota exhausted, or dead after the liveness probe |
+| 2 | opencode (`opencode run`) | depends on `-m` versus the author model | `opencode` missing, no model with quota, or required permissions unavailable |
+| 3 | Context-blind subagents | normally **same model** — weaker; record actual identity | host cannot restrict tools and capture reviewer output |
 
 Record the result in the artifact frontmatter as tool **and** model, never the tool alone:
 
 ```
-reviewer: codex-cli (gpt-5.x)
-reviewer: opencode (opencode/muse-spark-1.3-contributor-free, agent inkstone-reviewer) — codex: quota exhausted
-reviewer: subagents (claude-fable-5-1, same-model) — codex: not installed; opencode: not installed
+reviewer: "codex-cli (gpt-5.x)"
+reviewer: "opencode (opencode/muse-spark-1.3-contributor-free, agent inkstone-reviewer) — codex: quota exhausted"
+reviewer: "subagents (claude-fable-5-1, same-model) — codex: not installed; opencode: not installed"
 ```
 
 A free or small model is a legitimate backend, but a reader deciding how much to trust
@@ -40,6 +40,15 @@ Give the reviewer the output path, artifact format, exact scope and repo root.
 Reviewers write findings; they do not repair implementation files or the target plan.
 The caller reads the artifact and adds dispositions afterwards.
 
+Before dispatch, record a source baseline: `git rev-parse HEAD`,
+`git ls-files --stage -z`, `git status --porcelain=v1 -z --untracked-files=all`,
+and a SHA-256 hash of `git diff HEAD --binary --no-ext-diff --no-textconv`.
+Also hash the contents of each task-owned untracked input and the target plan/spec,
+including ignored or external inputs when applicable. Repeat and compare after
+the run. Exclude only the exact assigned report paths and caller-created logs,
+config and input artifacts; do not exclude the whole `reviews/` directory or assume
+a clean working tree. Record any unrelated edits already present in the baseline.
+
 Keep logs separate from the findings file. A backend succeeds only when it exits
 successfully and the assigned artifact is nonempty and contains the requested
 scope, findings (or an explicit no-findings verdict), and backend/model identity.
@@ -48,6 +57,8 @@ missing or malformed artifact is a backend failure; log it and try the next back
 If a failed attempt left an artifact, preserve it under a distinct failed-attempt
 filename before retrying so the next backend still receives a fresh output path.
 Never synthesize findings to satisfy a hook or treat a run log as a review.
+Unexpected source or index changes invalidate the review. Preserve the evidence
+and report the difference; do not reset a user's working tree to conceal it.
 
 ---
 
@@ -121,17 +132,26 @@ to that worktree using a JSON serializer, not shell string interpolation:
 
 ```json
 {
+  "formatter": false,
+  "lsp": false,
   "agent": {
     "inkstone-reviewer": {
       "description": "Review source and write only the assigned findings artifact",
       "mode": "primary",
       "permission": {
         "*": "deny",
-        "read": "allow",
+        "read": {
+          "*": "allow",
+          "../*": "deny",
+          "../../private-review-input/scope.patch": "allow"
+        },
         "glob": "allow",
         "grep": "allow",
         "list": "allow",
-        "external_directory": "allow",
+        "external_directory": {
+          "*": "deny",
+          "/absolute/private-review-input/*": "allow"
+        },
         "edit": {
           "*": "deny",
           "reviews/assigned-review.md": "allow"
@@ -152,11 +172,26 @@ does not match it. Derive the relative rule from the canonical output path and t
 actual worktree root; do not add a wildcard prefix to make it match. See the
 [write-tool implementation](https://github.com/anomalyco/opencode/blob/v1.18.34/packages/opencode/src/tool/write.ts).
 
+Create the input directory with `mktemp -d`, not a predictable shared name, and put
+only the materialized diff or copied external plan/spec inputs there. Generate its
+absolute directory allow rule and exact worktree-relative `read` exceptions using
+the actual paths. An `external_directory` check uses a directory marker ending in
+`/*`, not the individual filename; the `read` exception permits only the named input.
+See the [external-directory implementation](https://github.com/anomalyco/opencode/blob/v1.18.34/packages/opencode/src/tool/external-directory.ts)
+and [read-tool implementation](https://github.com/anomalyco/opencode/blob/v1.18.34/packages/opencode/src/tool/read.ts).
+Do not grant access to the whole home directory or other repositories. For a plan
+with no external inputs, omit the exceptions and deny all external directories.
+
+Keep `formatter` and `lsp` disabled in this per-run config: file reads/writes can
+otherwise start configured processes outside the shell tool's permission gate.
+
 Apply it per invocation through `OPENCODE_CONFIG_CONTENT`; do not change global or
 project settings. With the same inline config and `--pure`, inspect
 `opencode debug agent inkstone-reviewer` before running. Confirm the effective policy
 denies shell, delegation, other tools and every edit except the exact report path;
-inherited path-specific allows must not remain. Managed configuration can take
+check external/read rules too. Inherited rules must not permit additional source
+writes or unrelated external reads. Inspect any host-added tool-output exception
+and ensure the outside-worktree `read` deny still applies to it. Managed configuration can take
 precedence. If the installed version or merged policy cannot enforce this contract,
 log the reason and skip this backend. The JSON above is v1 syntax; do not apply it
 unchanged to v2. See [permissions](https://opencode.ai/docs/permissions/) and
@@ -194,10 +229,14 @@ minutes. On failure, log it and fall through to backend 3.
 
 ## Backend 3 — context-blind subagents
 
-Dispatch one subagent per lane, in parallel, each given **only** the diff (or plan)
-command, its own lane and a designated lane report path. Have each reviewer write
-its findings there under the same source-protection contract. Do not tell them
-anything about the change's intent or your reasoning. Consolidate their reports:
+Dispatch one subagent per lane with **Read/Glob/Grep only**, no shell, write tools
+or delegation. Give it only the saved diff plus recorded command (or plan/spec),
+its lane, and its report format. The host captures each reviewer's final message
+verbatim into its designated lane report, like Codex's CLI output writer. If the
+host supports file-scoped permissions, direct writes to that report are also valid;
+never grant unrestricted Write/Edit merely to save findings. If neither restricted
+execution nor output capture is available, report this backend unavailable.
+Do not include implementation reasoning or conversation history. Consolidate reports:
 deduplicate (keep the most detailed duplicate), sort by severity.
 
 Say plainly in the output and the artifact that the review was **same-model**, so its
@@ -218,14 +257,18 @@ written.
 # WRONG — nothing readable until the process exits
 codex --sandbox read-only exec "$PROMPT" 2>&1 | tail -200
 # RIGHT — write it all; filter when you READ the output file
-codex --sandbox read-only exec "$PROMPT" > "$OUT" 2>&1 < /dev/null
+codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "$PROMPT" > "$OUT" 2>&1 < /dev/null &
+REVIEW_PID=$!
 ```
 
-**Write the guard loop for the OS you are on.** Watch the process itself, not a proxy:
+**Watch the launched process.** Capture `$!` immediately after launching either
+backend, and keep its watcher in that same shell so `wait` can collect its status.
+Do not use a `pgrep -f` pattern that can match the watcher or an unrelated reviewer:
 
 ```bash
-while pgrep -f "codex --sandbox read-only exec|opencode run" >/dev/null 2>&1; do sleep 20; done
-echo "reviewer exited; output bytes: $(wc -c < "$OUT")"
+while kill -0 "$REVIEW_PID" 2>/dev/null; do sleep 20; done
+if wait "$REVIEW_PID"; then REVIEW_EXIT=0; else REVIEW_EXIT=$?; fi
+echo "reviewer exited (${REVIEW_EXIT}); output bytes: $(wc -c < "$OUT")"
 ```
 
 `until [ ! -d /proc ]` is a real example of getting this wrong: macOS has no `/proc`, so

@@ -1,6 +1,6 @@
 ---
 name: codex-review
-description: Run an independent cross-model code review of any git scope — uncommitted changes, a commit range, a merge commit, a PR, or specific paths — via Codex CLI, opencode, or context-blind subagents, then triage every finding with an explicit disposition. Use when asked to "review this diff", "codex review", "review PR N", "review the merge commit", or to get a second opinion on changes before or after merge. For reviewing implementation plans rather than code, see plan-review-loop.
+description: Run an independent code review of any git scope — uncommitted changes, a commit range, a merge commit, a PR, or specific paths — via Codex CLI, opencode, or context-blind subagents, then triage every finding with an explicit disposition. Use when asked to "review this diff", "codex review", "review PR N", "review the merge commit", or to get a second opinion on changes before or after merge. For reviewing implementation plans rather than code, see plan-review-loop.
 user-invocable: true
 argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>]"
 metadata:
@@ -89,7 +89,7 @@ reviewer and obvious to a primed one.
 ## Phase 3 — Run the reviewer
 
 Read `reviewer-backends.md`, beside this file in the installed skill directory, and
-pick the first backend that is installed, has quota, and passes its five-second smoke
+pick the first backend that is installed, has quota, and passes its short smoke
 test: **Codex CLI**, then **opencode**, then **context-blind subagents**, unless the user
 explicitly selected a backend or model. Log which one
 ran and why the earlier ones were skipped. The mechanics — the `< /dev/null` rule,
@@ -130,7 +130,7 @@ diff: git diff <DIFF_ARGS> [-- <PATHSPEC>]
 files_changed: <n>
 lines_changed: <n>
 lanes: correctness, contracts, tests, security, nextjs, project(.claude/code-review-lanes.md), focus
-reviewer: <tool (model[, agent])> — <why earlier backends were skipped, if any>
+reviewer: "<tool (model[, agent])> — <why earlier backends were skipped, if any>"
 reviewed_at: <ISO 8601>
 ---
 
@@ -142,8 +142,16 @@ reviewed_at: <ISO 8601>
 
 ...
 
-## Disposition
+## Verification limitations
+
+<checks the reviewer could not perform>
+
+## Verdict
+
+<ready | needs revision>
 ```
+
+The reviewer stops after the verdict. The caller appends `## Disposition` in Phase 5.
 
 Recording the exact diff command in the frontmatter is not decoration — it is the only
 way anyone later can tell what this review did and did not look at.

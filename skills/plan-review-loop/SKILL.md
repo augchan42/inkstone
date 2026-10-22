@@ -85,14 +85,16 @@ only in Phase 3.
    CODEX_CONFIG="${HOME}/.codex/config.toml" && if [ ! -f "$CODEX_CONFIG" ]; then mkdir -p "${HOME}/.codex" && printf '[features]\nmulti_agent = true\n' > "$CODEX_CONFIG" && echo "Created ~/.codex/config.toml with multi_agent enabled"; elif ! grep -qE '^\s*multi_agent\s*=\s*true' "$CODEX_CONFIG"; then if grep -qE '^\[features\]' "$CODEX_CONFIG"; then if [ "$(uname)" = "Darwin" ]; then sed -i '' '/^\[features\]/a\'$'\n''multi_agent = true' "$CODEX_CONFIG"; else sed -i '/^\[features\]/a multi_agent = true' "$CODEX_CONFIG"; fi; else printf '\n[features]\nmulti_agent = true\n' >> "$CODEX_CONFIG"; fi && echo "Enabled multi_agent in ~/.codex/config.toml"; else echo "Codex multi-agent: already enabled"; fi
    ```
 
-   Run `codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null` non-interactively. Ask for the complete consolidated review as its final Markdown message; the CLI writes that message to the artifact. Do not ask model tools to write it. Cross-model independence, matching the original review-loop.
+   Run `codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null` non-interactively. Ask for the complete consolidated review as its final Markdown message; the CLI writes that message to the artifact. Do not ask model tools to write it. Record independence from the actual author and reviewer models/vendors.
 
    **A hung Codex never exits — never wait on exit alone.** Codex can block on startup (auth refresh, dead network call) and burn an hour producing nothing. Three mandatory rules:
 
    - **Redirect, never pipe.** Launch in the background with output to a file — pipes (`| tail`, `| head`) buffer until exit and make a dead process indistinguishable from a working one:
 
      ```bash
-     touch .claude/plan-review-codex-launch && codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null > .claude/plan-review-codex-run.log 2>&1 &
+     touch .claude/plan-review-codex-launch
+     codex --sandbox read-only exec --output-last-message "$REVIEW_FILE" "<prompt>" < /dev/null > .claude/plan-review-codex-run.log 2>&1 &
+     REVIEW_PID=$!
      ```
 
    - **Liveness probe at ~90s.** A healthy Codex writes a rollout file within seconds of starting a session. About 90 seconds after launch, check:
@@ -105,7 +107,7 @@ only in Phase 3.
 
    - **Watchdog.** Hard cap ~15 minutes total; also treat "run log unchanged for 5 consecutive minutes" as a hang (poll while waiting — do not idle to a stop). On either trigger, or if Codex exits without producing the review file: kill the process, log the failure, fall back to backend 2.
 2. **opencode** (if installed and a model has quota): prepare and inspect the report-scoped `inkstone-reviewer` agent from `reviewer-backends.md`. With that per-run config, run `OPENCODE_CONFIG_CONTENT="$(cat "$REVIEW_CONFIG")" opencode run --pure --agent inkstone-reviewer -m <provider/model> --title "plan review <id>" "<prompt>" < /dev/null > .claude/plan-review-opencode-run.log 2>&1 &`. It reads the plan/spec with file tools and writes the consolidated review directly to `REVIEW_FILE`; shell and delegation are disabled. Record the model and validate the artifact before advancing. Liveness: the log should grow within the first minute; unchanged for 5 minutes is a hang; hard cap ~15 minutes. On failure, log it and fall back to backend 3.
-3. **Context-blind subagents** (fallback, always available): dispatch **three parallel subagents**, one per review lane. Each subagent's prompt must contain ONLY: the plan path, the source spec path (Lane 2), the repo root, its lane's criteria from `plan-review-dimensions.md`, the finding format, and its designated lane report path. Never include your planning reasoning or conversation history. Have reviewers write their lane reports, then consolidate them: deduplicate (keep the most detailed duplicate), sort by severity, write `reviews/plan-review-<id>.md`. Same-model — say so in the review file.
+3. **Context-blind subagents**: dispatch **three parallel subagents**, one per lane, with the restricted tools and host output capture specified in `reviewer-backends.md`. Each prompt contains ONLY the plan path, source spec path (Lane 2), repo root, lane criteria from `plan-review-dimensions.md`, and finding format. Never include planning reasoning or conversation history. Capture their final findings verbatim as lane reports, then consolidate: deduplicate, sort by severity, write `reviews/plan-review-<id>.md`. Record actual model identity and label same-model when applicable. If the host cannot enforce the shared contract, report review incomplete.
 
 Whichever backend ran, the review file records the tool **and** model, and which backends were skipped and why.
 
@@ -146,7 +148,7 @@ Work critical and high severity first. **Before appending the disposition log**,
 
 ## Phase 4 — Confirm (conditional)
 
-If any **critical** finding was fixed (i.e., the state file now says `phase: confirm`), run exactly one confirmation round: re-dispatch **one** fresh context-blind reviewer with the revised plan and the prior review file, asking only "are the critical findings resolved, and did the revisions introduce new problems?" The same backend rules apply, including the Codex liveness probe and watchdog — on backend failure, fall back to a subagent rather than skipping confirmation. Give this reviewer a fresh separate confirmation-artifact path and scope its write access to that file, leaving the prior review readable. Validate its output, then append its verdict to the original review as a `## Confirmation` section (the stop hook looks for this exact heading before allowing exit from the confirm phase). Do not loop beyond this single round.
+If any **critical** finding was fixed (i.e., the state file now says `phase: confirm`), run exactly one confirmation round: re-dispatch **one** fresh context-blind reviewer with the revised plan and the prior review file, asking only "are the critical findings resolved, and did the revisions introduce new problems?" The same backend rules apply, including Codex/OpenCode liveness probes and watchdogs — on backend failure, fall back to the next backend rather than skipping confirmation. Give this reviewer a fresh separate confirmation-artifact path and scope its write access to that file, leaving the prior review readable. Validate its output, then append its verdict to the original review as a `## Confirmation` section (the stop hook looks for this exact heading before allowing exit from the confirm phase). Do not loop beyond this single round.
 
 ## Phase 5 — Cleanup
 
