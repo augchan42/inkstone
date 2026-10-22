@@ -1,10 +1,10 @@
 ---
 name: codex-review
-description: Run an independent cross-model code review of any git scope — uncommitted changes, a commit range, a merge commit, a PR, or specific paths — via Codex CLI or context-blind subagents, then triage every finding with an explicit disposition. Use when asked to "review this diff", "codex review", "review PR N", "review the merge commit", or to get a second opinion on changes before or after merge. For reviewing implementation plans rather than code, see plan-review-loop.
+description: Run an independent code review of any git scope — uncommitted changes, a commit range, a merge commit, a PR, or specific paths — via Codex CLI, opencode, or context-blind subagents, then triage every finding with an explicit disposition. Use when asked to "review this diff", "codex review", "review PR N", "review the merge commit", or to get a second opinion on changes before or after merge. For reviewing implementation plans rather than code, see plan-review-loop.
 user-invocable: true
 argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>]"
 metadata:
-  version: "1.2.1"
+  version: "1.3.0"
 ---
 
 # Codex Review
@@ -88,112 +88,40 @@ reviewer and obvious to a primed one.
 
 ## Phase 3 — Run the reviewer
 
-Preference order:
+Read `reviewer-backends.md`, beside this file in the installed skill directory, and
+pick the first backend that is installed, has quota, and passes its short smoke
+test: **Codex CLI**, then **opencode**, then **context-blind subagents**, unless the user
+explicitly selected a backend or model. Log which one
+ran and why the earlier ones were skipped. The mechanics — the `< /dev/null` rule,
+artifact write permissions, liveness probes, the `tail`/`head` buffering trap, the guard loop —
+all live in that file; do not improvise them here.
 
-### 1. Codex CLI
-
-**Never use `codex exec review`.** That subcommand rejects a custom prompt, which
-makes lanes and focus impossible. Always use plain `codex exec` pointed at the
-resolved diff.
-
-Ensure multi-agent is enabled (idempotent):
-
-```bash
-CODEX_CONFIG="${HOME}/.codex/config.toml" && if [ ! -f "$CODEX_CONFIG" ]; then mkdir -p "${HOME}/.codex" && printf '[features]\nmulti_agent = true\n' > "$CODEX_CONFIG" && echo "Created ~/.codex/config.toml with multi_agent enabled"; elif ! grep -qE '^\s*multi_agent\s*=\s*true' "$CODEX_CONFIG"; then if grep -qE '^\[features\]' "$CODEX_CONFIG"; then if [ "$(uname)" = "Darwin" ]; then sed -i '' '/^\[features\]/a\'$'\n''multi_agent = true' "$CODEX_CONFIG"; else sed -i '/^\[features\]/a multi_agent = true' "$CODEX_CONFIG"; fi; else printf '\n[features]\nmulti_agent = true\n' >> "$CODEX_CONFIG"; fi && echo "Enabled multi_agent in ~/.codex/config.toml"; else echo "Codex multi-agent: already enabled"; fi
-```
-
-Then run it **in the background** (`run_in_background: true`) so its output stays
-visible and it can be killed if it stalls. Use a read-only sandbox — the reviewer
-reports findings, it does not edit code:
-
-```bash
-codex --sandbox read-only exec "<prompt>" < /dev/null
-```
-
-**The `< /dev/null` is not optional.** Without it `codex exec` prints
-`Reading additional input from stdin...` and blocks forever: backgrounded, its stdin is
-an open pipe that never reaches EOF, so it waits for input no one will send. The tell is
-a process that has burned **~0.05 s of CPU over half an hour** and has written no
-rollout under `~/.codex/sessions/<yyyy>/<mm>/<dd>/`. It looks exactly like a long review
-and is a deadlock before the first token. Verify with a five-second smoke test —
-`codex --sandbox read-only exec "Reply with exactly: SMOKE OK" < /dev/null` — before
-concluding a real pass is merely slow.
-
-The prompt must contain, in this order:
+Run the reviewer **in the background** so its output stays visible and it can be
+killed if it stalls. The prompt must contain, in this order:
 
 1. The exact diff command: `git diff <DIFF_ARGS> [-- <PATHSPEC>]`, and an instruction
-   to run it first and review **only** what it prints.
+   to review **only** its output first. Codex runs it; for the shell-disabled OpenCode
+   agent, materialize that exact diff beforehand and supply the saved file to read.
 2. `SCOPE_LABEL`, so the reviewer knows what it is looking at.
 3. One block per selected lane, each ending with the finding format.
-4. A consolidation instruction: dedupe overlapping findings, order by severity, return
-   the result **as text**.
+4. A consolidation instruction: dedupe overlapping findings, order by severity, and
+   produce the complete Markdown artifact at the designated path using the backend's
+   output contract. Include the Phase 4 format and backend/model metadata in the prompt.
 
 Per finding: `file:line`, severity (critical/high/medium/low), lane, what is wrong,
 why it is wrong, and a concrete fix.
 
-Have Codex return findings as text and write the artifact yourself. Letting the
-reviewer write the file is how you end up with a review that ran and produced nothing.
+Choose the Phase 4 artifact path before dispatch. Codex saves its final Markdown
+through `--output-last-message`; OpenCode writes through its report-scoped file tool.
+Confirm the artifact exists, is nonempty and matches the reviewed scope before triage.
+The caller adds dispositions after reading the review; it does not invent findings.
 
-#### Watching the run — two ways to blind yourself
+**Don't wait idle.** The pass is long enough to run the diff's own cheap checks
+alongside it — linters, localization or script guards, a targeted test suite.
 
-A Codex pass takes tens of minutes. Both of these make a healthy run look identical to a
-wedged one, and both are easy to do by reflex.
+## Phase 4 — Validate the reviewer-written artifact
 
-**Never pipe it through `tail -N` or `head -N`.** They buffer to EOF by definition, so the
-background task's output file stays at **0 bytes for the whole run** however much Codex has
-written. You then cannot tell progress from a stall without `pgrep`, and the pipe has
-silently removed the visibility that `run_in_background` existed to give you.
-
-```bash
-# WRONG — nothing readable until the process exits
-codex --sandbox read-only exec "$PROMPT" 2>&1 | tail -200
-# RIGHT — write it all; filter when you READ the output file
-codex --sandbox read-only exec "$PROMPT" 2>&1
-```
-
-**Write the guard loop for the OS you are on.** Watch the process itself, not a proxy:
-
-```bash
-while pgrep -f "codex --sandbox read-only exec" >/dev/null 2>&1; do sleep 20; done
-echo "codex exited; output bytes: $(wc -c < "$OUT")"
-```
-
-`until [ ! -d /proc ]` is a real example of getting this wrong: macOS has no `/proc`, so
-the condition is true on the first evaluation, the loop body never executes, and the
-watcher exits 0 having emitted nothing — which reads exactly like "hasn't finished yet".
-
-Before arming any watcher, ask: **if Codex died right now, what line would appear?** If the
-answer is "none", the watcher is decorative. A watcher that ends with no output is a result
-to investigate, never a result to report as "still running".
-
-**Check liveness, not just existence.** `pgrep` finding the process proves nothing — a
-deadlocked Codex is still a process. Two cheap signals separate working from wedged:
-
-```bash
-ps -o etime=,time= -p <pid>                      # elapsed vs CPU TIME consumed
-ls -t ~/.codex/sessions/$(date +%Y/%m/%d)/*.jsonl # a live run writes a rollout
-```
-
-Minutes of elapsed against ~0.05 s of CPU, and no rollout file, means it never started.
-Report elapsed time from a clock (`date`, `ps -o lstart=`), never from how many turns have
-gone by — that estimate drifts badly and turns into a confidently wrong status report.
-
-**Don't wait idle.** The pass is long enough to run the diff's own cheap checks alongside
-it — the project's linters, its localization or script guards, a targeted test suite. On a
-2026-09-10 sixlines-ios run those found a real defect (Traditional orthography in a
-Simplified string) before Codex returned anything at all.
-
-### 2. Fallback — context-blind subagents
-
-If `codex` is unavailable or fails: dispatch one subagent per lane, in parallel, each
-given only the diff command and its own lane. **Do not tell them anything about the
-change's intent or your reasoning** — context-blindness is the entire point of the
-fallback. Say plainly in the output that the review was same-model, so its
-independence is weaker.
-
-## Phase 4 — Write the artifact
-
-Write to `reviews/review-<YYYYMMDD-HHMMSS>-<REF_SHA>.md`:
+Require the reviewer to write `reviews/review-<YYYYMMDD-HHMMSS>-<REF_SHA>.md`:
 
 ```markdown
 ---
@@ -202,7 +130,7 @@ diff: git diff <DIFF_ARGS> [-- <PATHSPEC>]
 files_changed: <n>
 lines_changed: <n>
 lanes: correctness, contracts, tests, security, nextjs, project(.claude/code-review-lanes.md), focus
-reviewer: codex-cli | subagents
+reviewer: "<tool (model[, agent])> — <why earlier backends were skipped, if any>"
 reviewed_at: <ISO 8601>
 ---
 
@@ -214,8 +142,16 @@ reviewed_at: <ISO 8601>
 
 ...
 
-## Disposition
+## Verification limitations
+
+<checks the reviewer could not perform>
+
+## Verdict
+
+<ready | needs revision>
 ```
+
+The reviewer stops after the verdict. The caller appends `## Disposition` in Phase 5.
 
 Recording the exact diff command in the frontmatter is not decoration — it is the only
 way anyone later can tell what this review did and did not look at.
@@ -268,7 +204,10 @@ rewrite or publish.
 - Run the reviewer backgrounded so it can be watched and killed — and never through
   `tail`/`head`, which buffer to EOF and leave the output file empty for the whole run.
 - A watcher that produced no output is a broken watcher until proven otherwise.
-- Always `< /dev/null` on `codex exec`; without it a backgrounded run blocks on stdin
-  forever, looking exactly like a slow review.
+- Always `< /dev/null` on `codex exec` and `opencode run`; without it a backgrounded run
+  blocks on stdin forever, looking exactly like a slow review.
+- Run OpenCode with the dedicated report-scoped agent and effective policy defined in
+  `reviewer-backends.md`; reviewers may write findings but may not edit reviewed source.
+- Record the reviewer as tool **and** model, and say when it was same-model.
 - On any tooling failure, report it and continue degraded — never leave the user
   unsure whether a review ran.

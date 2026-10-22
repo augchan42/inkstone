@@ -3,7 +3,7 @@
 #
 # Enforces completion of the plan-review-loop skill. Unlike the original
 # review-loop plugin, the review itself is orchestrated by the skill
-# (Codex CLI or context-blind subagents); this hook only guarantees the
+# (Codex CLI, opencode or context-blind subagents); this hook only guarantees the
 # loop cannot be silently abandoned:
 #
 #   phase locate/review + no review file   → block: finish the review
@@ -129,7 +129,7 @@ case "$PHASE" in
 
 Per the plan-review-loop skill:
 1. Finish the target plan if it is not complete
-2. Run the independent review (Codex CLI if available, else context-blind subagents — see the skill's Phase 2) and write the consolidated review to ${REVIEW_FILE}
+2. Run the independent review (Codex CLI, then opencode, then context-blind subagents — see the skill's Phase 2) and write the consolidated review to ${REVIEW_FILE}
 3. Update ${STATE_FILE} to 'phase: addressing'
 4. Address each finding with judgment (agree → fix the plan; disagree → note why) and append a '## Disposition' log to ${REVIEW_FILE}
 5. Then stop
@@ -179,8 +179,8 @@ Please:
     block "Critical findings were fixed, so this loop owes one confirmation round before it can end (review: ${REVIEW_FILE}).
 
 Per the plan-review-loop skill's Phase 4:
-1. Dispatch ONE fresh context-blind reviewer with the revised plan and the prior review file, asking only: are the critical findings resolved, and did the revisions introduce new problems?
-2. Same backend rules apply — if using Codex, apply the liveness probe and watchdog; on failure fall back to a subagent rather than skipping
+1. Dispatch ONE fresh context-blind reviewer with the revised plan and the prior review file, asking only: are the critical findings resolved, and did the revisions introduce new problems? Give it a fresh separate confirmation artifact path and validate that output before appending its verdict here.
+2. Same backend rules apply — if using Codex or opencode, apply the liveness probe and watchdog; on failure fall back to the next backend rather than skipping
 3. Append its verdict to ${REVIEW_FILE} as a '## Confirmation' section
 4. Then stop (do not run further rounds)
 

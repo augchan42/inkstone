@@ -118,6 +118,11 @@ Report concisely:
 - **Recovery and ownership:** how to disable or revert a consequential
   change, and the responsible person if the context identifies one. State
   when a recovery path is proposed rather than tested; do not invent an owner.
+- **Required human decisions:** the project's ownership rules, required
+  checks and approval policy as far as they can be read. If they cannot be
+  read, say the policy is unknown, not that none applies. Name any change to
+  CI workflows, or to paths the project marks as owner-reviewed or sensitive,
+  as needing a human decision; passing checks do not stand in for it.
 
 Say plainly when verification is incomplete. Avoid a blanket claim that
 the change is safe or bug-free. A missing environment or credential belongs
