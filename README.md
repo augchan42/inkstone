@@ -55,6 +55,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 | Skill | Description |
 |-------|-------------|
+| **verify-change** | Have the implementation agent verify intended behavior with executable checks and hand off evidence, gaps, and recovery notes — complements the separate adversarial codex-review |
 | **codex-review** | Independent cross-model code review of any git scope — bare (auto-detect), `HEAD~3`, a range, a merge commit (auto-resolved to its first-parent diff), `--commit`, `--pr N`, `--staged`, or path-limited. Lanes from the skill plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Codex CLI or context-blind subagents; every finding gets an ACCEPTED / DECLINED / PRE-EXISTING disposition. No hook, no loop |
 | **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI or context-blind subagents as reviewer; completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
 
@@ -226,6 +227,11 @@ prioritized plan → dispatched implementation → verification. Modes: audit /
 plan / implement; vague requests never mutate code.
 
 ## Credits
+
+The [verify-change](skills/verify-change/SKILL.md) skill is adapted from
+[Addy Osmani's X post](https://x.com/addyosmani/status/2111604705340326393)
+and [How the Claude Code team does code review](https://claude.dev/blog/solving-code-review-at-anthropic/)
+by Addy Osmani, Morgan Westlee Lunt, and Qing Wang.
 
 The [marketing-clarity](skills/marketing-clarity/SKILL.md) skill credits
 Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). It is adapted from Eliot's
