@@ -4,7 +4,7 @@ description: Run a review loop on an implementation plan — author or locate th
 user-invocable: true
 argument-hint: "<plan path | task to plan | cancel>"
 metadata:
-  version: "1.0.0"
+  version: "1.1.0"
 ---
 
 # Plan Review Loop
@@ -69,7 +69,10 @@ Set `phase: review`.
 
 ## Phase 2 — Independent Review
 
-Pick a reviewer backend, in order of preference:
+Pick a reviewer backend, in order of preference. The shared backend mechanics are in
+`reviewer-backends.md` in the installed `codex-review` skill directory (its sibling in an
+Inkstone installation); read it before dispatching. Log which backend ran and why the
+earlier ones were skipped.
 
 1. **Codex CLI** (if `command -v codex` succeeds): first ensure multi-agent is enabled by running this bootstrap verbatim (idempotent; identical to the original review-loop's):
 
@@ -96,7 +99,10 @@ Pick a reviewer backend, in order of preference:
      No rollout file → the run is dead on arrival. Kill the process, log `backend=codex DEAD (no rollout within 90s)`, and fall back to backend 2 immediately.
 
    - **Watchdog.** Hard cap ~15 minutes total; also treat "run log unchanged for 5 consecutive minutes" as a hang (poll while waiting — do not idle to a stop). On either trigger, or if Codex exits without producing the review file: kill the process, log the failure, fall back to backend 2.
-2. **Context-blind subagents** (fallback, always available): dispatch **three parallel subagents**, one per review lane. Each subagent's prompt must contain ONLY: the plan path, the source spec path (Lane 2), the repo root, its lane's criteria from `plan-review-dimensions.md`, and the finding format. Never include your planning reasoning or conversation history. Consolidate their findings yourself: deduplicate (keep the most detailed duplicate), sort by severity, write `reviews/plan-review-<id>.md`.
+2. **opencode** (if `command -v opencode` succeeds and a model has quota): the same prompt and lanes, run as `opencode run --pure --agent plan -m <provider/model> --title "plan review <id>" "<prompt>" < /dev/null > .claude/plan-review-opencode-run.log 2>&1 &`. `--agent plan` is opencode's read-only agent; the default `build` agent can edit files. Because it is read-only, have it return the consolidated review as text and write `reviews/plan-review-<id>.md` yourself. Cross-model, so record the model: a free model is a legitimate reviewer, and the reader needs to see it was one. Liveness: the run log should grow within the first minute; unchanged for 5 minutes is a hang; hard cap ~15 minutes. On failure, log it and fall back to backend 3.
+3. **Context-blind subagents** (fallback, always available): dispatch **three parallel subagents**, one per review lane. Each subagent's prompt must contain ONLY: the plan path, the source spec path (Lane 2), the repo root, its lane's criteria from `plan-review-dimensions.md`, and the finding format. Never include your planning reasoning or conversation history. Consolidate their findings yourself: deduplicate (keep the most detailed duplicate), sort by severity, write `reviews/plan-review-<id>.md`. Same-model — say so in the review file.
+
+Whichever backend ran, the review file records the tool **and** model, and which backends were skipped and why.
 
 **The three review lanes** (full criteria in `plan-review-dimensions.md` — read it before dispatching):
 
