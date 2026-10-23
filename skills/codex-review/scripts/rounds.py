@@ -33,6 +33,7 @@ import hashlib
 import json
 import os
 import re
+import shlex
 import subprocess
 import sys
 import tempfile
@@ -89,21 +90,41 @@ def loop_dir(reviews: Path, loop: str) -> Path:
     return d
 
 
+SHORT_MAGIC = {"/": "top", "!": "exclude", "^": "exclude"}
+
+
 def top_relative(paths: list[str]) -> list[str]:
-    """Pathspecs as given from the current directory, rewritten relative to the
-    repository root, so later rounds mean the same files from anywhere."""
+    """Pathspecs as given from the current directory, rewritten as `:(top,...)`
+    pathspecs, so later rounds mean the same files from anywhere. Magic the caller
+    gave (glob, exclude, icase, ...) is kept; a pattern already anchored with
+    `top` or `:/` is left relative to the root."""
     prefix = git("rev-parse", "--show-prefix")
     out = []
     for p in paths:
-        q = os.path.normpath(os.path.join(prefix, p))
+        words: list[str] = []
+        pat = p
+        if p.startswith(":("):
+            close = p.find(")")
+            if close < 0:
+                raise Refusal(f"pathspec {p!r} has unclosed magic")
+            words = [w for w in p[2:close].split(",") if w]
+            pat = p[close + 1:]
+        elif p.startswith(":"):
+            i = 1
+            while i < len(p) and p[i] in SHORT_MAGIC:
+                words.append(SHORT_MAGIC[p[i]])
+                i += 1
+            pat = p[i + 1:] if p[i:i + 1] == ":" else p[i:]
+        if "top" in words:
+            words.remove("top")
+            q = os.path.normpath(pat) if pat else "."
+        else:
+            q = os.path.normpath(os.path.join(prefix, pat))
         if q == ".." or q.startswith("../") or os.path.isabs(q):
             raise Refusal(f"path {p!r} is outside the repository")
-        out.append("." if q == "." else q)
+        words = ["top"] + [w for w in dict.fromkeys(words)]
+        out.append(f":({','.join(words)}){'' if q == '.' else q}")
     return out
-
-
-def magic(paths: list[str]) -> list[str]:
-    return [f":(top){p}" for p in paths]
 
 
 def round_path(d: Path, n: int, suffix: str) -> Path:
@@ -237,7 +258,7 @@ def cmd_start(a) -> int:
                 frm = prev["head_sha"]
         # An empty scoped diff is refused whatever the commit ids say: an empty
         # commit, or one outside the pathspec, gives a round nothing to review.
-        if subprocess.run(["git", "diff", "--quiet", frm, head, "--", *magic(paths)]
+        if subprocess.run(["git", "diff", "--quiet", frm, head, "--", *paths]
                           ).returncode == 0:
             raise Refusal(f"nothing to review in {frm[:12]}..{head[:12]}"
                           + (f" under {paths}" if paths else "")
@@ -258,7 +279,7 @@ def cmd_start(a) -> int:
         write_atomic(jpath, rec)
         ctx = round_path(d, n, ".context.md")
         write_atomic(ctx, context(rounds, decisions.read_text(), n))
-    spec = " ".join(magic(paths))
+    spec = " ".join(shlex.quote(s) for s in paths)
     kv(ROUND=n, ARTIFACT=round_path(d, n, ".md"), CONTEXT=ctx,
        DIFF_ARGS=rec["diff_args"], FULL_DIFF_ARGS=rec["full_diff_args"],
        PATHSPEC=spec, HEAD_SHA=head[:12],
@@ -297,6 +318,28 @@ def context(rounds: list[dict], decisions: str, n: int) -> str:
 
 
 # -------------------------------------------------------------------- record
+
+def finding_headings(text: str) -> list[tuple[str, str]]:
+    """`### [severity] title` headings in the `## Findings` section, skipping fenced
+    code, so an example heading inside a finding is not taken for a finding."""
+    out, fence, inside = [], None, False
+    for line in text.splitlines():
+        s = line.strip()
+        m = re.match(r"(`{3,}|~{3,})", s)
+        if fence:
+            if m and m.group(1)[0] == fence[0] and len(m.group(1)) >= len(fence) \
+                    and not s[len(m.group(1)):].strip():
+                fence = None
+            continue
+        if m:
+            fence = m.group(1)
+            continue
+        if line.startswith("## "):
+            inside = s == "## Findings"
+        elif inside and (h := HEADING.match(line)):
+            out.append((h.group(1), h.group(2)))
+    return out
+
 
 def cmd_record(a) -> int:
     d = loop_dir(reviews_root(a.reviews_dir), a.loop)
@@ -367,7 +410,7 @@ def parse_findings(text: str) -> list[dict]:
         out.append({"id": fid, "severity": f["severity"], "lane": f["lane"],
                     "class": f["class"], "file": f.get("file"), "line": line,
                     "title": f["title"].strip()})
-    headings = sorted(HEADING.findall(prose))
+    headings = sorted(finding_headings(prose))
     listed = sorted((f["severity"], f["title"]) for f in out)
     if headings != listed:
         only_prose = [f"[{s}] {t}" for s, t in headings if (s, t) not in listed]

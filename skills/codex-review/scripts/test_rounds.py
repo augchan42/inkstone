@@ -302,14 +302,14 @@ class LoopTest(unittest.TestCase):
     def test_paths_after_double_dash(self):
         self.commit("a.py", "x = 2\n")
         keys = self.start("--base", self.base, "--", "a.py")
-        self.assertEqual(keys["PATHSPEC"], ":(top)a.py")
+        self.assertEqual(keys["PATHSPEC"], "':(top)a.py'")
 
     def test_subdirectory_runs_use_the_repository_loop_and_paths(self):
         Path("sub").mkdir()
         self.commit("sub/b.py", "y = 1\n")
         os.chdir("sub")
         keys = self.start("--base", self.base, "--", "b.py")
-        self.assertEqual(keys["PATHSPEC"], ":(top)sub/b.py")
+        self.assertEqual(keys["PATHSPEC"], "':(top)sub/b.py'")
         self.assertTrue((self.repo / "reviews/demo/round-01.json").exists())
         self.assertFalse(Path("reviews").exists())
         code, _, err = self.run_cmd("start", "demo", "--base", self.base, "--", "../..")
@@ -355,6 +355,49 @@ class LoopTest(unittest.TestCase):
         header = next(line for line in out.splitlines() if line.startswith("| loop"))
         cols = [c.strip() for c in header.strip("|").split("|")]
         self.assertEqual(cells[cols.index(next(c for c in cols if "candidates" in c))], "0")
+
+
+    # -------------------------------------------------- round-2 regressions
+
+    def test_pathspec_magic_and_root_scope_survive_anchoring(self):
+        Path("sub").mkdir()
+        self.commit("sub/b.py", "y = 1\n")
+        os.chdir("sub")
+        self.assertEqual(rounds.top_relative([".", "..", "b.py", ":(glob)**/*.py",
+                                              ":(exclude)b.py", ":!b.py", ":/a.py",
+                                              ":(top,icase)A.py"]),
+                         [":(top)sub", ":(top)", ":(top)sub/b.py", ":(top,glob)sub/**/*.py",
+                          ":(top,exclude)sub/b.py", ":(top,exclude)sub/b.py", ":(top)a.py",
+                          ":(top,icase)A.py"])
+        code, _, err = self.run_cmd("start", "demo", "--base", self.base, "--", "..",
+                                    ":(exclude)b.py")
+        self.assertIn("nothing to review", err)
+        Path(self.repo / "a.py").write_text("x = 2\n")
+        subprocess.run(["git", "commit", "-qam", "a"], check=True)
+        keys = self.start("--base", self.base, "--", "..", ":(exclude)b.py")
+        self.assertEqual(keys["PATHSPEC"], "':(top)' ':(top,exclude)sub/b.py'")
+
+    def test_root_dot_pathspec_matches_the_whole_tree(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base, "--", ".")
+
+    def test_fenced_example_headings_are_not_findings(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base)
+        text = artifact([finding("F1")]).replace(
+            "## Verdict", "Example:\n\n````markdown\n### [low] Example heading\n```\nx\n```\n"
+            "````\n\n## Verdict")
+        (self.loop / "round-01.md").write_text(text)
+        code, _, err = self.run_cmd("record", "demo", "1")
+        self.assertEqual(code, 0, err)
+
+    def test_headings_outside_the_findings_section_are_ignored(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base)
+        text = artifact([]).replace("## Verdict", "## Notes\n\n### [high] not a finding\n\n## Verdict")
+        (self.loop / "round-01.md").write_text(text)
+        code, _, err = self.run_cmd("record", "demo", "1")
+        self.assertEqual(code, 0, err)
 
 
 if __name__ == "__main__":
