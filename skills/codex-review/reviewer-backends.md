@@ -206,6 +206,9 @@ to a temporary file first, with the same refs and pathspec. Give the reviewer bo
 the recorded command and that file's absolute path; tell it to read the saved diff
 first, then inspect source with read/search tools. For plan review, it reads the plan
 and source spec directly. Do not include implementation reasoning or prior findings.
+The one exception is codex-review's loop mode: supply that round's context file
+(approved decisions, earlier declined points with their reasons, accepted findings
+whose repair to verify) as described in `loop-mode.md`. Plan review is unchanged.
 
 ```bash
 OPENCODE_CONFIG_CONTENT="$(cat "$REVIEW_CONFIG")" opencode run --pure --agent inkstone-reviewer -m <provider/model> --title "review <SCOPE_LABEL>" "<prompt>" < /dev/null

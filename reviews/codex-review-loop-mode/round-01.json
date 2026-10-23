@@ -1,0 +1,163 @@
+{
+  "schema": 1,
+  "loop": "codex-review-loop-mode",
+  "round": 1,
+  "status": "reviewed",
+  "started_at": "2026-10-23T02:36:15Z",
+  "base_sha": "bfab61c5a4e8f46a57ff9b28c85811bae6cd6dde",
+  "from_sha": "bfab61c5a4e8f46a57ff9b28c85811bae6cd6dde",
+  "head_sha": "2259932ba62127d3f83187a51d4726fd69f911c2",
+  "rebaseline": false,
+  "pathspec": [],
+  "diff_args": "bfab61c5a4e8f46a57ff9b28c85811bae6cd6dde..2259932ba62127d3f83187a51d4726fd69f911c2",
+  "full_diff_args": "bfab61c5a4e8f46a57ff9b28c85811bae6cd6dde..2259932ba62127d3f83187a51d4726fd69f911c2",
+  "decisions_sha256": "a1ed61063410b394d56c38c3f6ec66cb601ca995a905bd878a7a7ed78448421c",
+  "reviewer": "codex (gpt-6.1-sol, high)",
+  "findings": [
+    {
+      "id": "F1",
+      "severity": "high",
+      "lane": "security",
+      "class": "symlink-write-escape",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 102,
+      "title": "Output writes can follow symlinks outside the loop directory",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:04Z"
+      }
+    },
+    {
+      "id": "F2",
+      "severity": "high",
+      "lane": "correctness",
+      "class": "incomplete-findings-validation",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 291,
+      "title": "Prose findings omitted from JSON silently disappear",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:04Z"
+      }
+    },
+    {
+      "id": "F3",
+      "severity": "medium",
+      "lane": "contracts",
+      "class": "argument-parsing",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 502,
+      "title": "The documented path-limited start command fails argument parsing",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:04Z"
+      }
+    },
+    {
+      "id": "F4",
+      "severity": "medium",
+      "lane": "correctness",
+      "class": "working-directory-scope-drift",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 171,
+      "title": "Changing working directories changes the loop scope",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:04Z"
+      }
+    },
+    {
+      "id": "F5",
+      "severity": "medium",
+      "lane": "correctness",
+      "class": "empty-diff-validation",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 188,
+      "title": "Empty diffs are accepted as review rounds",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:04Z"
+      }
+    },
+    {
+      "id": "F6",
+      "severity": "medium",
+      "lane": "correctness",
+      "class": "round-number-discovery",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 86,
+      "title": "Round 100 is written but never loaded",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:05Z"
+      }
+    },
+    {
+      "id": "F7",
+      "severity": "low",
+      "lane": "correctness",
+      "class": "duplicate-reference-bounds",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 371,
+      "title": "Duplicate references accept nonexistent round zero",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:05Z"
+      }
+    },
+    {
+      "id": "F8",
+      "severity": "low",
+      "lane": "contracts",
+      "class": "repeat-statistics",
+      "file": "skills/codex-review/scripts/rounds.py",
+      "line": 479,
+      "title": "Confirmed repeats remain counted as unconfirmed candidates",
+      "candidates": [],
+      "disposition": {
+        "status": "ACCEPTED",
+        "reason": null,
+        "fixed_in": "c55a39d650190e599f1e6a373996781cd21be768",
+        "origin": "original",
+        "duplicate_of": null,
+        "at": "2026-10-23T02:43:05Z"
+      }
+    }
+  ],
+  "reviewed_at": "2026-10-23T02:40:01Z"
+}

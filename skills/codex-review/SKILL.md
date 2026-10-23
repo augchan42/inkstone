@@ -2,9 +2,9 @@
 name: codex-review
 description: Run an independent code review of any git scope — uncommitted changes, a commit range, a merge commit, a PR, or specific paths — via Codex CLI, opencode, or context-blind subagents, then triage every finding with an explicit disposition. Use when asked to "review this diff", "codex review", "review PR N", "review the merge commit", or to get a second opinion on changes before or after merge. For reviewing implementation plans rather than code, see plan-review-loop.
 user-invocable: true
-argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>]"
+argument-hint: "[scope] [paths] [--focus \"...\"] [--holistic] [--commit <sha>] [--pr <n>] [--loop <id> --base <ref>]"
 metadata:
-  version: "1.3.0"
+  version: "1.4.0"
 ---
 
 # Codex Review
@@ -15,8 +15,11 @@ An independent code review of a **scope you choose**, not a scope some tool chos
 code. Its value is that it does not already believe the change is correct. Preserve
 that — never hand it your reasoning, only the diff.
 
-**No hook, no state file, no loop.** This skill runs start-to-finish inside one
-invocation. Nothing can wedge a session, and nothing needs cancelling.
+**No hook, no hidden state.** This skill runs start-to-finish inside one
+invocation. Nothing can wedge a session, and nothing needs cancelling. By default a
+review is one-shot. Opt-in loop mode (`--loop <id>`, [loop-mode.md](loop-mode.md))
+is for a change reviewed more than once: each round is still one invocation, and
+its only state is the round records it leaves under `reviews/<id>/`.
 
 ## Lifecycle
 
@@ -46,7 +49,9 @@ for a standalone install use the skill's actual location. On Windows use
 an available Bash runtime such as Git Bash or WSL, with a path it can read.
 
 Pass the user's scope arguments through unchanged, minus `--focus` and `--holistic`
-(those are yours, not the resolver's). It emits `SCOPE_LABEL`, `DIFF_ARGS`,
+(those are yours, not the resolver's) and the loop flags `--loop`, `--base` and
+`--rebaseline`. **With `--loop <id>`, follow [loop-mode.md](loop-mode.md) instead of
+the resolver:** `scripts/rounds.py start` resolves the round's scope. It emits `SCOPE_LABEL`, `DIFF_ARGS`,
 `PATHSPEC`, `REF_SHA`, `CHANGED_FILES`, `CHANGED_LINES`, `OVERSIZED`.
 
 | The user says | Resolves to |
@@ -197,6 +202,9 @@ rewrite or publish.
 ## Rules
 
 - Echo the resolved scope before reviewing. Always.
+- In loop mode, write `decisions.md` before round 1, record every round with
+  `rounds.py`, and stop when `rounds.py verdict` says STOP — never by feel, and never
+  read STOP as approval to merge.
 - Never `codex exec review` with a custom prompt — it will be rejected.
 - Never let the reviewer see your reasoning about the change.
 - Never fix pre-existing findings inside the change under review.
