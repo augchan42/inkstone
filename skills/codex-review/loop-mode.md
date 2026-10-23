@@ -52,8 +52,9 @@ modified tracked files are refused.
    `PATHSPEC`, `HEAD_SHA`, `SCOPE_LABEL`. Echo `SCOPE_LABEL` as in Phase 1.
    Round 1's diff is `<base>..HEAD`. Round N's is the previous round's head to HEAD.
    It refuses: a dirty tree, an unsafe id, an incomplete earlier round, undisposed
-   findings, an empty increment, and rewritten history (`--rebaseline` reviews the
-   whole change again). The pathspec is fixed by round 1.
+   findings, an empty diff (in round 1 too, after the pathspec), and rewritten history (`--rebaseline` reviews the
+   whole change again). The pathspec is fixed by round 1 and stored relative to the repository root;
+   `reviews/` defaults to the repository root too, so any subdirectory gives the same loop.
 
 2. **Review** — Phases 2 and 3 as usual, with these differences in the prompt:
    - the diff command is `git diff <DIFF_ARGS> [-- <PATHSPEC>]`; review it first;
@@ -80,8 +81,9 @@ modified tracked files are refused.
      With lane subagents, the consolidating step assigns ids and writes the one block.
      No findings is `{"findings": []}`, never a missing block.
 
-3. **Record** — `rounds.py record <id> <N>`. It validates the block (types, enums,
-   unique ids, each title present in the prose) and stores the findings. A missing or
+3. **Record** — `rounds.py record <id> <N>`. It validates the block (one block only; types,
+   enums, unique ids; each `### [severity] title` heading under the findings matches one
+   JSON entry, severity included) and stores the findings. A missing or
    malformed block leaves the round incomplete: it never counts as clean. Recorded
    findings are immutable. It lists *possible* repeats of earlier findings (same
    class and file, or similar title) for you to confirm or reject.

@@ -126,7 +126,7 @@ class LoopTest(unittest.TestCase):
         self.start("--base", self.base)
         self.review(1, [])
         code, _, err = self.run_cmd("start", "demo")
-        self.assertIn("nothing committed", err)
+        self.assertIn("nothing to review", err)
         subprocess.run(["git", "commit", "-q", "--amend", "-m", "rewritten"], check=True)
         code, _, err = self.run_cmd("start", "demo")
         self.assertIn("history rewritten", err)
@@ -266,6 +266,95 @@ class LoopTest(unittest.TestCase):
         code, out, _ = self.run_cmd("stats")
         self.assertEqual(code, 0)
         self.assertIn("| demo | 1 | 0 | 2 | 1 |", out)
+
+
+    # -------------------------------------------------- round-1 regressions
+
+    def test_writes_refuse_symlinked_destinations(self):
+        self.commit("a.py", "x = 2\n")
+        outside = self.repo / "outside.txt"
+        outside.write_text("keep\n")
+        (self.loop / "round-01.context.md").symlink_to(outside)
+        code, _, err = self.run_cmd("start", "demo", "--base", self.base)
+        self.assertEqual(code, 2)
+        self.assertIn("symlink", err)
+        self.assertEqual(outside.read_text(), "keep\n")
+        self.assertEqual([p.name for p in self.loop.glob("*.tmp")], [])
+
+    def test_prose_findings_missing_from_json_are_refused(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base)
+        md = self.loop / "round-01.md"
+        extra = artifact([finding("F1")]).replace(
+            "## Verdict", "### [critical] only in prose\n\n## Verdict")
+        md.write_text(extra)
+        code, _, err = self.run_cmd("record", "demo", "1")
+        self.assertEqual(code, 2)
+        self.assertIn("only in prose", err)
+        md.write_text(artifact([finding("F1")]).replace("### [high]", "### [low]"))
+        code, _, err = self.run_cmd("record", "demo", "1")
+        self.assertEqual(code, 2)
+        md.write_text(artifact([finding("F1")]) + "```json\n{\"findings\": []}\n```\n")
+        code, _, err = self.run_cmd("record", "demo", "1")
+        self.assertEqual(code, 2)
+        self.assertIn("exactly one", err)
+
+    def test_paths_after_double_dash(self):
+        self.commit("a.py", "x = 2\n")
+        keys = self.start("--base", self.base, "--", "a.py")
+        self.assertEqual(keys["PATHSPEC"], ":(top)a.py")
+
+    def test_subdirectory_runs_use_the_repository_loop_and_paths(self):
+        Path("sub").mkdir()
+        self.commit("sub/b.py", "y = 1\n")
+        os.chdir("sub")
+        keys = self.start("--base", self.base, "--", "b.py")
+        self.assertEqual(keys["PATHSPEC"], ":(top)sub/b.py")
+        self.assertTrue((self.repo / "reviews/demo/round-01.json").exists())
+        self.assertFalse(Path("reviews").exists())
+        code, _, err = self.run_cmd("start", "demo", "--base", self.base, "--", "../..")
+        self.assertEqual(code, 2)
+
+    def test_empty_scoped_diff_is_refused_in_round_one(self):
+        subprocess.run(["git", "commit", "-q", "--allow-empty", "-m", "empty"], check=True)
+        code, _, err = self.run_cmd("start", "demo", "--base", self.base)
+        self.assertEqual(code, 2)
+        self.assertIn("nothing to review", err)
+        self.commit("c.py", "z = 1\n")
+        code, _, err = self.run_cmd("start", "demo", "--base", self.base, "--", "a.py")
+        self.assertEqual(code, 2)
+
+    def test_rounds_are_ordered_numerically_past_99(self):
+        for n in (9, 10, 100):
+            (self.loop / f"round-{n:02d}.json").write_text("{}")
+        names = [p.name for p in rounds.round_files(self.loop)]
+        self.assertEqual(names, ["round-09.json", "round-10.json", "round-100.json"])
+
+    def test_duplicate_of_must_name_an_earlier_round(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base)
+        self.review(1, [finding("F1")])
+        for ref in ("0:F1", "1:F1"):
+            code, _, err = self.run_cmd("dispose", "demo", "1", "F1", "DECLINED",
+                                        "--reason", "dup", "--duplicate-of", ref)
+            self.assertEqual(code, 2, ref)
+
+    def test_stats_does_not_count_confirmed_repeats_as_unconfirmed(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base)
+        self.review(1, [finding("F1")])
+        self.run_cmd("dispose", "demo", "1", "F1", "DECLINED", "--reason", "no")
+        self.commit("a.py", "x = 3\n")
+        self.start()
+        self.review(2, [finding("F1")])
+        self.run_cmd("dispose", "demo", "2", "F1", "DECLINED", "--reason", "same",
+                     "--duplicate-of", "1:F1")
+        code, out, _ = self.run_cmd("stats")
+        row = next(line for line in out.splitlines() if line.startswith("| demo"))
+        cells = [c.strip() for c in row.strip("|").split("|")]
+        header = next(line for line in out.splitlines() if line.startswith("| loop"))
+        cols = [c.strip() for c in header.strip("|").split("|")]
+        self.assertEqual(cells[cols.index(next(c for c in cols if "candidates" in c))], "0")
 
 
 if __name__ == "__main__":

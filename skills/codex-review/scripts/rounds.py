@@ -35,6 +35,7 @@ import os
 import re
 import subprocess
 import sys
+import tempfile
 import time
 from datetime import datetime, timezone
 from pathlib import Path
@@ -47,6 +48,8 @@ ORIGINS = ("original", "from-fix", "re-raise", "new-scope", "unknown")
 LOOP_ID = re.compile(r"^[a-z0-9][a-z0-9._-]{0,63}$")
 FINDING_ID = re.compile(r"^[A-Za-z0-9_-]{1,32}$")
 JSON_BLOCK = re.compile(r"```json[ \t]*\n(.*?)\n```", re.S)
+HEADING = re.compile(r"^### \[(critical|high|medium|low)\] (.+?)\s*$", re.M)
+ROUND_FILE = re.compile(r"^round-(\d+)\.json$")
 # Small findings from this round on are deferred to one follow-up issue.
 DEFER_FROM_ROUND = 4
 
@@ -66,24 +69,57 @@ def git(*args: str) -> str:
     return done.stdout.strip()
 
 
+def toplevel() -> Path:
+    return Path(git("rev-parse", "--show-toplevel")).resolve()
+
+
+def reviews_root(given: Path | None) -> Path:
+    """The reviews directory: as given (relative to the current directory), or
+    `reviews/` at the repository root, so a loop is the same from any subdirectory."""
+    return (given if given is not None else toplevel() / "reviews").absolute()
+
+
 def loop_dir(reviews: Path, loop: str) -> Path:
     if not LOOP_ID.match(loop):
         raise Refusal(f"loop id {loop!r} must match {LOOP_ID.pattern}")
-    if reviews.is_symlink():
-        raise Refusal(f"{reviews} is a symlink; refusing")
     d = reviews / loop
-    if d.is_symlink():
-        raise Refusal(f"{d} is a symlink; refusing")
+    for p in (reviews, d):
+        if p.is_symlink():
+            raise Refusal(f"{p} is a symlink; refusing")
     return d
+
+
+def top_relative(paths: list[str]) -> list[str]:
+    """Pathspecs as given from the current directory, rewritten relative to the
+    repository root, so later rounds mean the same files from anywhere."""
+    prefix = git("rev-parse", "--show-prefix")
+    out = []
+    for p in paths:
+        q = os.path.normpath(os.path.join(prefix, p))
+        if q == ".." or q.startswith("../") or os.path.isabs(q):
+            raise Refusal(f"path {p!r} is outside the repository")
+        out.append("." if q == "." else q)
+    return out
+
+
+def magic(paths: list[str]) -> list[str]:
+    return [f":(top){p}" for p in paths]
 
 
 def round_path(d: Path, n: int, suffix: str) -> Path:
     return d / f"round-{n:02d}{suffix}"
 
 
+def round_files(d: Path) -> list[Path]:
+    """Every round record, in numeric order (round-100 comes after round-99)."""
+    found = [(int(m.group(1)), p) for p in d.glob("round-*.json")
+             if (m := ROUND_FILE.match(p.name))]
+    return [p for _, p in sorted(found)]
+
+
 def load_rounds(d: Path) -> list[dict]:
     rounds = []
-    for p in sorted(d.glob("round-[0-9][0-9].json")):
+    for p in round_files(d):
         try:
             rec = json.loads(p.read_text())
         except ValueError as exc:
@@ -97,10 +133,20 @@ def load_rounds(d: Path) -> list[dict]:
     return rounds
 
 
-def write_atomic(path: Path, rec: dict) -> None:
-    tmp = path.with_suffix(path.suffix + ".tmp")
-    tmp.write_text(json.dumps(rec, indent=2, ensure_ascii=False) + "\n")
-    os.replace(tmp, path)
+def write_atomic(path: Path, rec: dict | str) -> None:
+    """Write through a fresh temporary file in the same directory, then rename.
+    Refuses a symlinked destination, so a planted link cannot redirect the write."""
+    if path.is_symlink():
+        raise Refusal(f"{path} is a symlink; refusing to write through it")
+    text = rec if isinstance(rec, str) else json.dumps(rec, indent=2, ensure_ascii=False) + "\n"
+    fd, tmp = tempfile.mkstemp(dir=path.parent, prefix=f".{path.name}.", suffix=".tmp")
+    try:
+        with os.fdopen(fd, "w") as fh:
+            fh.write(text)
+        os.replace(tmp, path)
+    except BaseException:
+        Path(tmp).unlink(missing_ok=True)
+        raise
 
 
 class Lock:
@@ -137,14 +183,18 @@ def kv(**pairs) -> None:
 # --------------------------------------------------------------------- start
 
 def cmd_start(a) -> int:
-    d = loop_dir(a.reviews_dir, a.loop)
+    d = loop_dir(reviews_root(a.reviews_dir), a.loop)
     decisions = d / "decisions.md"
     if not decisions.is_file() or not decisions.read_text().strip():
         raise Refusal(
             f"write {decisions} first: each open question the spec leaves silent with "
             "its decision, and what is in scope to break. If there are none, say so "
             "and state the scope.")
-    rel = os.path.relpath(d.resolve(), Path(git("rev-parse", "--show-toplevel")).resolve())
+    top = toplevel()
+    try:
+        rel = d.resolve().relative_to(top).as_posix()
+    except ValueError:
+        raise Refusal(f"{d} is outside the repository {top}") from None
     # Untracked files are not part of a committed diff; modified tracked ones are.
     dirty = git("status", "--porcelain", "--untracked-files=no", "--", ":/",
                 f":(top,exclude){rel}")
@@ -168,12 +218,12 @@ def cmd_start(a) -> int:
             if not a.base:
                 raise Refusal("round 1 needs --base REF (the commit the change starts from)")
             base = git("rev-parse", "--verify", a.base + "^{commit}")
-            paths = list(a.paths)
+            paths = top_relative(a.paths)
             frm = base
         else:
             first, prev = rounds[0], rounds[-1]
             base, paths = first["base_sha"], first["pathspec"]
-            if a.paths and list(a.paths) != paths:
+            if a.paths and top_relative(a.paths) != paths:
                 raise Refusal(f"the loop's pathspec is {paths}; it cannot change mid-loop")
             ancestor = subprocess.run(["git", "merge-base", "--is-ancestor",
                                        prev["head_sha"], head]).returncode == 0
@@ -185,9 +235,13 @@ def cmd_start(a) -> int:
                               "--rebaseline to review the whole change again.")
             else:
                 frm = prev["head_sha"]
-            if frm == head:
-                raise Refusal("nothing committed since the last round; run "
-                              f"`rounds.py verdict {a.loop}` instead")
+        # An empty scoped diff is refused whatever the commit ids say: an empty
+        # commit, or one outside the pathspec, gives a round nothing to review.
+        if subprocess.run(["git", "diff", "--quiet", frm, head, "--", *magic(paths)]
+                          ).returncode == 0:
+            raise Refusal(f"nothing to review in {frm[:12]}..{head[:12]}"
+                          + (f" under {paths}" if paths else "")
+                          + (f"; run `rounds.py verdict {a.loop}` instead" if n > 1 else ""))
         rec = {
             "schema": SCHEMA, "loop": a.loop, "round": n, "status": "started",
             "started_at": now(), "base_sha": base, "from_sha": frm, "head_sha": head,
@@ -203,8 +257,8 @@ def cmd_start(a) -> int:
         os.close(fd)
         write_atomic(jpath, rec)
         ctx = round_path(d, n, ".context.md")
-        ctx.write_text(context(rounds, decisions.read_text(), n))
-    spec = " ".join(paths)
+        write_atomic(ctx, context(rounds, decisions.read_text(), n))
+    spec = " ".join(magic(paths))
     kv(ROUND=n, ARTIFACT=round_path(d, n, ".md"), CONTEXT=ctx,
        DIFF_ARGS=rec["diff_args"], FULL_DIFF_ARGS=rec["full_diff_args"],
        PATHSPEC=spec, HEAD_SHA=head[:12],
@@ -245,7 +299,7 @@ def context(rounds: list[dict], decisions: str, n: int) -> str:
 # -------------------------------------------------------------------- record
 
 def cmd_record(a) -> int:
-    d = loop_dir(a.reviews_dir, a.loop)
+    d = loop_dir(reviews_root(a.reviews_dir), a.loop)
     with Lock(d):
         rounds = load_rounds(d)
         if not 1 <= a.round <= len(rounds):
@@ -279,7 +333,9 @@ def parse_findings(text: str) -> list[dict]:
     if not blocks:
         raise Refusal("the artifact has no ```json findings block; the round is "
                       "incomplete, not clean")
-    raw = blocks[-1]
+    if len(blocks) > 1:
+        raise Refusal(f"the artifact has {len(blocks)} ```json blocks; exactly one is allowed")
+    raw = blocks[0]
     try:
         doc = json.loads(raw)
     except ValueError as exc:
@@ -308,12 +364,18 @@ def parse_findings(text: str) -> list[dict]:
         if line is not None and (not isinstance(line, int) or isinstance(line, bool)
                                  or line < 0):
             raise Refusal(f"{fid}: line must be a non-negative integer or null")
-        if f["title"].strip() not in prose:
-            raise Refusal(f"{fid}: title {f['title']!r} does not appear in the Markdown "
-                          "findings; prose and JSON disagree")
         out.append({"id": fid, "severity": f["severity"], "lane": f["lane"],
                     "class": f["class"], "file": f.get("file"), "line": line,
                     "title": f["title"].strip()})
+    headings = sorted(HEADING.findall(prose))
+    listed = sorted((f["severity"], f["title"]) for f in out)
+    if headings != listed:
+        only_prose = [f"[{s}] {t}" for s, t in headings if (s, t) not in listed]
+        only_json = [f"[{s}] {t}" for s, t in listed if (s, t) not in headings]
+        raise Refusal("prose and JSON disagree: every `### [severity] title` heading needs "
+                      "one JSON entry with the same severity and title"
+                      + (f"; only in prose: {only_prose}" if only_prose else "")
+                      + (f"; only in JSON: {only_json}" if only_json else ""))
     return out
 
 
@@ -348,7 +410,7 @@ def candidates(f: dict, prior: list[tuple[int, dict]]) -> list[dict]:
 # ------------------------------------------------------------------- dispose
 
 def cmd_dispose(a) -> int:
-    d = loop_dir(a.reviews_dir, a.loop)
+    d = loop_dir(reviews_root(a.reviews_dir), a.loop)
     with Lock(d):
         rounds = load_rounds(d)
         if not 1 <= a.round <= len(rounds) or rounds[a.round - 1]["status"] != "reviewed":
@@ -368,7 +430,7 @@ def cmd_dispose(a) -> int:
         fixed = git("rev-parse", "--verify", a.fixed_in + "^{commit}") if a.fixed_in else None
         if a.duplicate_of:
             m = re.match(r"^(\d+):(.+)$", a.duplicate_of)
-            if not m or int(m.group(1)) >= a.round or not any(
+            if not m or not 1 <= int(m.group(1)) < a.round or not any(
                     x["id"] == m.group(2) for x in rounds[int(m.group(1)) - 1]["findings"]):
                 raise Refusal(f"--duplicate-of {a.duplicate_of} names no earlier finding")
         origin = a.origin or ("original" if a.round == 1 else
@@ -384,7 +446,7 @@ def cmd_dispose(a) -> int:
 # ------------------------------------------------------------------- verdict
 
 def cmd_verdict(a) -> int:
-    d = loop_dir(a.reviews_dir, a.loop)
+    d = loop_dir(reviews_root(a.reviews_dir), a.loop)
     rounds = load_rounds(d)
     if not rounds:
         raise Refusal(f"{d} has no rounds")
@@ -451,7 +513,7 @@ def repeats(rounds: list[dict]) -> list[str]:
 # --------------------------------------------------------------------- stats
 
 def cmd_stats(a) -> int:
-    reviews = a.reviews_dir
+    reviews = reviews_root(a.reviews_dir)
     if not reviews.is_dir():
         raise Refusal(f"{reviews} is not a directory")
     print("| loop | rounds | incomplete | reported | serious | accepted | "
@@ -459,7 +521,7 @@ def cmd_stats(a) -> int:
     print("|---|---|---|---|---|---|---|---|---|---|")
     any_loop = False
     for d in sorted(p for p in reviews.iterdir() if p.is_dir() and LOOP_ID.match(p.name)):
-        if not list(d.glob("round-[0-9][0-9].json")):
+        if not round_files(d):
             continue
         try:
             rounds = load_rounds(d)
@@ -476,7 +538,8 @@ def cmd_stats(a) -> int:
             sum(x["status"] == "ACCEPTED" for x in disp),
             sum(x["origin"] == "re-raise" for x in disp),
             sum(x["origin"] == "from-fix" for x in disp),
-            sum(bool(f.get("candidates")) for f in fs),
+            sum(bool(f.get("candidates")) and not (f.get("disposition") or {}).get(
+                "duplicate_of") for f in fs),
             ", ".join(str(sum(f["severity"] in SERIOUS for f in r["findings"])) for r in done),
         ])) + " |")
     if not any_loop:
@@ -493,13 +556,13 @@ def main(argv: list[str] | None = None) -> int:
     sub = p.add_subparsers(dest="cmd", required=True)
 
     def common(sp):
-        sp.add_argument("--reviews-dir", type=Path, default=Path("reviews"))
+        sp.add_argument("--reviews-dir", type=Path, default=None,
+                        help="default: reviews/ at the repository root")
 
     s = sub.add_parser("start")
     s.add_argument("loop")
     s.add_argument("--base")
     s.add_argument("--rebaseline", action="store_true")
-    s.add_argument("paths", nargs="*")
     common(s)
     s = sub.add_parser("record")
     s.add_argument("loop")
@@ -521,7 +584,15 @@ def main(argv: list[str] | None = None) -> int:
     s = sub.add_parser("stats")
     common(s)
 
+    argv = list(sys.argv[1:] if argv is None else argv)
+    paths: list[str] = []
+    if "--" in argv:
+        i = argv.index("--")
+        argv, paths = argv[:i], argv[i + 1:]
     a = p.parse_args(argv)
+    if paths and a.cmd != "start":
+        p.error("paths after -- apply to start only")
+    a.paths = paths
     try:
         return {"start": cmd_start, "record": cmd_record, "dispose": cmd_dispose,
                 "verdict": cmd_verdict, "stats": cmd_stats}[a.cmd](a)
