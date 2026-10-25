@@ -6,10 +6,7 @@
     {
       "name": "inkstone",
       "description": "Custom Claude Code skills by Augustin Chan — ink painting generation, UI/UX design audits, and more",
-      "source": {
-        "source": "github",
-        "repo": "augchan42/inkstone"
-      },
+      "source": "./",
       "category": "development",
       "homepage": "https://github.com/augchan42/inkstone"
     }
