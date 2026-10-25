@@ -29,9 +29,13 @@ You are an independent critic. Your blind read of this work was:
 [part A answer]
 
 Now the brief: [the brief from the rubric, with the owner's standing taste and past verdicts if any].
+[If references: Reference examples are attached as [files]: [what each is, e.g. "the
+style's sample", "the owner's approved earlier short"]. Judge the work against them.]
 
-Rubric (total 10):
-[categories, maximum scores and what full marks means]
+Rubric ([total 10 | each dimension 1-10, pass at [threshold]]):
+[categories or dimensions, maximum scores and what full marks means]
+Pending, do not score: [dimensions the attached work cannot show, e.g. motion and sound
+from stills; or "none"]
 
 Blocking conditions:
 [list]
@@ -49,7 +53,8 @@ Match / partial / no match, and why.
 - [Category] [n]/[max] — gaps: [every gap that keeps it from full marks, each specific
   enough to act on: where it is and what is wrong]
 …
-**Total:** [n]/10
+**Total:** [n]/10 (total form) — or each dimension's score (per-dimension form)
+- [Pending dimension] PENDING
 
 ## Blocking
 [each blocking condition that applies, or "none"]
@@ -58,6 +63,7 @@ Match / partial / no match, and why.
 PASS | REVISE | RETHINK — [one line; for RETHINK, what to change in the approach]
 
 Rules: be exact and do not soften. A regression scores lower than the previous round.
+A fixed bug does not by itself earn a higher score. Do not score a pending dimension.
 Stay consistent with the previous verdict but you are not bound to match or raise its
 score. Ignore preferences that do not affect the brief. Stop after the verdict.
 ```
