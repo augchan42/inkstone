@@ -33,11 +33,13 @@ log() {
 }
 
 approve() {
-  printf '{"decision":"approve"}\n'
+  # An omitted decision allows stopping in both Codex and Claude Code.
+  # Codex rejects the legacy decision:"approve" value for Stop hooks.
+  printf '{}\n'
   exit 0
 }
 
-trap 'log "ERROR: hook exited via ERR trap (line $LINENO)"; printf "{\"decision\":\"approve\"}\n"; exit 0' ERR
+trap 'log "ERROR: hook exited via ERR trap (line $LINENO)"; approve' ERR
 
 # Consume stdin (hook input JSON) — must read to avoid broken pipe
 HOOK_INPUT=$(cat)
