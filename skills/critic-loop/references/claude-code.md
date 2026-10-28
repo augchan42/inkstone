@@ -25,7 +25,8 @@ Run from a fresh packet directory containing only the assigned images and
 current phase's inputs. Reject symlinks escaping the packet. `--safe-mode`
 disables ordinary customizations; managed policy, including managed hooks,
 still applies. Before dispatch, inspect effective managed settings for hooks,
-extra tools, credential helpers or provider overrides. If they break this
+extra tools, credential helpers, additional working directories, permission
+allow rules or provider overrides. If they break this
 contract or their effective state cannot be verified, leave the route unavailable.
 `--restricted`, the explicit tools and empty strict MCP configuration limit
 file/tool access; they do not disable managed hooks.
@@ -45,10 +46,6 @@ Use a fresh prompt, stream log, stderr path and eventual Markdown result for
 each critic/phase/round. Keep caller-owned logs and outputs outside the packet.
 The host assembles the combined round record; no CLI writes directly over it.
 
-The caller runs this command with recorded absolute paths and a verified model.
-Pass the prompt through stdin so it reaches EOF without exposing the brief in
-process arguments. Clear API/provider overrides and preserve subscription login:
-
 Before inference, run `claude auth status` with the exact sanitized environment
 and isolation flags intended for the review. Require `loggedIn: true`,
 `authMethod: claude.ai` and `apiProvider: firstParty`; record `subscriptionType`
@@ -56,6 +53,14 @@ without credentials. If this preflight fails, do not send the review packet.
 The cleanup below covers provider selectors recognized by the checked CLI;
 recheck newly supported selectors when changing versions. Post-run metadata
 is a consistency check, not a substitute for this preflight.
+
+With the checked CLI, order the flags as `claude --strict-mcp-config
+--mcp-config '{"mcpServers":{}}' --safe-mode --restricted auth status`.
+The flag after the variadic `--mcp-config` prevents it consuming `auth status`.
+
+The caller runs the command below with recorded absolute paths and a verified
+model. Pass the prompt through stdin so it reaches EOF without exposing the
+brief in process arguments. Clear API/provider overrides and preserve login:
 
 ```sh
 env -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_BASE_URL \
@@ -69,8 +74,12 @@ env -u ANTHROPIC_API_KEY -u ANTHROPIC_AUTH_TOKEN -u ANTHROPIC_BASE_URL \
   < "$PROMPT_FILE" > "$STREAM_FILE" 2> "$ERROR_FILE"
 ```
 
-Run under the shared backend supervisor, which records the process/exit state
-and handles liveness and timeout checks. This command captures raw events only.
+In the shared backend supervisor, replace the entire redirected reviewer line
+with this command. Preserve its prompt/stream/error redirections; do not append
+the template's `< /dev/null` or output redirections. Record fresh PID and exit
+files. Require stream/error progress within 90 seconds, treat a five-minute
+stall as a hang, and cap each phase at 15 minutes. Terminate only the recorded
+reviewer PID on timeout and preserve its logs. This command captures raw events only.
 Before creating a verdict artifact, the caller must verify all of these:
 
 - Successful process exit and one successful, non-error final result with text.

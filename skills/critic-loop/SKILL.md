@@ -84,7 +84,7 @@ opencode, then context-blind subagents. A critic of pictures must receive the
 pictures:
 
 - Codex CLI: `codex --sandbox read-only exec -i <png> [-i <png> …] --output-last-message "$CRITIC_PHASE_FILE" "<prompt>" < /dev/null`
-- For the selected Astra critic, add `--model gpt-6-astra -c 'model_reasoning_effort="ultra"'`; use a fresh call for each blind-read and scored-verdict stage.
+- When a caller selects Astra at Ultra, add `--model gpt-6-astra -c 'model_reasoning_effort="ultra"'`; use a fresh call for each blind-read and scored-verdict stage.
 - Claude Code CLI: use [references/claude-code.md](references/claude-code.md) for subscription authentication, image reading, restricted tools and captured results.
 - opencode: `opencode run --pure --agent inkstone-reviewer -f <png> … "<prompt>" < /dev/null`
 - Subagent: give it the image paths and tell it to read them.
