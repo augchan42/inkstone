@@ -1,6 +1,6 @@
 ---
 name: deliver-change
-description: Coordinate a development task from a stronger brief through implementation and verification, with optional adversarial Codex review. Use when asked to deliver a change using deepen-task and verify-change or to run this combined workflow. Codex review is off unless explicitly requested. For verification alone, use verify-change; for a standalone review, use codex-review.
+description: Use when asked to deliver a development change using deepen-task and verify-change, including changes with visual deliverables. For verification alone, use verify-change; for standalone code review, use codex-review; for standalone visual criticism, use critic-loop.
 ---
 
 # Deliver Change
@@ -19,12 +19,16 @@ These are skill invocation conventions, not a new executable CLI. A clear
 natural-language request for Codex review also opts in. A routine request
 to inspect the work does not silently enable a separate model run. Honor
 an explicit opt-out; clarify contradictory review instructions if needed.
-Keep required project reviews visible even when this optional stage is off.
+These flags control optional adversarial code review. Visual criticism follows
+the artifact rule below, including with `--no-review`; an explicit request to
+skip visual criticism controls that separate stage. Keep required project
+reviews visible and resolve an explicit conflict before claiming acceptance.
 
 Locate and read `deepen-task` and `verify-change` through skill discovery,
 or their sibling directories beside this skill in an Inkstone installation.
 Locate and read `codex-review` only when opted in. Resolve resources from
 each skill's actual installed directory, not the target repository's cwd.
+For substantial visual deliverables, also locate and read `critic-loop`.
 If a dependency is unavailable, name the missing stage and continue useful
 independent work; do not silently replace it or claim it ran. If review was
 requested but cannot run, keep it explicitly incomplete in the handoff.
@@ -47,6 +51,7 @@ steps without asking for the same permission again.
 For a plan-only request, deliver the plan and state that implementation,
 runtime verification, and code review were not run. A review flag does not
 turn a plan into code or authorize reviewing unrelated existing changes.
+Existing visual references do not by themselves trigger criticism of those assets.
 
 ## Frame and implement
 
@@ -64,7 +69,40 @@ does not end the task or start an adversarial review loop.
 
 Before handoff, refresh evidence affected by edits. Keep passed, failed,
 blocked, and not-run checks distinct, and retain the tested code identity.
-If optional review is off, proceed directly to the final handoff.
+Complete any applicable visual criticism before the final handoff. Optional
+code review remains a separate stage.
+
+## Visual deliverables
+
+When the task creates or substantially changes renders, models judged through
+renders, UI appearance, game-camera captures, or other visual deliverables,
+use `critic-loop` before presenting them as ready. Backend-only changes have
+no visual stage. A trivial correction to previously approved work needs only
+the affected check unless the project requires another critic round.
+
+Use the skill's two-critic mode: Claude Code CLI with Opus 5.5 or a later
+available Opus model, and a fresh Codex CLI critic with `gpt-6-astra` at
+`ultra` reasoning effort. Honor explicit user/project reviewer settings and
+provider restrictions; a backend preference alone does not reduce the critic
+count. Change the pair only when a different review configuration is explicit.
+Claude uses the existing Claude subscription; do not
+introduce an API key, paid provider, or OpenRouter fallback. If either selected
+route cannot run, report that review as incomplete rather than silently
+replacing it or accepting a single-critic result.
+
+Both critics receive the same artifact state, viewing conditions and rubric,
+independently of each other and the producer's reasoning. Supply actual renders
+or screenshots at the intended viewing size. Follow `critic-loop` for the
+rubric-before-review, blind read, combined verdict, finding dispositions,
+revisions and stop rules. Its Claude CLI reference supplies the read-only
+invocation. The producer's own inspection is separate from both critic passes;
+record the actual tools/models, including any shared model family.
+
+After revisions, refresh affected renders and functional/source/export checks.
+Keep visual verdicts separate from gameplay, motion, sound and performance
+evidence; stills leave unobservable dimensions pending. If a dependency is
+missing or a stop rule ends below acceptance, hand off the useful work with
+the visual stage explicitly incomplete. Do not relax the rubric or claim readiness.
 
 ## Optional adversarial review
 
@@ -104,7 +142,9 @@ three-attempt checkpoint with a review-round policy.
 Report the implemented outcome, tested code state, meaningful evidence,
 remaining gaps, and recovery notes for consequential changes. Name any
 change to CI workflows or owner-designated sensitive paths as needing a
-human decision. Add optional
+human decision. For applicable visuals, report each critic, reviewed artifact
+state, combined verdict, records, pending dimensions and unresolved findings.
+Report a skipped visual stage and its reason. Add optional code
 review status: not requested, incomplete, or completed, with reviewer
 backend, reviewed state, finding dispositions, and any later edits it
 does not cover. Keep the report proportionate to the change.

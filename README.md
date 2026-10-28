@@ -56,7 +56,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 | Skill | Description |
 |-------|-------------|
-| **deliver-change** | Coordinate deepen-task, implementation, and verify-change; add separate adversarial codex-review only when requested with `--review` |
+| **deliver-change** | Coordinate deepen-task, implementation and verify-change; route substantial visual deliverables through two independent critics (Claude Code Opus 5.5 or later, and Codex GPT-6 Astra at Ultra); add adversarial code review only when requested with `--review` |
 | **verify-change** | Have the implementation agent verify intended behavior with executable checks and hand off evidence, gaps, and recovery notes — complements the separate adversarial codex-review |
 | **codex-review** | Independent code review of any git scope — bare (auto-detect), `HEAD~3`, a range, a merge commit (auto-resolved to its first-parent diff), `--commit`, `--pr N`, `--staged`, or path-limited. Lanes from the skill plus the target repo's own `.claude/code-review-lanes.md` plus `--focus`. Codex CLI, then opencode, then context-blind subagents, with the backend and model recorded. Reviewers write findings to their assigned artifacts while leaving implementation files unchanged; every finding gets an ACCEPTED / DECLINED / PRE-EXISTING disposition. No hook. Opt-in `--loop <id>` mode: decisions first, incremental rounds, JSON findings, a mechanical stop rule and loop statistics |
 | **plan-review-loop** | Adversarial review loop for implementation plans — zero-context executability check, grounding against repo + source spec, task structure/risk review, then address findings with judgment. Codex CLI, opencode or context-blind subagents as reviewer; completion enforced by a stop hook. Supports superpowers plans, planning-with-files, and other formats |
@@ -99,13 +99,24 @@ is recorded in [ADR-0001](docs/adr/0001-separate-verification-from-adversarial-r
 /deliver-change --review Add CSV export for the filtered results
 ```
 
-Codex review is off by default. The wrapper preserves the repair checkpoint
-and verification evidence; PR creation, merging, and deployment follow the
-authority in the request. In Codex, invoke the installed skill as
+Adversarial code review is off by default. Substantial visual deliverables use
+`critic-loop` with two fresh critics: Claude Code CLI with Opus 5.5 or a later
+available Opus model through the existing Claude subscription, and Codex CLI
+with `gpt-6-astra` at `ultra` reasoning effort. Both inspect the same actual
+images independently; the lower scores and either critic's blockers determine
+the combined result. Explicit user/project reviewer settings take precedence.
+An unavailable selected critic leaves that review incomplete; no silent model
+substitution or OpenRouter fallback. The producer's own check is separate.
+
+`--no-review` omits optional code review; visual criticism follows its own
+artifact rule. Backend-only changes and trivial corrections to approved visuals
+do not acquire an automatic visual-review stage. The wrapper preserves the
+repair checkpoint and separate verification evidence; PR creation, merging,
+and deployment follow the authority in the request. In Codex, invoke the skill as
 `$deliver-change` with the same task and optional `--review` instruction.
 Standalone installation needs `deepen-task` and `verify-change`; install
-`codex-review` too for the optional review stage. The Inkstone plugin bundles
-all four skills.
+`critic-loop` and its references for substantial visual work, and `codex-review`
+for the optional code-review stage. The Inkstone plugin bundles these skills.
 
 ### Generate an ink painting prompt
 

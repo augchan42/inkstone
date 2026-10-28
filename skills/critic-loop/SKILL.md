@@ -76,16 +76,25 @@ answer to start; record that it was shown.
 
 ## Phase 2 — The packet
 
-Each round's critic is a **fresh** agent. Choose the backend from
-[../codex-review/reviewer-backends.md](../codex-review/reviewer-backends.md): Codex CLI,
-then opencode, then context-blind subagents. A critic of pictures must receive the
+Each round's critic is a **fresh** agent. Honor an explicit user/project or
+calling workflow's backend/model selection before the defaults in
+[../codex-review/reviewer-backends.md](../codex-review/reviewer-backends.md).
+`deliver-change` selects the two-critic pair: Claude Code CLI, Opus 5.5 or a
+later available Opus, plus Codex CLI, `gpt-6-astra` at `ultra` reasoning effort.
+Without a selected route, retain the shared default order: Codex CLI, then
+opencode, then context-blind subagents. A critic of pictures must receive the
 pictures:
 
 - Codex CLI: `codex --sandbox read-only exec -i <png> [-i <png> …] --output-last-message "$ROUND_FILE" "<prompt>" < /dev/null`
+- For the selected Astra critic, add `--model gpt-6-astra -c 'model_reasoning_effort="ultra"'`; use a fresh call for each blind-read and scored-verdict stage.
+- Claude Code CLI: use [references/claude-code.md](references/claude-code.md) for subscription authentication, image reading, restricted tools and captured results.
 - opencode: `opencode run --pure --agent inkstone-reviewer -f <png> … "<prompt>" < /dev/null`
 - Subagent: give it the image paths and tell it to read them.
 
-A backend that cannot take images is skipped for visual work; log why. Record the critic
+A backend that cannot take images is skipped for default visual routing; log why.
+If a selected backend/model cannot run, keep its review incomplete and report
+the reason; do not silently replace it or reduce a required two-critic round to one.
+Record the critic
 as tool **and** model, and say when it is the same model family as the producer.
 
 The packet contains, and only contains:
@@ -109,6 +118,8 @@ from different model families on the same packet, each blind to the other (for e
 a Claude subagent and Codex CLI on a GPT model). The round's total is the **lower** of the
 two — per dimension, the lower score in each; a blocking condition from either blocks. Changes both
 critics ask for go first; a finding only one raises is still dispositioned.
+Both critics must complete before the combined result can pass. Keep their blind
+reads separate and give each scored-verdict call only its own blind read.
 
 ## Phase 3 — Blind read
 

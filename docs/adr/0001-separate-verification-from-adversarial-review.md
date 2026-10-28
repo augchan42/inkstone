@@ -49,6 +49,15 @@ separate reviewer without passing it the author's implementation narrative.
 The wrapper preserves existing authority for repairs and delivery actions
 and adds no merge or deployment permission of its own.
 
+For substantial visual deliverables, `deliver-change` also coordinates the
+separate `critic-loop` skill. The default pair is Claude Code CLI with Opus 5.5
+or later through the existing subscription, plus a fresh Codex CLI critic using
+GPT-6 Astra at Ultra effort. Explicit user/project reviewer settings take
+precedence. This visual stage is distinct from opt-in adversarial code review
+and from the producer's functional checks. It requires actual visual artifacts;
+stills cannot establish motion, sound or gameplay correctness. Trivial approved
+visual corrections and backend-only work do not require a new visual round.
+
 ### Make claims traceable to observable evidence
 
 Choose checks from requirements and established contracts, with effort
