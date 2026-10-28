@@ -26,9 +26,11 @@ reviews visible and resolve an explicit conflict before claiming acceptance.
 
 Locate and read `deepen-task` and `verify-change` through skill discovery,
 or their sibling directories beside this skill in an Inkstone installation.
-Locate and read `codex-review` only when opted in. Resolve resources from
+Locate and read the `codex-review` skill only when opted in. Resolve resources from
 each skill's actual installed directory, not the target repository's cwd.
 For substantial visual deliverables, also locate and read `critic-loop`.
+Its shared `codex-review/reviewer-backends.md` reference is needed for visual
+dispatch even when the adversarial code-review stage is off.
 If a dependency is unavailable, name the missing stage and continue useful
 independent work; do not silently replace it or claim it ran. If review was
 requested but cannot run, keep it explicitly incomplete in the handoff.

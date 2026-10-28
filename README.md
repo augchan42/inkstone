@@ -115,8 +115,9 @@ repair checkpoint and separate verification evidence; PR creation, merging,
 and deployment follow the authority in the request. In Codex, invoke the skill as
 `$deliver-change` with the same task and optional `--review` instruction.
 Standalone installation needs `deepen-task` and `verify-change`; install
-`critic-loop` and its references for substantial visual work, and `codex-review`
-for the optional code-review stage. The Inkstone plugin bundles these skills.
+`critic-loop` and its references, including `codex-review/reviewer-backends.md`,
+for substantial visual work. The full `codex-review` skill is needed to run the
+optional code-review stage. The Inkstone plugin bundles these skills and references.
 
 ### Generate an ink painting prompt
 
