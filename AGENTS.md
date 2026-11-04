@@ -60,7 +60,7 @@ adversarial review is in [ADR-0001](docs/adr/0001-separate-verification-from-adv
 
 ### Design / UX
 
-- **ui-ux-architect** — UI/UX audit against 13 dimensions with Jobs/Ive design philosophy. Uses mobile-mcp for live device inspection. Design-only scope — does not touch logic/state/APIs.
+- **ui-ux-architect** — UI/UX audit judged from the rendered page, with Jobs/Ive design philosophy. Web: `capture.mjs` (Playwright) records screenshots, visible text and measurements at 360/768/1440 per theme; native: mobile-mcp. Repo design rules before taste, CONFIRMED/PLAUSIBLE/INCONCLUSIVE verdicts, report-only unless fixes are approved. Design-only scope.
 - **design-dna** — Extracts an abstract visual/motion blueprint (design DNA) from reference websites, or researches award-winning references from a vibe description. Observes and abstracts only — never implements.
 - **motion-craft** — Implements professional web animations in a target repo against an approved design blueprint or explicit motion direction. Plans by default; modifies code only on explicit implement authority.
 - **upgrade-site** — Orchestrates a full website design upgrade: snapshot → reference research via design-dna → direction synthesis → gap scoring → prioritized plan → implementation dispatch to motion-craft → verification.

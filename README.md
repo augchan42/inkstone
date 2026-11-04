@@ -35,7 +35,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 
 | Skill | Description |
 |-------|-------------|
-| **ui-ux-architect** | Premium UI/UX audit with Jobs/Ive philosophy — visual hierarchy, spacing, typography, color, motion, accessibility, dark mode |
+| **ui-ux-architect** | UI/UX audit judged from the rendered page — Playwright capture at three widths and every theme, repo design rules first, graded dimensions, AI-slop check, report-only by default. mobile-mcp for native apps |
 | **design-dna** | Extract an abstract visual/motion blueprint from reference websites, or research award-winning references from a vibe description — observes and abstracts only, never implements |
 | **motion-craft** | Implement professional web animations against an approved design blueprint or explicit motion direction — plans by default, modifies code only on implement authority |
 | **upgrade-site** | Orchestrate a full site design upgrade — snapshot, reference research via design-dna, direction synthesis, gap scoring, prioritized plan, implementation via motion-craft, verification |

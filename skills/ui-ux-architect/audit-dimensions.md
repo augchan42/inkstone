@@ -25,7 +25,7 @@ Evaluate screens in this order (highest impact first).
 | Check | Pass Criteria |
 |-------|---------------|
 | Hierarchy | Clear size/weight differentiation |
-| Restraint | ≤3 font sizes per screen |
+| Restraint | Few sizes per screen; none below the repo's text floor |
 | Readability | Comfortable line height (1.4-1.6×) |
 | Calm vs chaos | Type feels organized, not competing |
 
@@ -80,11 +80,11 @@ Evaluate screens in this order (highest impact first).
 | Error | Helpful message, not hostile, styled consistently |
 | Success | Clear confirmation, appropriate celebration level |
 
-## 10. Dark Mode
+## 10. Themes
 
 | Check | Pass Criteria |
 |-------|---------------|
-| Designed | Not just inverted colors |
+| Designed | Not just inverted colors; checked in every theme the app ships |
 | Contrast | All text passes contrast in dark |
 | Shadows | Adjusted or replaced with borders |
 | Semantic colors | Still meaningful in dark context |
@@ -101,15 +101,25 @@ Evaluate screens in this order (highest impact first).
 
 | Check | Pass Criteria |
 |-------|---------------|
-| Touch targets | Minimum 44×44pt |
-| Fluid adaptation | Not just 3 breakpoint snaps |
-| Thumb reach | Primary actions in easy thumb zone |
+| Touch targets | Minimum 44×44px |
+| Fluid adaptation | Holds at 360, 768 and 1440, and in between |
+| No sideways scroll | Page width equals viewport width at 360px |
+| Thumb reach | Primary actions in easy thumb zone on phones |
 
 ## 13. Accessibility
 
 | Check | Pass Criteria |
 |-------|---------------|
-| VoiceOver | Logical reading order, meaningful labels |
-| Dynamic Type | Scales appropriately |
+| Screen reader | Logical heading order, every control has a name, images have alt |
+| Zoom | Usable at 200% browser zoom; pinch-zoom not disabled |
 | Focus states | Visible keyboard focus |
 | Color independence | Info not conveyed by color alone |
+
+## 14. Brand fit
+
+| Check | Pass Criteria |
+|-------|---------------|
+| Committed look | The product's look is used on purpose, not mixed with generic SaaS styling |
+| One face per role | No system fallback font leaking in (e.g. a `font-mono` utility with no theme font behind it) |
+| Not generated | No generic gradient heroes, emoji icons, uniform card grids or filler CTAs |
+| Voice | Copy follows the repo's house style and terminology |
