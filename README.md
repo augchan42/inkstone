@@ -51,6 +51,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **voice-calibration** | Interactive voice profiling — asks live writing prompts, collects responses, and distills a reusable voice profile for tone-consistent content |
 | **deepen-task** | Reframe a task into a stronger brief — missing expert work, primary evidence, concrete methods, and independent checks; adapted from Felix Rieseberg's ambition framework |
 | **marketing-clarity** | Clarify marketing messages, website copy and company introductions when the offer or its value is hard to understand. Credit to [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). |
+| **unslop** | Cut AI tells from any writing — 33 numbered rules for content, language, formatting, filler and plain speech. From [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT). User-invoked only. |
 
 ### Engineering Process
 
@@ -270,6 +271,10 @@ by Addy Osmani, Morgan Westlee Lunt, and Qing Wang.
 The [deepen-task](skills/deepen-task/SKILL.md) skill is adapted from
 Felix Rieseberg's [How to be more ambitious: A tutorial for humans with models](https://felixrieseberg.com/how-to-be-more-ambitious-a-tutorial-for-humans-with-models/),
 surfaced by [CG's X post](https://x.com/cgtwts/status/2110571916973207906).
+
+The [unslop](skills/unslop/SKILL.md) skill is copied from the `unslop` skill in
+[Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack)
+(MIT, Copyright (c) 2026 Lauren Tan). Its licence is in the skill folder.
 
 The [marketing-clarity](skills/marketing-clarity/SKILL.md) skill credits
 Alexander Payne and his brother [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). It is adapted from Eliot's
