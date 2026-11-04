@@ -42,6 +42,14 @@ known-good reference. Do not derive the expected answer solely from the new
 implementation. In a bug fix, prefer a check that demonstrates the original
 failure and passes with the fix when that comparison is practical and safe.
 
+A check you have never seen fail proves nothing. For each new or changed
+check that carries a material claim, show it failing once on a broken
+variant of the code it guards: the unfixed code, a removed guard, a
+reordered step or an off-by-one. Then restore the code and confirm the check
+passes again. Record the variant and both outcomes with the evidence. If no
+safe broken variant exists, say so in the gaps; do not count the check as
+proven. This applies to tests, scripts and CI steps alike.
+
 Size the verification to the consequences of failure. Consider affected
 users, sensitive data, shared state, cross-platform behavior, and how easily
 the change can be undone. Diff size and the author's confidence are poor
@@ -144,3 +152,6 @@ and [How the Claude Code team does code review](https://claude.dev/blog/solving-
 by Addy Osmani, Morgan Westlee Lunt, and Qing Wang (15 October 2026).
 This skill implements the verification and evidence-handoff part of their
 approach; Inkstone's codex-review remains the separate adversarial reviewer.
+The rule that a check must be seen to fail is adapted from Lauren Tan's
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT),
+`create-formal-verification-skill` ("Able to fail").

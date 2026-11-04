@@ -103,7 +103,8 @@ class LoopTest(unittest.TestCase):
         self.review(1, [finding("F1"), finding("F2", "low", "naming", title="bad name")])
         self.run_cmd("dispose", "demo", "1", "F2", "DECLINED", "--reason", "house style")
         h2 = self.commit("a.py", "x = 3\n")
-        self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h2)
+        self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h2,
+                     "--encode", "tests/test_a.py")
         keys = self.start()
         self.assertEqual(keys["DIFF_ARGS"], f"{h1}..{h2}")
         self.assertEqual(keys["FULL_DIFF_ARGS"], f"{self.base}..{h2}")
@@ -181,7 +182,8 @@ class LoopTest(unittest.TestCase):
         self.start("--base", self.base)
         self.review(1, [finding("F1")])
         h = self.commit("a.py", "x = 3\n")
-        self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h)
+        self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h,
+                     "--encode", "tests/test_a.py")
         self.start()
         out = self.review(2, [finding("G1")])
         self.assertIn("may repeat 1:F1 (class+file)", out)
@@ -225,7 +227,8 @@ class LoopTest(unittest.TestCase):
         self.assertEqual(code, 1)
         self.assertIn("no fix recorded", out)
         h = self.commit("a.py", "x = 3\n")
-        self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h)
+        self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h,
+                     "--encode", "tests/test_a.py")
         code, out, _ = self.run_cmd("verdict", "demo")
         self.assertEqual(code, 1)
         self.assertIn("review their fixes", out)
@@ -248,13 +251,40 @@ class LoopTest(unittest.TestCase):
             if n < 4:
                 last = self.commit("a.py", f"x = {n + 10}\n")
                 self.run_cmd("dispose", "demo", str(n), f"F{n}", "ACCEPTED",
-                             "--fixed-in", last)
+                             "--fixed-in", last, "--encode", "none: needs judgment")
             else:
                 self.run_cmd("dispose", "demo", "4", "F4", "DEFERRED", "--reason", "small")
         code, out, _ = self.run_cmd("verdict", "demo")
         self.assertEqual(code, 0)
         self.assertIn("deferred to one follow-up issue", out)
         self.assertIn("'off-by-one' recurred in rounds 1, 2, 3", out)
+        self.assertIn("no fix in this class names a check", out)
+
+    def test_a_serious_fix_names_its_check(self):
+        self.commit("a.py", "x = 2\n")
+        self.start("--base", self.base)
+        self.review(1, [finding("F1"), finding("F2", "low", "docs", title="doc")])
+        h = self.commit("a.py", "x = 3\n")
+        code, _, err = self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in", h)
+        self.assertEqual(code, 2)
+        self.assertIn("--encode", err)
+        self.assertIsNone(self.record(1)["findings"][0]["disposition"])
+        for bad in ("none", "none:", "  ", "None:   "):
+            code, _, err = self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED",
+                                        "--fixed-in", h, "--encode", bad)
+            self.assertEqual(code, 2, bad)
+        code, _, err = self.run_cmd("dispose", "demo", "1", "F2", "DECLINED",
+                                    "--reason", "x", "--encode", "t.py")
+        self.assertIn("ACCEPTED findings only", err)
+        # a small fix needs no check; a serious one names one, or says why not
+        self.assertEqual(self.run_cmd("dispose", "demo", "1", "F2", "ACCEPTED",
+                                      "--fixed-in", h)[0], 0)
+        self.assertEqual(self.run_cmd("dispose", "demo", "1", "F1", "ACCEPTED", "--fixed-in",
+                                      h, "--encode", "tests/test_a.py::test_bound")[0], 0)
+        self.assertEqual(self.record(1)["findings"][0]["disposition"]["encode"],
+                         "tests/test_a.py::test_bound")
+        code, out, _ = self.run_cmd("stats")
+        self.assertIn("| demo | 1 | 0 | 2 | 1 | 2 | 1/1 |", out)
 
     # ---------------------------------------------------------------- stats
 
@@ -265,7 +295,7 @@ class LoopTest(unittest.TestCase):
         self.review(1, [finding("F1"), finding("F2", "low", "docs", title="doc")])
         code, out, _ = self.run_cmd("stats")
         self.assertEqual(code, 0)
-        self.assertIn("| demo | 1 | 0 | 2 | 1 |", out)
+        self.assertIn("| demo | 1 | 0 | 2 | 1 | 0 | 0/0 |", out)
 
 
     # -------------------------------------------------- round-1 regressions

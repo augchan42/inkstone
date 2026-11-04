@@ -176,9 +176,18 @@ Every finding gets exactly one disposition line under `## Disposition`:
 - **PRE-EXISTING** — real, but not caused by this diff. Do not fix it here; that is
   scope creep wearing a helpful hat.
 
+An ACCEPTED critical or high finding also gets **ENCODE**: the test, lint rule,
+script or type that will catch the whole class next time, shipped with the fix.
+If no check can catch it, write `ENCODE: none —` and the reason. A rule that lives
+only in prose or in a reviewer's memory is broken again later; a check is not.
+Prefer the check that removes the class over the one that catches this instance.
+
 ```markdown
 ## Disposition
-- [high] HexagramLines off-by-one on changingLines — ACCEPTED, fixed in <sha>
+- [high] HexagramLines off-by-one on changingLines — ACCEPTED, fixed in <sha>;
+  ENCODE: property test tests/hexagram.test.ts (changing lines stay in 1–6)
+- [high] stale cache key after locale switch — ACCEPTED, fixed in <sha>;
+  ENCODE: none — depends on the product's cache policy, which a person decides
 - [med] bg-accent hardcoded in HexagramDisplay — PRE-EXISTING, filed #212
 - [low] extract the combobox into a hook — DECLINED: churn exceeds the value
 ```
@@ -195,9 +204,16 @@ rewrite or publish.
    Do not fix pre-existing findings in this change.
 3. **Commit the review artifact** if the project tracks `reviews/` (check whether the
    directory is in git — many projects gitignore it).
-4. **Feed the lesson back.** When a finding was real and would recur, propose adding
-   it to `.claude/code-review-lanes.md`. That file is how the review gets sharper each
-   time instead of repeating the same generic checks forever.
+4. **Feed the lesson back — as a check first.** Ship each ENCODE check with its fix,
+   and show it failing on the unfixed code before you count it: a check never seen
+   to fail proves nothing. Only a lesson that needs judgment goes to
+   `.claude/code-review-lanes.md`, so the next review looks for it.
+5. **Harvest recurring classes.** When the project keeps review records, group
+   their findings by class every so often. A class seen in two or more reviews
+   with no ENCODE check is the next check to build; propose it with the findings
+   that justify it. In loop mode, `rounds.py verdict` names recurring classes
+   that no fix covered with a check, and `rounds.py stats` counts serious fixes
+   that came with one.
 
 ## Rules
 
@@ -209,6 +225,7 @@ rewrite or publish.
 - Never let the reviewer see your reasoning about the change.
 - Never fix pre-existing findings inside the change under review.
 - Every finding gets a disposition, including the ones you reject.
+- Every accepted serious finding names its ENCODE check, or says why none can exist.
 - Run the reviewer backgrounded so it can be watched and killed — and never through
   `tail`/`head`, which buffer to EOF and leave the output file empty for the whole run.
 - A watcher that produced no output is a broken watcher until proven otherwise.
@@ -219,3 +236,9 @@ rewrite or publish.
 - Record the reviewer as tool **and** model, and say when it was same-model.
 - On any tooling failure, report it and continue degraded — never leave the user
   unsure whether a review ran.
+
+## Attribution
+
+ENCODE and the harvest step adapt "Encode lessons in structure" from Lauren Tan's
+[pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT): when a fix is
+structural, the instruction is the symptom.

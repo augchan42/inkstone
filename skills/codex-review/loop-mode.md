@@ -107,7 +107,9 @@ modified tracked files are refused.
    are only as good as these.
 
 5. **Fix** accepted findings (Phase 6 rules apply), commit, then
-   `dispose ... ACCEPTED --fixed-in <sha>`.
+   `dispose ... ACCEPTED --fixed-in <sha>`. For a critical or high finding, add
+   `--encode "<test, lint rule or script that catches the class>"` or
+   `--encode "none: <why no check can>"`; without it the fix is refused.
 
 6. **Verdict** — `rounds.py verdict <id>`:
    - `INCOMPLETE` (exit 2): a round has no recorded findings, or a finding has no
@@ -120,7 +122,8 @@ modified tracked files are refused.
    listed for one follow-up issue, filed under the project's own rules. A class
    accepted (or confirmed as a repeat) in two or more rounds is named: stop and
    diagnose before fixing it again — usually a decision missing from
-   `decisions.md`, sometimes a missing test. Serious findings can keep a loop going;
+   `decisions.md`, sometimes a missing test. The verdict says when no fix in
+   that class named a check: build one before the next fix. Serious findings can keep a loop going;
    this is a convergence rule, not a round cap.
 
 ## Statistics
