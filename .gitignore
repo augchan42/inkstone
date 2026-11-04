@@ -19,3 +19,7 @@ agent/
 # Personal voice profiles (voice-calibration output) — keep local, not published
 skills/voice-calibration/profiles/*
 !skills/voice-calibration/profiles/.gitkeep
+
+# Python bytecode
+__pycache__/
+*.pyc
