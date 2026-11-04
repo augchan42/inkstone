@@ -10,8 +10,9 @@ Usage:
     rounds.py start   <id> [--base REF] [--rebaseline] [--reviews-dir D] [-- PATH...]
     rounds.py record  <id> <round> [--reviews-dir D]
     rounds.py dispose <id> <round> <finding> <ACCEPTED|DECLINED|PRE-EXISTING|DEFERRED>
-                      [--reason TEXT] [--fixed-in SHA] [--origin ORIGIN]
-                      [--duplicate-of ROUND:FINDING] [--reviews-dir D]
+                      [--reason TEXT] [--fixed-in SHA] [--encode CHECK]
+                      [--origin ORIGIN] [--duplicate-of ROUND:FINDING]
+                      [--reviews-dir D]
     rounds.py verdict <id> [--reviews-dir D]
     rounds.py stats   [--reviews-dir D]
 
@@ -470,6 +471,15 @@ def cmd_dispose(a) -> int:
                               "can be DEFERRED to the follow-up issue")
         if a.fixed_in and a.status != "ACCEPTED":
             raise Refusal("--fixed-in applies to ACCEPTED findings only")
+        if a.encode is not None and a.status != "ACCEPTED":
+            raise Refusal("--encode applies to ACCEPTED findings only")
+        if a.encode is not None and not encode_ok(a.encode):
+            raise Refusal("--encode names a check (a test, lint rule or script), "
+                          "or 'none: <why no check can catch this class>'")
+        if a.fixed_in and f["severity"] in SERIOUS and a.encode is None:
+            raise Refusal("a serious fix names the check that catches its class: "
+                          "--encode '<test, lint rule or script>', or "
+                          "--encode 'none: <why no check can>'")
         fixed = git("rev-parse", "--verify", a.fixed_in + "^{commit}") if a.fixed_in else None
         if a.duplicate_of:
             m = re.match(r"^(\d+):(.+)$", a.duplicate_of)
@@ -479,11 +489,24 @@ def cmd_dispose(a) -> int:
         origin = a.origin or ("original" if a.round == 1 else
                               "re-raise" if a.duplicate_of else "unknown")
         f["disposition"] = {"status": a.status, "reason": a.reason, "fixed_in": fixed,
-                            "origin": origin, "duplicate_of": a.duplicate_of,
+                            "encode": a.encode, "origin": origin, "duplicate_of": a.duplicate_of,
                             "at": now()}
         write_atomic(round_path(d, a.round, ".json"), rec)
     print(f"{a.round}:{a.finding} {a.status}" + (f" fixed in {fixed[:12]}" if fixed else ""))
     return 0
+
+
+def encode_ok(text: str) -> bool:
+    """A check name, or 'none:' with a reason after it."""
+    text = text.strip()
+    if text.lower().startswith("none"):
+        return bool(re.match(r"(?i)^none:\s*\S", text))
+    return bool(text)
+
+
+def has_check(disp: dict | None) -> bool:
+    enc = (disp or {}).get("encode")
+    return bool(enc) and not enc.strip().lower().startswith("none")
 
 
 # ------------------------------------------------------------------- verdict
@@ -543,13 +566,17 @@ def cmd_verdict(a) -> int:
 def repeats(rounds: list[dict]) -> list[str]:
     """Finding classes accepted, or confirmed as repeats, in two or more rounds."""
     seen: dict[str, set[int]] = {}
+    checked: set[str] = set()
     for r in rounds:
         for f in r["findings"]:
             disp = f["disposition"]
             if disp["status"] == "ACCEPTED" or disp["duplicate_of"]:
                 seen.setdefault(f["class"], set()).add(r["round"])
+            if has_check(disp):
+                checked.add(f["class"])
     return [f"class {c!r} recurred in rounds {', '.join(map(str, sorted(ns)))}: diagnose "
             "before fixing again — a decision missing from decisions.md, or a missing test"
+            + ("" if c in checked else "; no fix in this class names a check (--encode)")
             for c, ns in sorted(seen.items()) if len(ns) > 1]
 
 
@@ -559,9 +586,10 @@ def cmd_stats(a) -> int:
     reviews = reviews_root(a.reviews_dir)
     if not reviews.is_dir():
         raise Refusal(f"{reviews} is not a directory")
-    print("| loop | rounds | incomplete | reported | serious | accepted | "
-          "confirmed repeats | from-fix | heuristic repeat candidates | serious by round |")
-    print("|---|---|---|---|---|---|---|---|---|---|")
+    print("| loop | rounds | incomplete | reported | serious | accepted | serious fixed "
+          "with a check | confirmed repeats | from-fix | heuristic repeat candidates | "
+          "serious by round |")
+    print("|---|---|---|---|---|---|---|---|---|---|---|")
     any_loop = False
     for d in sorted(p for p in reviews.iterdir() if p.is_dir() and LOOP_ID.match(p.name)):
         if not round_files(d):
@@ -569,7 +597,7 @@ def cmd_stats(a) -> int:
         try:
             rounds = load_rounds(d)
         except Refusal as exc:
-            print(f"| {d.name} | unreadable: {exc} |||||||||")
+            print(f"| {d.name} | unreadable: {exc} ||||||||||")
             continue
         any_loop = True
         done = [r for r in rounds if r["status"] == "reviewed"]
@@ -579,6 +607,8 @@ def cmd_stats(a) -> int:
             d.name, len(rounds), len(rounds) - len(done), len(fs),
             sum(f["severity"] in SERIOUS for f in fs),
             sum(x["status"] == "ACCEPTED" for x in disp),
+            f"{sum(has_check(f.get('disposition')) for f in fs if f['severity'] in SERIOUS)}"
+            f"/{sum(bool((f.get('disposition') or {}).get('fixed_in')) for f in fs if f['severity'] in SERIOUS)}",
             sum(x["origin"] == "re-raise" for x in disp),
             sum(x["origin"] == "from-fix" for x in disp),
             sum(bool(f.get("candidates")) and not (f.get("disposition") or {}).get(
@@ -618,6 +648,7 @@ def main(argv: list[str] | None = None) -> int:
     s.add_argument("status", choices=STATUSES)
     s.add_argument("--reason")
     s.add_argument("--fixed-in")
+    s.add_argument("--encode")
     s.add_argument("--origin", choices=ORIGINS)
     s.add_argument("--duplicate-of")
     common(s)
