@@ -62,6 +62,8 @@ Identify the specific reason understanding breaks down:
 - *Abstract language:* A phrase leaves the activity, person or result unclear.
 - *Empty signposting:* The heading announces a topic but adds little meaning.
 - *Buried value:* The useful point appears too late.
+- *Broken cause:* In a story or sequence, an action no longer follows from
+  what came before because a step was cut or paraphrased away.
 - *Competing messages:* Several ideas obscure the passage's main purpose.
 
 Name the most important problem briefly. Avoid producing a full audit when
@@ -126,6 +128,32 @@ Make the activity and audience understandable before adding background,
 method or differentiation. Read the result aloud and check whether a
 listener could explain it back accurately.
 
+### Stories and sequences
+
+When copy tells what someone did (a story, a case study, a script, a
+how-it-happened paragraph), list every action and say why the actor does it,
+using only the words on the page. Mark a gap when:
+
+- the copy gives no reason a newcomer could name;
+- the stated reason does not fit what came before, so the action would not
+  do what the copy says it does;
+- you had to supply a missing step, even if you think you guessed right.
+
+A reader who works out a missing step rarely reports it, so check each
+action rather than asking whether the whole makes sense.
+
+Shorten by cutting whole side events, never a step a later line depends on:
+what someone says or predicts, why each person acts, how one act leads to
+the next. Keep a prediction, motive or command in its own terms; a
+paraphrase is safe only if the next line still follows from it. Fix a gap
+by saying the missing step in plain words, not by cutting more.
+
+Example: a source says a man's twitching finger means "I always get to taste
+something unusual"; his ruler then serves a rare dish to everyone but him.
+Shortened to "That means a rare dish", the snub no longer tests the omen and
+the next line ("to prove it wrong") stops making sense. "That means I'll
+taste something rare" keeps the step.
+
 ### Calls to action
 
 Make the next action understandable and appropriate to the reader's
@@ -139,6 +167,7 @@ Verify that the revision:
 - Uses benefits supported by the available facts.
 - Fits the surrounding voice and level of formality.
 - Gives ordinary words a clear referent.
+- Keeps every step a later sentence depends on (see Stories and sequences).
 - Avoids introducing guarantees, metrics or commercial commitments.
 - Remains understandable when read aloud.
 
