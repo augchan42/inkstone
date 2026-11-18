@@ -4,7 +4,7 @@ This file provides guidance to coding agents (Claude Code, opencode, and other A
 
 ## What This Is
 
-Inkstone (硯台) is a Claude Code plugin — a collection of agent skills for creative and design workflows. It is installed via the Claude Code plugin marketplace (`/plugin marketplace add augchan42/inkstone`). There is no build step and no dependencies to install. The repo is almost entirely Markdown skill definitions, plus one piece of runtime shell: a Stop hook (`hooks/`) that enforces the plan-review-loop skill's lifecycle.
+Inkstone (硯台) is a Claude Code plugin — a collection of agent skills for creative and design workflows. It is installed via the Claude Code plugin marketplace (`/plugin marketplace add augchan42/inkstone`). There is no build step and no dependencies to install. The repo is almost entirely Markdown skill definitions, plus two hooks in `hooks/`: a Stop hook that enforces the plan-review-loop skill's lifecycle, and a PreToolUse guard on Bash that blocks self-killing `pkill -f`/`pgrep -f` calls.
 
 ## Repository Structure
 
@@ -13,8 +13,9 @@ Inkstone (硯台) is a Claude Code plugin — a collection of agent skills for c
   plugin.json          # Plugin manifest — name, version, "skills": "./skills"
   marketplace.json     # Marketplace listing metadata
 hooks/
-  hooks.json           # Auto-discovered by Claude Code — registers the Stop hook
+  hooks.json           # Auto-discovered by Claude Code — registers both hooks
   stop-hook.sh         # Enforces plan-review-loop completion; no-op when no loop is active
+  block-self-kill.py   # PreToolUse (Bash): blocks pkill/pgrep -f patterns that match the tool's own shell
 agents/
   inkstone-lane-reviewer.md # Read/search-only lane reviewer; host captures findings
 skills/
@@ -115,6 +116,10 @@ Content safety substitutions exist because 52 of 4,096 images failed generation 
 - **Fail-open:** on any error, malformed state, invalid `review_id` (validated against `^[0-9]{8}-[0-9]{6}-[0-9a-f]{6}$` to prevent path traversal), or exhausted block budget (at most 2 blocks per phase without a phase transition, tracked via `hook_blocks`/`hook_block_phase` in the state file, enforced only under `stop_hook_active`), clean up state and approve — never trap the user.
 - **JSON-only stdout**, cross-platform shell (macOS + Linux), timestamped telemetry to `.claude/plan-review-loop.log`.
 - After modifying `stop-hook.sh`, re-test every path with piped hook-input JSON: no-state, defer-to-original, review-phase block, block-budget fail-open, addressing block (no disposition), addressing approve (with disposition), confirm block (no verdict), confirm approve (with `## Confirmation`), invalid review_id, `active: false`, unknown phase. Verify each output with `jq .` and run `python3 hooks/test_stop_hook.py` to check the Stop output contract and lifecycle behavior.
+
+## The Bash guard (hooks/block-self-kill.py)
+
+The Bash tool runs each command as `bash -c "<command>"`, so that shell's own command line contains any `pkill -f` pattern. `pkill -f "next dev"` therefore kills the shell running it (exit 144), and the rest of the command (a commit, a push) silently does not run. The hook parses the command with `shlex`, finds `pkill`/`pgrep` invocations in command position (after `;`, `&&`, `|`, `sudo`, `env`, …) that use `-f`/`--full`, and denies the call when the pattern has no `[`. The reason it returns names the bracket form (`-f "[n]ext dev"`) and the kill-by-port alternative. It allows everything else, including the text "pkill -f" inside a string, and allows unparseable commands. After changing it, run `python3 hooks/test_block_self_kill.py`.
 
 ## Conventions
 

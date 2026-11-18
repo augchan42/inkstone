@@ -1,5 +1,5 @@
 {
-  "description": "Plan review loop stop hook: enforces completion of plan-review-loop before allowing exit. No-op unless the loop state file exists; defers to the original review-loop plugin when its loop is active.",
+  "description": "Plan review loop stop hook (enforces completion of plan-review-loop; no-op unless its state file exists) and a Bash guard that blocks `pkill -f`/`pgrep -f` patterns that would match and kill the Bash tool's own shell.",
   "hooks": {
     "Stop": [
       {
@@ -9,6 +9,18 @@
             "command": "${CLAUDE_PLUGIN_ROOT}/hooks/stop-hook.sh",
             "timeout": 120,
             "statusMessage": "Plan review loop: checking phase..."
+          }
+        ]
+      }
+    ],
+    "PreToolUse": [
+      {
+        "matcher": "Bash",
+        "hooks": [
+          {
+            "type": "command",
+            "command": "python3 \"${CLAUDE_PLUGIN_ROOT}/hooks/block-self-kill.py\"",
+            "timeout": 10
           }
         ]
       }
