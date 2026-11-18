@@ -1,6 +1,6 @@
 ---
 name: blakean-scene
-description: Convert abstract symbolic concepts into Blakean embodied scene prompts — Blake's 8 compositional patterns, body grammar, and figure types. Use when visualizing oracular or symbolic ideas as figures; for ink-painting scenes from verse, see verse-to-prompt instead.
+description: Use when an oracular or symbolic idea needs a complete Blakean image prompt. For reusable character and action blocks with a separately chosen visual style, see concept-to-scene. For ink-painting scenes from verse, see verse-to-prompt.
 user-invocable: true
 argument-hint: "[tradition name] [concept name and brief description]"
 metadata:
@@ -9,7 +9,7 @@ metadata:
 
 # Blakean Scene — Concept → Embodied Scene
 
-Convert an abstract symbolic concept from any tradition into a **characters** + **action** scene description that slots into the 8-layer prophetic force prompt architecture.
+Create a complete Blakean image prompt from an abstract symbolic concept using Blake's eight compositional patterns, body grammar, and figure types.
 
 **First:** Read `blakean-reference.md` (in this skill's directory) for the full pattern details, tradition body grammar, palette families, and examples.
 

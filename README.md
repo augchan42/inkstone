@@ -29,6 +29,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **create-explanation** | Produce bilingual scholarly explanations for Jiaoshi Yilin verses |
 | **gloss-drift-audit** | Verify translations and derived image prompts after a source text is corrected — separates hash staleness from meaning error, orders the fixes so only changed rows get re-rendered |
 | **blakean-scene** | Turn abstract symbolic concepts into Blakean embodied scene prompts — 8 compositional patterns, body grammar, figure types |
+| **concept-to-scene** | Turn an abstract symbol (chakra, sephirah, alchemical stage, rune, hexagram) into 40-60 word character and action blocks for use with any visual style; for a complete Blakean prompt, use blakean-scene |
 | **shaughnessy-iching** | Interpret a Zhouyi (I Ching) hexagram/line in Edward Shaughnessy's de-mythologized late–Western Zhou register — divination-manual reading, not wisdom classic; provenance-flagged, interpret-only (no casting) |
 
 ### Design / UX
