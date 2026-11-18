@@ -3,6 +3,8 @@ name: concept-to-scene
 description: Use when an abstract symbol such as a chakra, sephirah, alchemical stage, rune, or hexagram needs reusable character and action blocks for image generation with a separately chosen visual style. For a complete Blakean image prompt, see blakean-scene.
 user-invocable: true
 argument-hint: "[tradition name] [concept name and optional brief description]"
+metadata:
+  version: "1.0.0"
 ---
 
 # Concept → Embodied Scene
@@ -41,8 +43,8 @@ The symbol type can suggest a physical question:
 Every scene MUST satisfy:
 
 1. **At least one figure under tension** — a body reaching, dissolving, kneeling, hanging, transforming, resisting, yielding. Tension is non-negotiable. Static figures standing at rest are forbidden.
-2. **Imply the symbol through action.** Use the gesture or physical relationship to evoke the reading. Omit literal diagrams, such as a six-pointed star or hexagram lines.
-3. **Describe the body specifically.** Give the figure a posture and gesture. Use clothing and expression to reinforce the physical action. A kneeling figure can bow its head, clasp its hands, and tense its shoulders.
+2. **Imply the symbol through action.** Use the gesture or physical relationship to evoke the reading. Omit literal diagrams, such as a six-pointed star or hexagram lines. A count taken from the symbol's structure, such as six cloud layers for six hexagram lines, can shape the setting. It must not read as the diagram itself: no stacked bars, labelled petals, or inscribed syllables.
+3. **Describe the body specifically.** Give the figure a posture and gesture. Use clothing and the position of the head, hands, and shoulders to reinforce the physical action. A kneeling figure can bow its head, clasp its hands, and tense its shoulders.
 4. **Freeze a single moment.** Show the action at the point of maximum tension.
 
 Choose the figures' spatial relationship to fit the reading. Use height when ascent, descent, or hierarchy carries meaning. Two forces that meet as equals can face each other at eye level.
@@ -51,13 +53,15 @@ Before writing the final blocks, check whether the same pose and action could il
 
 ## Content Safety (MANDATORY)
 
-The same rules as verse-to-prompt apply. Show weight through atmosphere, aftermath, and metaphor — never through the act itself.
+Show violence and harm through atmosphere, aftermath, and metaphor, never through the act itself. Keep substitutions free of any one visual style, since the style is chosen separately.
 
 | Blocked concept | Safe alternative |
 |----------------|-----------------|
-| Blood / wounds | "dark stains like spilled ink", "vermillion streaks on stone" |
-| Weapons contacting bodies | Aftermath — "sword embedded in earth", "arrow lodged in post" |
-| Self-harm / self-sacrifice | Ordeal metaphor — "weathered by nine days", "body wracked with tension" |
+| Blood / wounds | "dark stains spreading across stone", "red streaks on a wall" |
+| Weapons contacting bodies | Aftermath — "sword embedded in earth", "arrow lodged in a post" |
+| Self-harm / self-sacrifice | Ordeal — "weathered by nine days of wind", "body rigid with strain" |
+| Fallen bodies | Emptiness — "abandoned armour on bare ground" |
+| Restraint | Environment — "a narrow gorge with no exit" |
 | Dismemberment | Broken objects — "shattered vessel", "split tree trunk" |
 | Graphic nudity | Cosmic forms — "luminous outline", "translucent figure" |
 
@@ -79,10 +83,10 @@ Present conversationally:
 
 Use **Scene interpretation (creative reading):** when you supply an interpretation beyond the input.
 
-**Characters (for prompt layer):**
+**Characters:**
 > [40-60 words describing who/what is physically present]
 
-**Action (for prompt layer):**
+**Action:**
 > [40-60 words describing the moment of tension]
 
 These blocks can also fill two layers in the eight-layer Blakean prompt structure:
@@ -99,17 +103,17 @@ background → medium → composition → [characters] → [action] → palette 
 **Scene interpretation:** A grounded body can bear the weight of everything above it.
 
 **Characters:**
-> A massive figure crouched at the base of a stone column that rises into darkness above — legs braced, hands pressed flat against the earth. The body is dense, heavy, made of the same stone as the ground. Four serpents coil around the figure's base, their heads raised and watchful.
+> A heavy, broad figure crouches at the base of a stone column that rises into darkness. Its legs are braced wide and both palms press flat against the floor. Its skin has the grain and colour of the stone beneath it. A single serpent lies coiled three and a half times around the column's base.
 
 **Action:**
-> The figure presses downward with such force that cracks radiate through the stone floor — not destruction but rooting, the foundation driving itself deeper. The column above trembles with the energy transmitted upward. The serpents pulse with a slow, rhythmic glow. Everything above depends on this weight holding.
+> The figure pushes down through its palms and heels, and cracks spread outward through the floor around it. The column above shakes as the force travels up through the stone. The serpent's head lifts slightly, its eyes newly open. The figure's shoulders and thighs stay locked to hold the weight.
 
 ### Input: I-Ching — Hexagram 1, Qián (The Creative)
 
 **Scene interpretation (creative reading):** Creative force is a dragon straining upward at the threshold of taking form.
 
 **Characters:**
-> A colossal figure ascending through layered clouds — arms reaching upward, body elongated and spiraling, robes trailing below into depths. The figure is neither young nor old, neither fully human nor fully dragon — scales flash along the forearms, the spine arches with serpentine grace.
+> A long figure climbs through layered clouds with both arms raised above its head. Its body twists in a spiral from hips to shoulders, and its robes hang down into the clouds below. Scales cover its forearms and run along its spine. Its hands and bare feet end in short curved claws like a dragon's.
 
 **Action:**
 > The figure strains into the highest of six cloud layers. Its fingertips just touch the bright edge of the cloud while its trailing robes hang through the darker layers below. The back arches and the ribs flare with the effort of holding the reach. Far beneath, the ground is barely visible.

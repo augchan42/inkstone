@@ -55,6 +55,7 @@ adversarial review is in [ADR-0001](docs/adr/0001-separate-verification-from-adv
 - **image-to-scene** — Converts ink paintings into video generation motion prompts — 5 motion categories, 6 motion rules, Seedance 2.0 API reference, and a QwenCloud Token Plan (HappyHorse 1.1) section — endpoint, the async-header 403, measured credit cost, and where the runner code lives (`8bitoracle-next`, not `sixlines-ios`).
 - **create-explanation** — Generates bilingual (English + Traditional Chinese) scholarly explanations of classical Chinese oracular verses. English 100-150 words, Chinese 150-200 characters.
 - **blakean-scene** — Converts abstract symbolic concepts into 240-280 word Blakean embodied scene prompts using an 8-layer prompt architecture and 8 compositional patterns. Reads `blakean-reference.md` for pattern details.
+- **concept-to-scene** — Turns an abstract symbol (chakra, sephirah, alchemical stage, rune, hexagram) into a one-sentence scene interpretation plus 40-60 word characters and action blocks, independent of visual style. Labels any reading beyond the user's input as a creative reading. The blocks can fill the characters and action layers of blakean-scene's 8-layer prompt.
 - **gloss-drift-audit** — Verifies translations and derived image prompts after a source text is corrected — separates hash staleness from meaning error and orders the fixes so only changed rows get re-rendered.
 - **shaughnessy-iching** — Interprets a Zhouyi (I Ching) hexagram or line in Edward Shaughnessy's de-mythologized late–Western Zhou register — divination-manual reading, not wisdom classic. Provenance-flagged, interpret-only (no casting).
 
@@ -118,7 +119,7 @@ Content safety substitutions exist because 52 of 4,096 images failed generation 
 
 ## Conventions
 
-- Prompts target 50-60 words (verse-to-prompt) or 240-280 words (blakean-scene) — stay within these ranges
+- Prompts target 50-60 words (verse-to-prompt), 240-280 words (blakean-scene), or 40-60 words per block (concept-to-scene) — stay within these ranges
 - End ink painting prompts with "Chinese ink painting."; stipple (matrix skin) prompts reuse the ink scene and end with the luminous-stipple suffix ("Golden age science fiction stipple illustration, … phosphor-green and amber palette on black."); tech-noir prompts end with "phosphor-green tech-noir illustration, CRT scanlines, flat deep blacks, stylized graphic art, not photorealistic."
 - Disambiguation is mandatory: write "crane bird" not "crane", "swallow bird" not "swallow", etc.
 - Traditional Chinese (繁體中文) is used in bilingual outputs, not Simplified
