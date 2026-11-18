@@ -1,29 +1,31 @@
 ---
 name: concept-to-scene
-description: Convert abstract symbolic concepts into embodied scene descriptions for image generation. Use when you have an abstract concept (chakra, sephirah, alchemical stage, rune, hexagram) and need to turn it into a scene with figures, gesture, and tension — not a diagram or symbol. Works across all mystical/esoteric traditions.
+description: Use when an abstract symbol such as a chakra, sephirah, alchemical stage, rune, or hexagram needs reusable character and action blocks for image generation with a separately chosen visual style. For a complete Blakean image prompt, see blakean-scene.
 user-invocable: true
-argument-hint: [tradition name] [concept name and brief description]
+argument-hint: "[tradition name] [concept name and optional brief description]"
 ---
 
 # Concept → Embodied Scene
 
-Convert an abstract symbolic concept from any tradition into a **characters** + **action** scene description that slots into the 8-layer prophetic force prompt architecture.
+Turn an abstract symbol into a scene with **characters** and **action**. Each block can be used with a separately chosen visual style.
 
 ## The Problem This Solves
 
-Abstract concepts (lotus diagrams, geometric yantras, hexagram lines, sephiroth on a tree, alchemical symbols) produce flat, diagrammatic images when described literally. The prophetic force grammar works through **figures under tension** — bodies reaching, dissolving, hanging, kneeling, transforming. When a concept has no inherent figure, you must *create one* by finding the human experience the symbol encodes.
+Describing a lotus diagram, yantra, or hexagram literally tells an image model to draw the symbol. Find a physical action that expresses the supplied reading. A figure can reach, dissolve, hang, kneel, or transform. Choose what the body does based on the meaning the scene needs to convey.
 
 ## Your Task
 
-Given a concept (name + tradition + brief description), produce:
+Given a concept, its tradition, and an optional brief description, produce:
 
-1. A **scene interpretation** — one sentence explaining what human experience this symbol encodes
+1. A **scene interpretation** — one sentence stating the experience or relationship the scene will embody
 2. A **characters block** (40-60 words) — who/what is in the scene, described physically
 3. An **action block** (40-60 words) — what is happening in the scene, the moment of tension
 
 ## The Method: Symbol → Experience → Figure
 
-Every abstract symbol encodes a felt experience. Find it:
+Start with the user's description, including any source or school they specify. Use it to pick the experience or relationship to embody. If you supply a reading or make an interpretive assumption beyond the description, label the scene interpretation as a **creative reading**. If fidelity to a specific source or school is required and the input leaves the reading unclear, ask for the relevant passage or interpretation.
+
+The symbol type can suggest a physical question:
 
 | Symbol Type | Ask | Example |
 |------------|-----|---------|
@@ -32,17 +34,20 @@ Every abstract symbol encodes a felt experience. Find it:
 | Process (alchemical stage, bardo state) | What is the figure becoming? Show the transformation mid-act. | Rubedo → two figures fusing into one form inside a vessel flooding with red fire |
 | Elemental (Wu Xing phase, Greek element) | What is the element doing to/through a figure? | Water phase → a figure descending into dark water, the surface closing overhead |
 | Relational (yin-yang, conjunction) | Show two figures or forces in the moment of meeting. | Coniunctio → a king and queen reaching toward each other, their outstretched hands beginning to merge |
-| Cosmic (hexagram, odù) | What scene would make someone FEEL this hexagram's meaning? | Gé (Revolution) → a figure mid-molt, old skin splitting away, new form emerging raw |
+| Cosmic (hexagram, odù) | What physical change would express this reading? | Gé (Revolution) → a figure mid-molt, old skin splitting away, new form emerging raw |
 
-## The 5 Constraints (MANDATORY)
+## The 4 Constraints (MANDATORY)
 
 Every scene MUST satisfy:
 
 1. **At least one figure under tension** — a body reaching, dissolving, kneeling, hanging, transforming, resisting, yielding. Tension is non-negotiable. Static figures standing at rest are forbidden.
-2. **The vertical axis encodes hierarchy** — what is above has authority over what is below. Use this. A figure reaching upward toward light, pressed downward by weight, caught between rising and falling.
-3. **The symbol is implied, not depicted** — never describe the abstract symbol itself (no "a six-pointed star," no "the Tree of Life diagram," no "hexagram lines"). The scene must make the viewer FEEL the symbol without seeing it drawn.
-4. **Specificity of body** — describe the figure's posture, gesture, clothing, expression. "A figure kneeling" is too vague. "A figure kneeling in absolute darkness, hands clasped, head bowed, body wracked with tension between agony and ecstasy" has presence.
-5. **One moment, not a narrative** — freeze the scene at its point of maximum tension. Not "first this happened, then that." The image is a single instant.
+2. **Imply the symbol through action.** Use the gesture or physical relationship to evoke the reading. Omit literal diagrams, such as a six-pointed star or hexagram lines.
+3. **Describe the body specifically.** Give the figure a posture and gesture. Use clothing and expression to reinforce the physical action. A kneeling figure can bow its head, clasp its hands, and tense its shoulders.
+4. **Freeze a single moment.** Show the action at the point of maximum tension.
+
+Choose the figures' spatial relationship to fit the reading. Use height when ascent, descent, or hierarchy carries meaning. Two forces that meet as equals can face each other at eye level.
+
+Before writing the final blocks, check whether the same pose and action could illustrate a different concept after swapping the title. If so, make the gesture or relationship more specific to this reading.
 
 ## Content Safety (MANDATORY)
 
@@ -59,7 +64,7 @@ The same rules as verse-to-prompt apply. Show weight through atmosphere, afterma
 ## Anti-Patterns
 
 - **Describing the symbol literally** — "a twelve-petaled lotus with Sanskrit syllables" → flat diagram, not a scene
-- **No figure** — pure landscape or pure geometry with no body → loses the prophetic force grammar
+- **No figure** — pure landscape or geometry leaves the action without a body
 - **Multiple sequential moments** — "first he rises, then he falls, then he is reborn" → pick ONE moment
 - **Tradition-as-costume** — don't just dress a generic figure in tradition-specific clothing. The scene itself must arise from the concept's meaning.
 - **Over-specifying faces** — diffusion models struggle with specific facial expressions. Use body posture and gesture instead.
@@ -70,7 +75,9 @@ Present conversationally:
 
 **Concept:** [tradition] — [concept name]
 
-**Scene interpretation:** [One sentence: what human experience does this symbol encode?]
+**Scene interpretation:** [One sentence stating the experience or relationship the scene will embody]
+
+Use **Scene interpretation (creative reading):** when you supply an interpretation beyond the input.
 
 **Characters (for prompt layer):**
 > [40-60 words describing who/what is physically present]
@@ -78,18 +85,18 @@ Present conversationally:
 **Action (for prompt layer):**
 > [40-60 words describing the moment of tension]
 
-These slot directly into the 8-layer prompt architecture:
+These blocks can also fill two layers in the eight-layer Blakean prompt structure:
 ```
 background → medium → composition → [characters] → [action] → palette → anti → closer
 ```
-
-The style layers (background, medium, composition, palette, anti, closer) are handled separately — this skill produces only the two tradition-specific layers.
 
 ## Examples
 
 ### Input: Hinduism — Muladhara (Root Chakra)
 
-**Scene interpretation:** The primal anchor — the body's first claim on existence, the weight that says "I am here."
+**Supplied reading:** Grounding gives the rest of the body a stable base.
+
+**Scene interpretation:** A grounded body can bear the weight of everything above it.
 
 **Characters:**
 > A massive figure crouched at the base of a stone column that rises into darkness above — legs braced, hands pressed flat against the earth. The body is dense, heavy, made of the same stone as the ground. Four serpents coil around the figure's base, their heads raised and watchful.
@@ -99,10 +106,22 @@ The style layers (background, medium, composition, palette, anti, closer) are ha
 
 ### Input: I-Ching — Hexagram 1, Qián (The Creative)
 
-**Scene interpretation:** Pure creative force before it takes form — the dragon that rises through every stage of becoming.
+**Scene interpretation (creative reading):** Creative force is a dragon straining upward at the threshold of taking form.
 
 **Characters:**
 > A colossal figure ascending through layered clouds — arms reaching upward, body elongated and spiraling, robes trailing below into depths. The figure is neither young nor old, neither fully human nor fully dragon — scales flash along the forearms, the spine arches with serpentine grace.
 
 **Action:**
-> Six layers of cloud mark the ascent — the figure has already burst through five and strains toward the sixth, where blinding light awaits. Below, the earth is impossibly distant. The body stretches between ground and heaven, every muscle engaged in the act of rising. The moment before the final threshold.
+> The figure strains into the highest of six cloud layers. Its fingertips just touch the bright edge of the cloud while its trailing robes hang through the darker layers below. The back arches and the ribs flare with the effort of holding the reach. Far beneath, the ground is barely visible.
+
+### Input: Alchemy — Coniunctio
+
+**Supplied reading:** Two distinct elements form a union through mutual effort.
+
+**Scene interpretation:** Two equal forces each yield at the point where they join.
+
+**Characters:**
+> Two glassworkers stand face to face at eye level, their feet braced wide on the same stone floor. One rod carries a gather of amber glass and the other a gather of blue. Their leather sleeves crease at the elbows as they hold the glowing tips halfway between them.
+
+**Action:**
+> Each worker turns their rod a fraction of a turn as the softened glass meets. Both lean into the seam with elbows held close. The two gathers flatten by the same amount at the point of contact, and a thread of each colour curls into the other at the join.
