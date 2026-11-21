@@ -53,6 +53,7 @@ A collection of agent skills for creative and design workflows, built for [Claud
 | **deepen-task** | Reframe a task into a stronger brief — missing expert work, primary evidence, concrete methods, and independent checks; adapted from Felix Rieseberg's ambition framework |
 | **marketing-clarity** | Clarify marketing messages, website copy and company introductions when the offer or its value is hard to understand. Credit to [Eliot Payne](https://www.linkedin.com/in/eliot-payne/). |
 | **unslop** | Cut AI tells from any writing — 33 numbered rules for content, language, formatting, filler and plain speech. From [Lauren Tan's pstack](https://github.com/cursor/plugins/tree/main/pstack) (MIT). User-invoked only. |
+| **unslop-pages** | Remove AI layout patterns from web pages, templates and slide decks: kicker labels above titles, subtitles below them, "KEY INSIGHT" badges, numbered section labels, stat strips. Moves real metadata under the title instead of deleting it, and keeps images, nav and actions. Pairs with unslop for the wording. |
 
 ### Engineering Process
 
